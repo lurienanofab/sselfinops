@@ -1,0 +1,86 @@
+﻿.summary {
+    padding: 0;
+    font-size: small;
+    font-family: 'Times New Roman';
+    border: solid 1px #AAAAAA;
+    margin-bottom: 10px;
+}
+
+    .summary .title {
+        padding: 5px;
+        font-weight: bold;
+        background-color: #D3D3D3;
+        border-bottom: solid 1px #AAAAAA;
+    }
+
+    .summary .content {
+        padding: 5px;
+    }
+
+.summary-table {
+    border-collapse: collapse;
+    table-layout: fixed;
+}
+
+    .summary-table td {
+        padding: 5px;
+    }
+
+.detail {
+    padding: 0;
+    font-size: small;
+    font-family: 'Times New Roman';
+    border: solid 1px #AAAAAA;
+    margin-bottom: 10px;
+}
+
+.detail-table {
+    table-layout: fixed;
+    border-collapse: collapse;
+    border: none;
+    margin: 0;
+    width: 100%;
+}
+
+    .detail-table > thead > tr > th {
+        padding: 5px;
+        font-weight: bold;
+        text-align: left;
+        background-color: #D3D3D3;
+        border-bottom: solid 1px #AAAAAA;
+        white-space: nowrap;
+    }
+
+    .detail-table > tbody > tr > td {
+        background-color: #FFFFFF;
+        border-top: solid 1px #CCCCCC;
+        padding: 5px;
+    }
+
+    .detail-table > tbody > tr:nth-child(odd) > td {
+        background-color: #FAF0E6;
+    }
+
+    .detail-table > tbody > tr > .expire-fifteen {
+        color: red;
+        font-weight: bold;
+    }
+
+    .detail-table > tbody > tr > .expire-fortyfive {
+        color: orange;
+    }
+
+    .detail-table > tbody > tr > .controls > a {
+        text-decoration: none;
+    }
+
+.center {
+    text-align: right;
+}
+
+.download-all-working {
+    padding-left: 18px;
+    font-style: italic;
+    color: #808080;
+    background: url(//ssel-apps.eecs.umich.edu/static/images/ajax-loader-2.gif) no-repeat left center;
+}

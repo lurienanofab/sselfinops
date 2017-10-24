@@ -1,0 +1,31 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="FinOpsMaster.master.cs" Inherits="sselFinOps.FinOpsMaster" %>
+
+<!DOCTYPE html>
+<html>
+<head runat="server">
+    <title>LNF FinOps</title>
+
+    <link rel="stylesheet" href="//ssel-apps.eecs.umich.edu/static/styles/theme/default.css" />
+    <link rel="stylesheet" href="//ssel-apps.eecs.umich.edu/static/styles/datatables.css" />
+    <link rel="stylesheet" href="//ssel-apps.eecs.umich.edu/static/lib/jquery-ui/themes/smoothness/jquery-ui.min.css" />
+
+    <asp:ContentPlaceHolder ID="head" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form id="form1" runat="server">
+        <asp:ContentPlaceHolder ID="ContentPlaceHolder1" runat="server">
+        </asp:ContentPlaceHolder>
+    </form>
+
+    <script src="//ssel-apps.eecs.umich.edu/static/lib/moment/moment.min.js"></script>
+    <script src="//ssel-apps.eecs.umich.edu/static/lib/jquery/jquery.min.js"></script>
+    <script src="//ssel-apps.eecs.umich.edu/static/lib/jquery-ui/jquery-ui.min.js"></script>
+    <script src="//ssel-apps.eecs.umich.edu/static/lib/datatables/js/jquery.dataTables.min.js"></script>
+    <script src="//ssel-apps.eecs.umich.edu/static/lib/js-cookie/js.cookie.js"></script>
+    <script src="//ssel-apps.eecs.umich.edu/static/scripts/jquery/jquery.scrollposition.js"></script>
+
+    <asp:ContentPlaceHolder ID="scripts" runat="server">
+    </asp:ContentPlaceHolder>
+</body>
+</html>

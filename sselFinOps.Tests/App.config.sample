@@ -1,0 +1,31 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+    <configSections>
+        <sectionGroup name="lnf">
+            <section name="providers" type="LNF.ProvidersSection, LNF"/>
+            <section name="redis" type="LNF.Impl.Redis.RedisConfigurationSection, LNF.Impl"/>
+        </sectionGroup>
+    </configSections>
+
+    <lnf>
+        <providers production="false">
+            <context type="LNF.Impl.AppContextProvider, LNF.Impl" loginUrl="/login" />
+            <dataAccess type="LNF.Impl.NHibernateThreadStaticDataAccess, LNF.Impl" />
+            <serialization type="LNF.Impl.Serialization.SerializationProvider, LNF.Impl"/>
+            <email type="LNF.Impl.Email.EmailProvider, LNF.Impl" host="127.0.0.1" log="true" />
+            <log type="LNF.Impl.Logging.ServiceLogProvider, LNF.Impl" enabled="true" name="sselFinOps"/>
+            <modelFactory type="LNF.Impl.ModelFactory.ValueInjecterModelFactory, LNF.Impl"/>
+        </providers>
+        <redis>
+            <connection host="cachesvr" databaseId="5"/>
+        </redis>
+    </lnf>
+
+    <appSettings>
+        <add key="MongoConnectionString" value="*****"/>
+    </appSettings>
+
+    <connectionStrings>
+        <add name="cnSselData" connectionString="*****" providerName="System.Data.SqlClient"/>
+    </connectionStrings>
+</configuration>

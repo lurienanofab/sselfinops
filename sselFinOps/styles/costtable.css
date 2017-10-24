@@ -1,0 +1,85 @@
+﻿        .aux-costs-container {
+            width: 800px;
+            padding: 0;
+        }
+
+        .costs-container {
+            width: 1000px;
+            padding: 0;
+        }
+
+        .costs-table {
+            border-collapse: collapse;
+            width: 100%;
+            font-size: 10pt;
+            font-family: 'Times New Roman';
+        }
+
+            .costs-table th, .costs-table td {
+                padding: 3px;
+                border: solid 1px #D3D3D3;
+            }
+
+            .costs-table th {
+                text-align: center;
+                font-weight: bold;
+                background-color: #D3D3D3;
+            }
+
+            .costs-table .right-border-thick {
+                border-right: 2px solid #000000;
+            }
+
+            .costs-table .item .right-border-none {
+                border-right: 1px solid #FFFFFF;
+            }
+
+            .costs-table .alt-item .right-border-none {
+                border-right: 1px solid #E5E5E5;
+            }
+
+        .aux-costs-container .costs-table .numeric-text {
+            width: 60px;
+            text-align: right;
+        }
+
+        .costs-container .costs-table .numeric-text {
+            width: 40px;
+            text-align: right;
+        }
+
+        .costs-table .item {
+            background-color: #FFFFFF;
+        }
+
+        .costs-table .alt-item {
+            background-color: #E5E5E5;
+        }
+
+        .costs-table .cost-group {
+            background-color: #669966;
+            font-weight: bold;
+        }
+
+        .costs-table .cost-category {
+            background-color: #CCFFCC;
+            font-weight: bold;
+        }
+
+            .costs-table .cost-category .name-column {
+                padding-left: 15px;
+            }
+
+        .costs-table .cost-item .name-column {
+            padding-left: 30px;
+        }
+
+        .error {
+            color: #FF0000;
+            font-weight: bold;
+        }
+
+        .message {
+            color: #003366;
+            font-weight: bold;
+        }

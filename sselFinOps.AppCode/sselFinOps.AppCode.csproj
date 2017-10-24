@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7CFCFE27-D4C2-4F8D-873B-0FAF88ADE11E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>sselFinOps.AppCode</RootNamespace>
+    <AssemblyName>sselFinOps.AppCode</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="antlr.runtime, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ical.Net.3.0.15\lib\netstandard1.3\antlr.runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="GemBox.ExcelLite">
+      <HintPath>..\..\SharedLib\GemBox.ExcelLite.dll</HintPath>
+    </Reference>
+    <Reference Include="Ical.Net, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ical.Net.3.0.15\lib\netstandard1.3\Ical.Net.dll</HintPath>
+    </Reference>
+    <Reference Include="Ical.Net.Collections, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ical.Net.3.0.15\lib\netstandard1.3\Ical.Net.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=10.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.10.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NodaTime, Version=2.2.1.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NodaTime.2.2.1\lib\net45\NodaTime.dll</HintPath>
+    </Reference>
+    <Reference Include="SevenZipSharp, Version=0.64.3890.29348, Culture=neutral, PublicKeyToken=20de82c62b055c88, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\SevenZipSharp.0.64\lib\SevenZipSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Net.Http, Version=4.1.1.2, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Net.Http.4.3.3\lib\net46\System.Net.Http.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.TypeExtensions, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.TypeExtensions.4.4.0\lib\net461\System.Reflection.TypeExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.Caching" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Runtime.Serialization.Primitives, Version=4.1.2.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.Serialization.Primitives.4.3.0\lib\net46\System.Runtime.Serialization.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Algorithms, Version=4.1.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Algorithms.4.3.0\lib\net461\System.Security.Cryptography.Algorithms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Encoding, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Encoding.4.3.0\lib\net46\System.Security.Cryptography.Encoding.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Primitives.4.3.0\lib\net46\System.Security.Cryptography.Primitives.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Security.Cryptography.X509Certificates, Version=4.1.1.1, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.X509Certificates.4.3.1\lib\net461\System.Security.Cryptography.X509Certificates.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AtomFeed.cs" />
+    <Compile Include="AuthInfo.cs" />
+    <Compile Include="BillingChecks.cs" />
+    <Compile Include="BLL\AccountBL.cs" />
+    <Compile Include="BLL\BillingTypeManager.cs" />
+    <Compile Include="BLL\ClientBL.cs" />
+    <Compile Include="BLL\FormulaBL.cs" />
+    <Compile Include="BLL\RoomApportionDataManager.cs" />
+    <Compile Include="BLL\RoomManager.cs" />
+    <Compile Include="DAL\AddressDA.cs" />
+    <Compile Include="DAL\BillingTypeDA.cs" />
+    <Compile Include="DAL\GlobalCostDA.cs" />
+    <Compile Include="DAL\AccountDA.cs" />
+    <Compile Include="DAL\ClientDA.cs" />
+    <Compile Include="DAL\MiscBillingChargeDA.cs" />
+    <Compile Include="DAL\RoomBillingDA.cs" />
+    <Compile Include="DAL\RoomUsageData.cs" />
+    <Compile Include="DAL\StoreBillingDA.cs" />
+    <Compile Include="DAL\ToolBillingDA.cs" />
+    <Compile Include="DateUtility.cs" />
+    <Compile Include="ExcelUtility.cs" />
+    <Compile Include="GlobalCost.cs" />
+    <Compile Include="GoogleHoliday.cs" />
+    <Compile Include="iCalFeed.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReportPage.cs">
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="ReportFactory.cs" />
+    <Compile Include="ZipUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\lnf\LNF.Models\LNF.Models.csproj">
+      <Project>{98c7f73d-ef9d-4a87-8b79-a1208085cfbd}</Project>
+      <Name>LNF.Models</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lnf\LNF.WebApi\LNF.WebApi.csproj">
+      <Project>{85be7662-47c8-4e82-8090-3f2bd61cc0f7}</Project>
+      <Name>LNF.WebApi</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LNF\LNF.Web\LNF.Web.csproj">
+      <Project>{f79683ff-e524-4107-a6e1-29579ee544e1}</Project>
+      <Name>LNF.Web</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\LNF\LNF\LNF.csproj">
+      <Project>{e3b73410-869b-4ba2-99ac-ad6708a27ade}</Project>
+      <Name>LNF</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\lnf\OnlineServices.Api\OnlineServices.Api.csproj">
+      <Project>{d0c76fe8-7233-4da5-b106-8e4f51a32ad2}</Project>
+      <Name>OnlineServices.Api</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SUB\ReportBase.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SUB\RoomReport.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SUB\StoreReport.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="SUB\ToolReport.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
