@@ -13,13 +13,13 @@ namespace sselFinOps
         {
             if (!Page.IsPostBack)
             {
-                int orgAcctId = GetOrgAcctID();
+                int accountId = GetAccountID();
                 DateTime startPeriod = GetStartPeriod();
                 DateTime endPeriod = GetEndPeriod();
 
-                if (orgAcctId == 0)
+                if (accountId == 0)
                 {
-                    ShowError("Invalid parameter: OrgAcctID");
+                    ShowError("Invalid parameter: AccountID");
                     return;
                 }
 
@@ -51,16 +51,16 @@ namespace sselFinOps
 
                 // made it this far so we passed all the validation tests
 
-                //GetInvoiceData(startPeriod, endPeriod);
-                var mgr = new ExternalInvoiceManager(startPeriod, endPeriod, ShowRemote());
+                var mgr = new ExternalInvoiceManager(accountId, startPeriod, endPeriod, ShowRemote());
+                var inv = mgr.GetInvoices(accountId).First();
 
                 switch (reportType)
                 {
                     case "Excel":
-                        CreateExcelInvoice(mgr, orgAcctId);
+                        CreateExcelInvoice(inv);
                         break;
                     case "Html":
-                        DisplayHtmlInvoice(mgr, orgAcctId);
+                        DisplayHtmlInvoice(inv);
                         break;
                     default:
                         litErrorMessage.Text = "<div class=\"error-message\">Invalid parameter: ReportType</div>";
@@ -69,11 +69,11 @@ namespace sselFinOps
             }
         }
 
-        private int GetOrgAcctID()
+        private int GetAccountID()
         {
             int result;
 
-            if (int.TryParse(Request.QueryString["OrgAcctID"], out result))
+            if (int.TryParse(Request.QueryString["AccountID"], out result))
                 return result;
 
             return 0;
@@ -85,8 +85,8 @@ namespace sselFinOps
 
             if (DateTime.TryParse(Request.QueryString["StartPeriod"], out result))
                 return result;
-            else
-                return CacheManager.Current.StartPeriod();
+
+            return default(DateTime);
         }
 
         private DateTime GetEndPeriod()
@@ -95,8 +95,8 @@ namespace sselFinOps
 
             if (DateTime.TryParse(Request.QueryString["EndPeriod"], out result))
                 return result;
-            else
-                return CacheManager.Current.EndPeriod();
+
+            return default(DateTime);
         }
 
         private bool ShowRemote()
@@ -117,19 +117,17 @@ namespace sselFinOps
                 litErrorMessage.Text = string.Format("<div class=\"error-message\">{0}</div>", msg);
         }
 
-        private void CreateExcelInvoice(ExternalInvoiceManager mgr, int orgAcctId)
+        private void CreateExcelInvoice(ExternalInvoice inv)
         {
-            var inv = mgr.GetInvoices(orgAcctId).First();
-
             string filePath;
-            if (mgr.StartDate >= RepInvoice.July2009)
+            if (inv.StartDate >= RepInvoice.July2009)
             {
                 string alert = string.Empty;
                 filePath = ExcelUtility.GenerateInvoiceExcelReport(inv, CacheManager.Current.ClientID, string.Empty, true, ref alert);
                 ShowError(alert);
             }
             else
-                filePath = ExcelUtility.MakeSpreadSheet(inv.Header.AccountID, inv.Header.InvoiceNumber, inv.Header.DeptRef, inv.Header.OrgName, CacheManager.Current.ClientID, mgr.StartDate, mgr.EndDate);
+                filePath = ExcelUtility.MakeSpreadSheet(inv.Header.AccountID, inv.Header.InvoiceNumber, inv.Header.DeptRef, inv.Header.OrgName, CacheManager.Current.ClientID, inv.StartDate, inv.EndDate);
 
             // display excel spreadsheet
             if (!string.IsNullOrEmpty(filePath))
@@ -139,16 +137,14 @@ namespace sselFinOps
             }
         }
 
-        public void DisplayHtmlInvoice(ExternalInvoiceManager mgr, int orgAcctId)
+        public void DisplayHtmlInvoice(ExternalInvoice inv)
         {
-            var inv = mgr.GetInvoices(orgAcctId).First();
-
             litAccountName.Text = string.Format("{0} ({1})", inv.Header.AccountName, inv.Header.OrgName);
 
-            if (mgr.StartDate.AddMonths(1) == mgr.EndDate)
-                litAccountName.Text += string.Format(" - {0:MMM yyyy}", mgr.StartDate);
+            if (inv.StartDate.AddMonths(1) == inv.EndDate)
+                litAccountName.Text += string.Format(" - {0:MMM yyyy}", inv.StartDate);
             else
-                litAccountName.Text += string.Format(" - {0:MMM yyyy} to {1:MMM yyyy}", mgr.StartDate, mgr.EndDate.AddMonths(-1));
+                litAccountName.Text += string.Format(" - {0:MMM yyyy} to {1:MMM yyyy}", inv.StartDate, inv.EndDate.AddMonths(-1));
 
             litInvoiceTotal.Text = string.Format("Total: {0:C}", inv.Usage.Sum(x => x.LineTotal));
 
@@ -158,9 +154,10 @@ namespace sselFinOps
 
         protected void btnCreateExcelInvoice_Click(object sender, EventArgs e)
         {
-            int orgAcctId = GetOrgAcctID();
-            var mgr = new ExternalInvoiceManager(GetStartPeriod(), GetEndPeriod(), ShowRemote());
-            CreateExcelInvoice(mgr, orgAcctId);
+            int accountId = GetAccountID();
+            var mgr = new ExternalInvoiceManager(accountId, GetStartPeriod(), GetEndPeriod(), ShowRemote());
+            var inv = mgr.GetInvoices(accountId).First();
+            CreateExcelInvoice(inv);
         }
     }
 }

@@ -142,9 +142,9 @@ namespace sselFinOps
             return string.Empty;
         }
 
-        protected string GetViewUrl(int orgAcctId, string reportType)
+        protected string GetViewUrl(int accountId, string reportType)
         {
-            return string.Format(VirtualPathUtility.ToAbsolute("~/RepInvoiceView.aspx?OrgAcctID={0}&ReportType={3}&ShowRemote={4}"), orgAcctId, StartPeriod, EndPeriod, reportType, ShowRemote);
+            return string.Format(VirtualPathUtility.ToAbsolute("~/RepInvoiceView.aspx?AccountID={0}&StartPeriod={1:yyyy-MM-dd}&EndPeriod={2:yyyy-MM-dd}&ReportType={3}&ShowRemote={4}"), accountId, StartPeriod, EndPeriod, reportType, ShowRemote);
         }
 
         protected void dgOrg_ItemDataBound(object sender, DataGridItemEventArgs e)
@@ -180,14 +180,6 @@ namespace sselFinOps
                         lblFunds.Text = string.Format("{0:C}", h.PoRemainingFunds);
                     }
                 }
-
-                //int orgAcctId = Convert.ToInt32(dgOrg.DataKeys[e.Item.ItemIndex]);
-
-                //ImageButton btnExcelOrgInvoice = (ImageButton)e.Item.FindControl("btnExcelOrgInvoice");
-                //btnExcelOrgInvoice.CommandArgument = orgAcctId.ToString();
-
-                //ImageButton btnHtmlOrgInvoice = (ImageButton)e.Item.FindControl("btnHtmlOrgInvoice");
-                //btnHtmlOrgInvoice.CommandArgument = orgAcctId.ToString();
             }
         }
 
@@ -201,13 +193,13 @@ namespace sselFinOps
 
         protected void OrgInvoice_Command(object sender, CommandEventArgs e)
         {
-            int orgAcctId = Convert.ToInt32(e.CommandArgument);
-            CreateExcelInvoice(orgAcctId);
+            int accountId = Convert.ToInt32(e.CommandArgument);
+            CreateExcelInvoice(accountId);
         }
 
-        private void CreateExcelInvoice(int orgAcctId)
+        private void CreateExcelInvoice(int accountId)
         {
-            var inv = _mgr.GetInvoices(orgAcctId).First();
+            var inv = _mgr.GetInvoices(accountId).First();
 
             string filePath;
             if (StartPeriod >= July2009)
@@ -254,17 +246,16 @@ namespace sselFinOps
 
                 foreach (ExternalInvoice i in items)
                 {
-                    int orgAcctId = i.Header.OrgAcctID;
+                    int accountId = i.Header.AccountID;
 
                     // get datarows for Org and Account
-                    var inv = invoices.First(x => x.Header.OrgAcctID == orgAcctId);
+                    var inv = invoices.First(x => x.Header.AccountID == accountId);
                     string alert = string.Empty;
                     string fileName = ExcelUtility.GenerateInvoiceExcelReport(i, CacheManager.Current.ClientID, "Zip", del, ref alert);
                     del = false;
                 }
 
                 Response.Redirect("~/RepInvoice.aspx?DownloadAll=" + "ExternalInvoices_" + StartPeriod.ToString("yyyy-MM"));
-                //Response.Redirect(GetVirtualPath("ExternalInvoices_" + StartPeriod.ToString("yyyy-MM"), "zip"));
             }
         }
     }

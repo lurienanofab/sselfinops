@@ -98,12 +98,8 @@
                                     <%#Eval("Usage.TotalCharges", "{0:C}")%>
                                 </td>
                                 <td class="controls" style="text-align: center;">
-                                    <a href='<%#GetViewUrl((int)Eval("Header.OrgAcctID"), "Excel")%>'>
-                                        <img src="images/xls.png" alt="Create Excel Invoice" title="Create Excel Invoice" />
-                                    </a>
-                                    <a href='<%#GetViewUrl((int)Eval("Header.OrgAcctID"), "Html")%>'>
-                                        <img src="images/html.png" alt="Display Invoice" title="Display Invoice" />
-                                    </a>
+                                    <asp:HyperLink runat="server" ID="hypViewExcel" ImageUrl="~/images/xls.png" NavigateUrl='<%#GetViewUrl((int)Eval("Header.AccountID"), "Excel")%>' ToolTip="Create Excel Invoice"></asp:HyperLink>
+                                    <asp:HyperLink runat="server" ID="hypViewHtml" ImageUrl="~/images/html.png" NavigateUrl='<%#GetViewUrl((int)Eval("Header.AccountID"), "Html")%>' ToolTip="Display Invoice"></asp:HyperLink>
                                 </td>
                             </tr>
                         </ItemTemplate>
@@ -112,49 +108,6 @@
                             </table>
                         </FooterTemplate>
                     </asp:Repeater>
-
-                    <asp:DataGrid runat="server" ID="zdgOrg" TabIndex="26" AutoGenerateColumns="False" DataKeyField="OrgAcctID" CssClass="detail-table" AlternatingItemStyle-BackColor="Linen" GridLines="None" OnItemDataBound="dgOrg_ItemDataBound">
-                        <EditItemStyle CssClass="GridText" BackColor="#66FFFF"></EditItemStyle>
-                        <AlternatingItemStyle CssClass="altitem"></AlternatingItemStyle>
-                        <ItemStyle CssClass="item"></ItemStyle>
-                        <HeaderStyle CssClass="header"></HeaderStyle>
-                        <Columns>
-                            <asp:TemplateColumn HeaderText="Organization">
-                                <ItemStyle Width="300"></ItemStyle>
-                                <ItemTemplate>
-                                    <asp:Label ID="lblOrg" runat="server"></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateColumn>
-                            <asp:TemplateColumn HeaderText="Account">
-                                <ItemStyle Width="300"></ItemStyle>
-                                <ItemTemplate>
-                                    <asp:Label ID="lblAccount" runat="server"></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateColumn>
-                            <asp:TemplateColumn HeaderText="PO Expire">
-                                <ItemStyle Width="100"></ItemStyle>
-                                <ItemTemplate>
-                                    <asp:Label ID="lblExpire" runat="server"></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateColumn>
-                            <asp:TemplateColumn HeaderText="Funds" HeaderStyle-CssClass="center">
-                                <ItemStyle Width="100" HorizontalAlign="Right"></ItemStyle>
-                                <ItemTemplate>
-                                    <asp:Label ID="lblFunds" runat="server"></asp:Label>
-                                </ItemTemplate>
-                            </asp:TemplateColumn>
-                            <asp:TemplateColumn>
-                                <ItemStyle Width="35" HorizontalAlign="Center"></ItemStyle>
-                                <ItemTemplate>
-                                    <asp:ImageButton ID="btnExcelOrgInvoice" runat="server" ImageUrl="~/images/xls.png" AlternateText="Create Excel Invoice" ToolTip="Create Excel Invoice" CommandName="ExcelReport" CausesValidation="false" OnCommand="OrgInvoice_Command"></asp:ImageButton>
-                                    <a href="RepInvoiceView.aspx?">
-                                        <img src="images/html.png" alt="Display Invoice" /></a>
-                                    <asp:ImageButton ID="btnHtmlOrgInvoice" runat="server" ImageUrl="~/images/html.png" AlternateText="Display Invoice" ToolTip="Display Invoice" CommandName="HtmlReport" CausesValidation="false" OnCommand="OrgInvoice_Command"></asp:ImageButton>
-                                </ItemTemplate>
-                            </asp:TemplateColumn>
-                        </Columns>
-                        <PagerStyle HorizontalAlign="Right" Mode="NumericPages"></PagerStyle>
-                    </asp:DataGrid>
                 </div>
             </asp:Panel>
         </div>
