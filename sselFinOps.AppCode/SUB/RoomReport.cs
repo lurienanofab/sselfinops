@@ -1,8 +1,8 @@
 ﻿using LNF.Billing;
 using LNF.CommonTools;
 using LNF.Models.Billing.Reports.ServiceUnitBilling;
+using LNF.Repository;
 using LNF.Repository.Billing;
-using sselFinOps.AppCode.BLL;
 using sselFinOps.AppCode.DAL;
 using System;
 using System.Configuration;
@@ -13,7 +13,12 @@ namespace sselFinOps.AppCode.SUB
 {
     public class RoomReport : ReportBase
     {
-        public RoomReport(DateTime startPeriod, DateTime endPeriod) : base(startPeriod, endPeriod) { }
+        protected IBillingTypeManager BillingTypeManager { get; }
+
+        public RoomReport(DateTime startPeriod, DateTime endPeriod, IBillingTypeManager billingTypeManager) : base(startPeriod, endPeriod)
+        {
+            BillingTypeManager = billingTypeManager;
+        }
 
         protected override void FillDataTable(DataTable dt)
         {
@@ -45,7 +50,7 @@ namespace sselFinOps.AppCode.SUB
 
             //Get all active NAP Rooms with their costs, all chargetypes are returned
             //This is a temporary table, it's used to derive the really useful table below
-            DataTable dtNAPRoomForAllChargeType = RoomManager.GetAllNAPRoomsWithCosts(EndPeriod);
+            DataTable dtNAPRoomForAllChargeType = BLL.RoomManager.GetAllNAPRoomsWithCosts(EndPeriod);
 
             //filter out the chargetype so that we only have Internal costs with each NAP room
             DataRow[] drsNAPRoomForInternal = dtNAPRoomForAllChargeType.Select("ChargeTypeID = 5");
@@ -53,7 +58,7 @@ namespace sselFinOps.AppCode.SUB
             //Loop through each room and find out this specified month's apportionment data.
             foreach (DataRow dr1 in drsNAPRoomForInternal)
             {
-                DataTable dtApportionData = RoomApportionDataManager.GetNAPRoomApportionDataByPeriod(StartPeriod, EndPeriod, dr1.Field<int>("RoomID"));
+                DataTable dtApportionData = BLL.RoomApportionDataManager.GetNAPRoomApportionDataByPeriod(StartPeriod, EndPeriod, dr1.Field<int>("RoomID"));
 
                 foreach (DataRow dr2 in dtApportionData.Rows)
                 {
@@ -102,13 +107,13 @@ namespace sselFinOps.AppCode.SUB
             //and divide the individual record's "TotalCalcCost'
             foreach (DataRow drCWC in dtClientWithCharges.Rows)
             {
-                DataRow[] fdr = dtRoomDB.Select(string.Format("ClientID = {0} AND RoomID = {1}", drCWC["ClientID"], (int)LabRoom.CleanRoom));
+                DataRow[] fdr = dtRoomDB.Select(string.Format("ClientID = {0} AND RoomID = {1}", drCWC["ClientID"], (int)BLL.LabRoom.CleanRoom));
                 if (fdr.Length > 1)
                 {
                     //this user has multiple account for the clean room usage, so we have to find out the total of all accounts on this clean room
-                    double tempTotal = Convert.ToDouble(dtRoomDB.Compute("SUM(TotalCalcCost)", string.Format("ClientID = {0} AND RoomID = {1}", drCWC["ClientID"], (int)LabRoom.CleanRoom)));
+                    double tempTotal = Convert.ToDouble(dtRoomDB.Compute("SUM(TotalCalcCost)", string.Format("ClientID = {0} AND RoomID = {1}", drCWC["ClientID"], (int)BLL.LabRoom.CleanRoom)));
 
-                    DataRow[] fdrRoom = dtRoomDB.Select(string.Format("ClientID = {0} AND RoomID = {1}", drCWC["ClientID"], (int)LabRoom.CleanRoom));
+                    DataRow[] fdrRoom = dtRoomDB.Select(string.Format("ClientID = {0} AND RoomID = {1}", drCWC["ClientID"], (int)BLL.LabRoom.CleanRoom));
                     for (int i = 0; i < fdrRoom.Length; i++)
                         fdrRoom[i].SetField("TotalAllAccountCost", tempTotal); //assign the total to each record
                 }
@@ -128,9 +133,9 @@ namespace sselFinOps.AppCode.SUB
                 //billingtype are all gone
                 billingTypeId = dr.Field<int>("BillingType");
 
-                if (dr.Field<LabRoom>("RoomID") == LabRoom.CleanRoom) //6 is clean room
+                if (dr.Field<BLL.LabRoom>("RoomID") == BLL.LabRoom.CleanRoom) //6 is clean room
                 {
-                    if (BillingTypeUtility.IsMonthlyUserBillingType(billingTypeId))
+                    if (BillingTypeManager.IsMonthlyUserBillingType(billingTypeId))
                     {
                         if (dr["TotalAllAccountCost"] == DBNull.Value)
                         {
@@ -138,12 +143,12 @@ namespace sselFinOps.AppCode.SUB
                             //2008-10-27 but it might also that the user has only one internal account, and he apportion all hours to his external accouts
                             //so we must also check 'TotalHours' to make sure the user has more than 0 hours 
                             if (dr.Field<double>("TotalHours") != 0)
-                                dr.SetField("TotalCalcCost", BillingTypeManager.GetTotalCostByBillingType(billingTypeId, 0, 0, LabRoom.CleanRoom, 1315));
+                                dr.SetField("TotalCalcCost", BLL.BillingTypeManager.GetTotalCostByBillingType(billingTypeId, 0, 0, BLL.LabRoom.CleanRoom, 1315));
                         }
                         else
                         {
                             double total = dr.Field<double>("TotalAllAccountCost");
-                            dr.SetField("TotalCalcCost", (dr.Field<double>("TotalCalcCost") / total) * BillingTypeManager.GetTotalCostByBillingType(billingTypeId, 0, 0, LabRoom.CleanRoom, 1315));
+                            dr.SetField("TotalCalcCost", (dr.Field<double>("TotalCalcCost") / total) * BLL.BillingTypeManager.GetTotalCostByBillingType(billingTypeId, 0, 0, BLL.LabRoom.CleanRoom, 1315));
                         }
                     }
                 }
@@ -175,9 +180,9 @@ namespace sselFinOps.AppCode.SUB
                         string expression = string.Format("ClientID = {0}", sdr["ClientID"]);
                         DataRow[] foundRows;
                         bool flag = false;
-                        if (sdr.Field<LabRoom>("RoomID") == LabRoom.CleanRoom) //6 = clean room
+                        if (sdr.Field<BLL.LabRoom>("RoomID") == BLL.LabRoom.CleanRoom) //6 = clean room
                             foundRows = dtlistClean.Select(expression);
-                        else if (sdr.Field<LabRoom>("RoomID") == LabRoom.ChemRoom) //25 = chem room
+                        else if (sdr.Field<BLL.LabRoom>("RoomID") == BLL.LabRoom.ChemRoom) //25 = chem room
                             foundRows = dtlistChem.Select(expression);
                         else //DCLab
                             foundRows = null;

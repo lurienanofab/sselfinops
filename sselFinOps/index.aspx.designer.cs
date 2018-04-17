@@ -10,7 +10,7 @@
 namespace sselFinOps {
     
     
-    public partial class index {
+    public partial class Index {
         
         /// <summary>
         /// lblName control.
@@ -121,13 +121,13 @@ namespace sselFinOps {
         protected global::System.Web.UI.WebControls.Button btnRepInvoice;
         
         /// <summary>
-        /// btnConAuxCost control.
+        /// btnAuxCostConfiguration control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConAuxCost;
+        protected global::System.Web.UI.WebControls.Button btnAuxCostConfiguration;
         
         /// <summary>
         /// btnDatCurrentCosts control.
@@ -182,6 +182,15 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepToolUseJE;
+        
+        /// <summary>
+        /// btnManagerUsageSummary control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnManagerUsageSummary;
         
         /// <summary>
         /// btnConStoreCost control.
@@ -281,6 +290,15 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnConOrgRecharge;
+        
+        /// <summary>
+        /// btnDurationReport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDurationReport;
         
         /// <summary>
         /// Label2 control.

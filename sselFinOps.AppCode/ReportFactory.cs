@@ -89,14 +89,20 @@ namespace sselFinOps.AppCode
 
         public static List<JournalUnitReportItem> GetAllJU(RoomJU roomJU, ToolJU toolJU, out double total)
         {
+            total = 0;
             var allItems = new List<JournalUnitReportItem>();
 
-            allItems.AddRange(roomJU.Items);
-            allItems.AddRange(toolJU.Items);
+            if (roomJU !=null)
+            { 
+                allItems.AddRange(roomJU.Items);
+                total += roomJU.CreditEntry.MerchandiseAmount;
+            }
 
-            total = 0;
-            total += roomJU.CreditEntry.MerchandiseAmount;
-            total += toolJU.CreditEntry.MerchandiseAmount;
+            if (toolJU !=null)
+            { 
+                allItems.AddRange(toolJU.Items);
+                total += toolJU.CreditEntry.MerchandiseAmount;
+            }
 
             return allItems;
         }
@@ -125,6 +131,20 @@ namespace sselFinOps.AppCode
             {
                 total += bu.MerchandiseAmount;
             }
+
+            return allItems;
+        }
+
+        public static List<ServiceUnitBillingReportItem> GetSUB(ServiceUnitBillingReport sub, out double total)
+        {
+            var allItems = new List<ServiceUnitBillingReportItem>();
+
+            foreach (var group in sub.Items)
+                allItems.AddRange(group);
+
+            total = 0;
+            foreach (var bu in sub.Summaries)
+                total += bu.MerchandiseAmount;
 
             return allItems;
         }

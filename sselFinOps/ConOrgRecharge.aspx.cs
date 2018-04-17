@@ -1,15 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using LNF.Billing;
+using LNF.Data;
+using LNF.Repository;
+using LNF.Repository.Billing;
+using LNF.Repository.Data;
+using sselFinOps.AppCode;
+using System;
 using System.Linq;
 using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
-using LNF.Data;
-using LNF.Billing;
-using LNF.Repository;
-using LNF.Repository.Data;
-using LNF.Repository.Billing;
-using sselFinOps.AppCode;
 
 namespace sselFinOps
 {
@@ -48,7 +46,7 @@ namespace sselFinOps
             if (ShowAllAccounts())
                 query = DA.Current.Query<Account>().OrderBy(x => x.Name).ToArray();
             else
-                query = AccountUtility.ActiveAccounts().ToArray();
+                query = AccountManager.ActiveAccounts().ToArray();
 
             ddlAccount.DataSource = query.Where(x => x.Org.OrgType.ChargeType.ChargeTypeID == 5).Select(CreateAccountSelectItem);
             ddlAccount.DataBind();

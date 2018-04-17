@@ -1,7 +1,9 @@
 ﻿using LNF.Models.Data;
+using System;
 
 namespace sselFinOps.AppCode
 {
+    [Obsolete]
     public class AuthInfo
     {
         private string _Location;

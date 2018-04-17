@@ -10,7 +10,7 @@
 namespace sselFinOps {
     
     
-    public partial class ConAuxCost {
+    public partial class AuxCostConfiguration {
         
         /// <summary>
         /// dgRoomAuxCost control.

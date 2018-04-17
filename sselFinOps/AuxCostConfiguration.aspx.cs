@@ -10,7 +10,7 @@ using System.Web.UI.WebControls;
 
 namespace sselFinOps
 {
-    public partial class ConAuxCost : ReportPage
+    public partial class AuxCostConfiguration : ReportPage
     {
         private DataSet dsAuxCost;
 

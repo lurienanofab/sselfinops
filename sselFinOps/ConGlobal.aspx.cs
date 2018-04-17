@@ -83,8 +83,8 @@ namespace sselFinOps
                 int labCreditAccountId = Convert.ToInt32(ddlGenLabCredit.SelectedValue);
                 int subsidyCreditAccountId = Convert.ToInt32(ddlSubsidyCreditAcct.SelectedValue);
                 int adminId = Convert.ToInt32(ddlAdmin.SelectedValue);
-                int businessDay = RepositoryUtility.ConvertTo(txtBusinessDay.Text, 4);
-                int accessToOld = RepositoryUtility.ConvertTo(txtAccessToOld.Text, 365);
+                int businessDay = Utility.ConvertTo(txtBusinessDay.Text, 4);
+                int accessToOld = Utility.ConvertTo(txtAccessToOld.Text, 365);
 
                 if (current.Rows.Count > 0)
                 {
@@ -109,8 +109,8 @@ namespace sselFinOps
                         .AddParameter("@LabCreditAccountID", Convert.ToInt32(ddlGenLabCredit.SelectedValue))
                         .AddParameter("@SubsidyCreditAccountID", Convert.ToInt32(ddlSubsidyCreditAcct.SelectedValue))
                         .AddParameter("@AdminID", Convert.ToInt32(ddlAdmin.SelectedValue))
-                        .AddParameter("@BusinessDay", RepositoryUtility.ConvertTo(txtBusinessDay.Text, 4))
-                        .AddParameter("@AccessToOld", RepositoryUtility.ConvertTo(txtAccessToOld.Text, 365))
+                        .AddParameter("@BusinessDay", Utility.ConvertTo(txtBusinessDay.Text, 4))
+                        .AddParameter("@AccessToOld", Utility.ConvertTo(txtAccessToOld.Text, 365))
                         .ExecuteNonQuery("GlobalCost_Insert");
                 }
 
@@ -126,7 +126,7 @@ namespace sselFinOps
 
         private void ModifiedCheck<T>(DataRow dr, string column, T value, ref bool modified)
         {
-            if (!value.Equals(RepositoryUtility.ConvertTo<T>(dr[column], default(T))))
+            if (!value.Equals(Utility.ConvertTo(dr[column], default(T))))
                 modified = true;
         }
     }

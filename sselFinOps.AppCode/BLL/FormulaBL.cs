@@ -1,4 +1,5 @@
 ﻿using LNF.Billing;
+using LNF.Repository;
 using LNF.Repository.Billing;
 using System;
 using System.Data;
@@ -9,6 +10,8 @@ namespace sselFinOps.AppCode.BLL
     {
         public static readonly DateTime July2010 = new DateTime(2010, 7, 1);
         public static readonly DateTime April2011 = new DateTime(2011, 4, 1);
+
+        public static IBillingTypeManager BillingTypeManager => DA.Use<IBillingTypeManager>();
 
         [Obsolete("Use LNF.CommonTools.LineCostUtility.CalculateRoomLineCost instead.")]
         public static void ApplyRoomFormula(DataTable dtIn)
@@ -22,7 +25,7 @@ namespace sselFinOps.AppCode.BLL
                 room = (LabRoom)dr.Field<int>("RoomID");
 
                 //1. Find out all Monthly type users and apply to Clean room
-                if (BillingTypeUtility.IsMonthlyUserBillingType(billingTypeId))
+                if (BillingTypeManager.IsMonthlyUserBillingType(billingTypeId))
                 {
                     if (room == LabRoom.CleanRoom)
                         dr["LineCost"] = dr["MonthlyRoomCharge"];
@@ -30,7 +33,7 @@ namespace sselFinOps.AppCode.BLL
                         dr["LineCost"] = dr.Field<decimal>("RoomCharge") + dr.Field<decimal>("EntryCharge");
                 }
                 //2. The growers are charged with room fee only when they reserve and activate a tool
-                else if (BillingTypeUtility.IsGrowerUserBillingType(billingTypeId))
+                else if (BillingTypeManager.IsGrowerUserBillingType(billingTypeId))
                 {
                     if (room == LabRoom.Organics)
                     {

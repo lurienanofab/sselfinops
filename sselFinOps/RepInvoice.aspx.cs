@@ -88,7 +88,8 @@ namespace sselFinOps
             panSummary.Visible = true;
             panDetail.Visible = true;
 
-            _mgr = new ExternalInvoiceManager(StartPeriod, EndPeriod, ShowRemote);
+            _mgr = new ExternalInvoiceManager(StartPeriod, EndPeriod, ShowRemote, BillingTypeManager);
+
             var invoices = _mgr.GetInvoices();
 
             if (invoices.Count() == 0)
@@ -111,7 +112,7 @@ namespace sselFinOps
 
         public IEnumerable<ExternalInvoiceSummaryItem> GetSummary()
         {
-            _mgr = new ExternalInvoiceManager(StartPeriod, EndPeriod, ShowRemote);
+            _mgr = new ExternalInvoiceManager(StartPeriod, EndPeriod, ShowRemote, BillingTypeManager);
             return _mgr.GetSummary();
         }
 

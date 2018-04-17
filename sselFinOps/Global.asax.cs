@@ -1,5 +1,6 @@
 ﻿using LNF;
 using LNF.Cache;
+using LNF.Impl.DependencyInjection.Web;
 using System;
 using System.Security.Principal;
 using System.Web.Security;
@@ -10,7 +11,9 @@ namespace sselFinOps
     {
         protected void Application_Start(object sender, EventArgs e)
         {
-            if (Providers.IsProduction())
+            ServiceProvider.Current = IOC.Resolver.GetInstance<ServiceProvider>();
+
+            if (ServiceProvider.Current.IsProduction())
                 Application["AppServer"] = "http://" + Environment.MachineName + ".eecs.umich.edu/";
         }
 
@@ -26,7 +29,7 @@ namespace sselFinOps
 
         protected void Session_Start(object sender, EventArgs e)
         {
-            if (Providers.IsProduction())
+            if (ServiceProvider.Current.IsProduction())
                 CacheManager.Current.Logout = Application["AppServer"].ToString() + "login";
             else
                 CacheManager.Current.Logout = "/login";

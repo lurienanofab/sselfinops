@@ -44,9 +44,9 @@ namespace sselFinOps
             userSelectedValue = string.IsNullOrEmpty(ddlUser.SelectedValue) ? -1 : Convert.ToInt32(ddlUser.SelectedValue);
             if (userSelectedValue != -1)
             {
-                ClientModel client = CacheManager.Current.GetClient(userSelectedValue);
-                IList<Account> accts = AccountUtility.FindActiveInDateRange(client.ClientID, pp1.SelectedPeriod, pp1.SelectedPeriod.AddMonths(1)).ToList();
-                IList<Account> orderedAccounts = ClientPreferenceUtility.OrderAccountsByUserPreference(client.ClientID, accts);
+                var client = CacheManager.Current.GetClient(userSelectedValue);
+                var accts = AccountManager.FindActiveInDateRange(client.ClientID, pp1.SelectedPeriod, pp1.SelectedPeriod.AddMonths(1)).ToList();
+                var orderedAccounts = ClientPreferenceUtility.OrderAccountsByUserPreference(client.ClientID, accts);
                 if (orderedAccounts != null)
                 {
                     ddlAccount.DataSource = orderedAccounts.Select(x => new {AccountName = x.GetFullAccountName(), AccountID = x.AccountID.ToString()});
@@ -109,24 +109,21 @@ namespace sselFinOps
                 lblDescriptionValidation.Text = "* Required";
             }
 
-            double qty;
-            if (!double.TryParse(txtQuantity.Text.Trim(), out qty))
+            if (!double.TryParse(txtQuantity.Text.Trim(), out double qty))
             {
                 isValid = false;
                 lblQuantityValidation.Visible = true;
                 lblQuantityValidation.Text = "* Must be numeric";
             }
 
-            double cost;
-            if (!double.TryParse(txtCost.Text.Trim(), out cost))
+            if (!double.TryParse(txtCost.Text.Trim(), out double cost))
             {
                 isValid = false;
                 lblCostValidation.Visible = true;
                 lblCostValidation.Text = "* Must be numeric";
             }
 
-            DateTime actDate;
-            if (!DateTime.TryParse(txtActDate.Text, out actDate))
+            if (!DateTime.TryParse(txtActDate.Text, out DateTime actDate))
             {
                 isValid = false;
             }
@@ -164,8 +161,7 @@ namespace sselFinOps
 
         protected void btnRecalcSubsidy_Command(object sender, CommandEventArgs e)
         {
-            DateTime actDate;
-            if (DateTime.TryParse(txtActDate.Text, out actDate))
+            if (DateTime.TryParse(txtActDate.Text, out DateTime actDate))
             { 
                 int clientId = Convert.ToInt32(e.CommandArgument);
                 DateTime period = new DateTime(actDate.Year, actDate.Month, 1);

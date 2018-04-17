@@ -1,13 +1,10 @@
-﻿using System;
+﻿using Ical.Net;
+using Ical.Net.CalendarComponents;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Ical.Net;
-using Ical.Net.Interfaces;
-using Ical.Net.Interfaces.Components;
-using System.Net;
 using System.IO;
+using System.Linq;
+using System.Net;
 
 namespace sselFinOps.AppCode
 {
@@ -36,7 +33,7 @@ namespace sselFinOps.AppCode
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create(Uri);
             HttpWebResponse resp = (HttpWebResponse)req.GetResponse();
             Stream response = resp.GetResponseStream();
-            _calendar = Calendar.LoadFromStream(response).First();
+            _calendar = Calendar.Load(response);
         }
 
         public string FeedTitle

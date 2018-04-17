@@ -122,7 +122,7 @@ namespace sselFinOps
             else
             {
                 BillingUnit summaryUnit = new BillingUnit();
-                RoomReport mgr = new RoomReport(StartPeriod, EndPeriod);
+                RoomReport mgr = new RoomReport(StartPeriod, EndPeriod, BillingTypeManager);
                 DataTable dtRoom = mgr.GenerateDataTable(summaryUnit);
                 filePath = mgr.GenerateExcelFile(dtRoom);
             }

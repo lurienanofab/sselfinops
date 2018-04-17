@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Configure Auxilliary Costs" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="ConAuxCost.aspx.cs" Inherits="sselFinOps.ConAuxCost" %>
+﻿<%@ Page Title="Configure Auxilliary Costs" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="AuxCostConfiguration.aspx.cs" Inherits="sselFinOps.AuxCostConfiguration" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
 </asp:Content>

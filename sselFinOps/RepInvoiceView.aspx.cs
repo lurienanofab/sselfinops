@@ -51,7 +51,7 @@ namespace sselFinOps
 
                 // made it this far so we passed all the validation tests
 
-                var mgr = new ExternalInvoiceManager(accountId, startPeriod, endPeriod, ShowRemote());
+                var mgr = new ExternalInvoiceManager(accountId, startPeriod, endPeriod, ShowRemote(), BillingTypeManager);
                 var inv = mgr.GetInvoices(accountId).First();
 
                 switch (reportType)
@@ -71,9 +71,7 @@ namespace sselFinOps
 
         private int GetAccountID()
         {
-            int result;
-
-            if (int.TryParse(Request.QueryString["AccountID"], out result))
+            if (int.TryParse(Request.QueryString["AccountID"], out int result))
                 return result;
 
             return 0;
@@ -81,9 +79,7 @@ namespace sselFinOps
 
         private DateTime GetStartPeriod()
         {
-            DateTime result;
-
-            if (DateTime.TryParse(Request.QueryString["StartPeriod"], out result))
+            if (DateTime.TryParse(Request.QueryString["StartPeriod"], out DateTime result))
                 return result;
 
             return default(DateTime);
@@ -91,9 +87,7 @@ namespace sselFinOps
 
         private DateTime GetEndPeriod()
         {
-            DateTime result;
-
-            if (DateTime.TryParse(Request.QueryString["EndPeriod"], out result))
+            if (DateTime.TryParse(Request.QueryString["EndPeriod"], out DateTime result))
                 return result;
 
             return default(DateTime);
@@ -103,8 +97,7 @@ namespace sselFinOps
         {
             if (!string.IsNullOrEmpty(Request.QueryString["ShowRemote"]))
             {
-                bool result;
-                if (bool.TryParse(Request.QueryString["ShowRemote"], out result))
+                if (bool.TryParse(Request.QueryString["ShowRemote"], out bool result))
                     return result;
             }
 
@@ -155,7 +148,7 @@ namespace sselFinOps
         protected void btnCreateExcelInvoice_Click(object sender, EventArgs e)
         {
             int accountId = GetAccountID();
-            var mgr = new ExternalInvoiceManager(accountId, GetStartPeriod(), GetEndPeriod(), ShowRemote());
+            var mgr = new ExternalInvoiceManager(accountId, GetStartPeriod(), GetEndPeriod(), ShowRemote(), BillingTypeManager);
             var inv = mgr.GetInvoices(accountId).First();
             CreateExcelInvoice(inv);
         }
