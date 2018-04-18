@@ -4,70 +4,65 @@
   http://go.microsoft.com/fwlink/?LinkId=169433
   -->
 <configuration>
-  <configSections>
-    <sectionGroup name="lnf">
-      <section name="providers" type="LNF.ProvidersSection, LNF" />
-      <section name="redis" type="LNF.Impl.Redis.RedisConfigurationSection, LNF.Impl"/>
-    </sectionGroup>
-  </configSections>
+    <configSections>
+        <sectionGroup name="lnf">
+            <section name="provider" type="LNF.ServiceProviderSection, LNF" />
+        </sectionGroup>
+    </configSections>
 
-  <lnf>
-    <providers production="false">
-      <context type="LNF.Impl.WebContextProvider, LNF.Impl" loginUrl="/login" />
-      <dataAccess type="LNF.Impl.NHibernateWebDataAccess, LNF.Impl" />
-      <serialization type="LNF.Impl.Serialization.SerializationProvider, LNF.Impl" />
-      <email type="LNF.Impl.Email.EmailProvider, LNF.Impl" host="127.0.0.1" log="true" />
-      <log type="LNF.Impl.Logging.ServiceLogProvider, LNF.Impl" enabled="true" name="sselFinOps" />
-      <modelFactory type="LNF.Impl.ModelFactory.ValueInjecterModelFactory, LNF.Impl" />
-    </providers>
-    <redis>
-      <connection host="cachesvr" databaseId="5"/>
-    </redis>
-  </lnf>
+    <lnf>
+        <provider production="false">
+            <context loginUrl="/login" />
+            <dataAccess showSql="true" />
+            <email host="xxxxx" log="true" />
+            <control host="xxxxx" />
+            <log name="sselFinOps" enabled="true" />
+        </provider>
+    </lnf>
 
-  <appSettings>
-    <add key="7zLibPath" value="*****" />
-    <add key="SpreadsheetsDirectory" value="*****" />
-    <add key="ApiHost" value="*****" />
-    <add key="as:AudienceId" value="*****" />
-    <add key="as:AudienceSecret" value="*****" />
-    <add key="StaticHost" value="*****" />
-    <add key="MongoConnectionString" value="*****" />
-  </appSettings>
+    <appSettings>
+        <add key="7zLibPath" value="xxxxx" />
+        <add key="SpreadsheetsDirectory" value="xxxxx" />
+        <add key="ApiHost" value="xxxxx" />
+        <add key="as:AudienceId" value="xxxxx" />
+        <add key="as:AudienceSecret" value="xxxxx" />
+        <add key="StaticHost" value="xxxxx" />
+        <add key="MongoConnectionString" value="xxxxx" />
+    </appSettings>
 
-  <connectionStrings>
-    <add name="cnSselData" connectionString="*****" providerName="System.Data.SqlClient" />
-  </connectionStrings>
+    <connectionStrings>
+        <add name="cnSselData" connectionString="xxxxx" providerName="System.Data.SqlClient" />
+    </connectionStrings>
 
-  <system.web>
-    <compilation debug="true" targetFramework="4.6.1" />
-    <httpRuntime targetFramework="4.6.1" />
+    <system.web>
+        <compilation debug="true" targetFramework="4.6.1" />
+        <httpRuntime targetFramework="4.6.1" />
 
-    <pages>
-      <controls>
-        <add namespace="LNF.Web.Controls" assembly="LNF.Web" tagPrefix="lnf" />
-        <add namespace="LNF.Web.Controls.Tools" assembly="LNF.Web" tagPrefix="lnf" />
-      </controls>
-    </pages>
+        <pages>
+            <controls>
+                <add namespace="LNF.Web.Controls" assembly="LNF.Web" tagPrefix="lnf" />
+                <add namespace="LNF.Web.Controls.Tools" assembly="LNF.Web" tagPrefix="lnf" />
+            </controls>
+        </pages>
 
-    <authentication mode="Forms">
-      <forms name="sselAuth.cookie" path="/" loginUrl="/login" timeout="480" protection="All" slidingExpiration="true" cookieless="UseCookies" domain="umich.edu" />
-    </authentication>
+        <authentication mode="Forms">
+            <forms name="sselAuth.cookie" path="/" loginUrl="/login" timeout="480" protection="All" slidingExpiration="true" cookieless="UseCookies" domain="umich.edu" />
+        </authentication>
 
-    <authorization>
-      <deny users="?" />
-    </authorization>
+        <authorization>
+            <deny users="?" />
+        </authorization>
 
-    <machineKey compatibilityMode="Framework20SP2" validationKey="*****" decryptionKey="*****" validation="SHA1" decryption="3DES" />
+        <machineKey compatibilityMode="Framework20SP2" validationKey="xxxxx" decryptionKey="xxxxx" validation="SHA1" decryption="3DES" />
 
-    <customErrors mode="Off" />
-  </system.web>
+        <customErrors mode="Off" />
+    </system.web>
 
-  <system.webServer>
-    <handlers>
-      <remove name="ExtensionlessUrlHandler-ISAPI-4.0_32bit" />
-      <remove name="ExtensionlessUrlHandler-ISAPI-4.0_64bit" />
-      <remove name="ExtensionlessUrlHandler-Integrated-4.0" />
-    </handlers>
-  </system.webServer>
+    <system.webServer>
+        <handlers>
+            <remove name="ExtensionlessUrlHandler-ISAPI-4.0_32bit" />
+            <remove name="ExtensionlessUrlHandler-ISAPI-4.0_64bit" />
+            <remove name="ExtensionlessUrlHandler-Integrated-4.0" />
+        </handlers>
+    </system.webServer>
 </configuration>
