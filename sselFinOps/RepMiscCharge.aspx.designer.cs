@@ -13,22 +13,22 @@ namespace sselFinOps {
     public partial class RepMiscCharge {
         
         /// <summary>
-        /// pp1 control.
+        /// PeriodPicker1 control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::LNF.Web.Controls.PeriodPicker pp1;
+        protected global::LNF.Web.Controls.PeriodPicker PeriodPicker1;
         
         /// <summary>
-        /// ddlUser control.
+        /// ClientDropDown control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlUser;
+        protected global::System.Web.UI.WebControls.DropDownList ClientDropDown;
         
         /// <summary>
         /// lblUserValidation control.
@@ -148,13 +148,13 @@ namespace sselFinOps {
         protected global::System.Web.UI.WebControls.Label lblDescriptionValidation;
         
         /// <summary>
-        /// btnSave control.
+        /// SaveButton control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnSave;
+        protected global::System.Web.UI.WebControls.Button SaveButton;
         
         /// <summary>
         /// btnBack2 control.
@@ -166,12 +166,12 @@ namespace sselFinOps {
         protected global::System.Web.UI.WebControls.LinkButton btnBack2;
         
         /// <summary>
-        /// gv control.
+        /// MiscChargeGridView control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gv;
+        protected global::System.Web.UI.WebControls.GridView MiscChargeGridView;
     }
 }

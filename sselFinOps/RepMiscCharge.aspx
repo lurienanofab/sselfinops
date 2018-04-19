@@ -56,7 +56,7 @@
                 <tr>
                     <td>Select period:</td>
                     <td>
-                        <lnf:PeriodPicker runat="server" ID="pp1" StartPeriod="2009-01-01" AutoPostBack="true" OnSelectedPeriodChanged="pp1_SelectedPeriodChanged" />
+                        <lnf:PeriodPicker runat="server" ID="PeriodPicker1" StartPeriod="2009-01-01" AutoPostBack="true" OnSelectedPeriodChanged="PeriodPicker1_SelectedPeriodChanged" />
                     </td>
                 </tr>
             </table>
@@ -69,13 +69,13 @@
                 <tr>
                     <td>Client:</td>
                     <td>
-                        <asp:DropDownList ID="ddlUser" DataSourceID="odsClient" runat="server" AutoPostBack="true" DataValueField="ClientID" DataTextField="DisplayName" CssClass="user-select report-select" OnDataBound="ddlUser_DataBound" OnSelectedIndexChanged="ddlUser_SelectedIndexChanged">
+                        <asp:DropDownList ID="ClientDropDown" DataSourceID="odsClient" runat="server" AutoPostBack="true" DataValueField="ClientID" DataTextField="DisplayName" CssClass="user-select report-select" OnDataBound="ClientDropDown_DataBound" OnSelectedIndexChanged="ClientDropDown_SelectedIndexChanged">
                         </asp:DropDownList>
                         <asp:Label runat="server" ID="lblUserValidation" CssClass="validation-error" Visible="false"></asp:Label>
                         <asp:ObjectDataSource ID="odsClient" runat="server" TypeName="sselFinOps.AppCode.BLL.ClientBL" SelectMethod="GetAllClientByDate">
                             <SelectParameters>
-                                <asp:ControlParameter ControlID="pp1" Type="Int32" Name="year" PropertyName="SelectedYear" />
-                                <asp:ControlParameter ControlID="pp1" Type="Int32" Name="month" PropertyName="SelectedMonth" />
+                                <asp:ControlParameter ControlID="PeriodPicker1" Type="Int32" Name="year" PropertyName="SelectedYear" />
+                                <asp:ControlParameter ControlID="PeriodPicker1" Type="Int32" Name="month" PropertyName="SelectedMonth" />
                             </SelectParameters>
                         </asp:ObjectDataSource>
                     </td>
@@ -88,9 +88,9 @@
                         <asp:Label runat="server" ID="lblAccountValidation" CssClass="validation-error" Visible="false"></asp:Label>
                         <asp:ObjectDataSource ID="odsAccount" runat="server" TypeName="sselFinOps.AppCode.BLL.AccountBL" SelectMethod="GetAccountsByClientIDAndDate">
                             <SelectParameters>
-                                <asp:ControlParameter ControlID="ddlUser" Type="Int32" Name="clientId" PropertyName="SelectedValue" />
-                                <asp:ControlParameter ControlID="pp1" Type="Int32" Name="year" PropertyName="SelectedYear" />
-                                <asp:ControlParameter ControlID="pp1" Type="Int32" Name="month" PropertyName="SelectedMonth" />
+                                <asp:ControlParameter ControlID="ClientDropDown" Type="Int32" Name="clientId" PropertyName="SelectedValue" />
+                                <asp:ControlParameter ControlID="PeriodPicker1" Type="Int32" Name="year" PropertyName="SelectedYear" />
+                                <asp:ControlParameter ControlID="PeriodPicker1" Type="Int32" Name="month" PropertyName="SelectedMonth" />
                             </SelectParameters>
                         </asp:ObjectDataSource>
                     </td>
@@ -139,13 +139,13 @@
                 </tr>
             </table>
             <div class="criteria-item">
-                <asp:Button runat="server" ID="btnSave" Text="Create New Entry" CssClass="report-button" OnClick="btnSave_Click" />
+                <asp:Button runat="server" ID="SaveButton" Text="Create New Entry" CssClass="report-button" OnClick="SaveButton_Click" />
                 <asp:LinkButton runat="server" ID="btnBack2" Text="&larr; Back To Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton>
             </div>
         </div>
     </div>
     <div class="section">
-        <asp:GridView runat="server" ID="gv" AutoGenerateColumns="false" DataKeyNames="ExpID" AllowSorting="true" CssClass="gridview highlight" GridLines="None" OnRowDeleting="gv_RowDeleting" OnRowEditing="gv_RowEditing" OnRowCancelingEdit="gv_RowCancelingEdit" OnRowUpdating="gv_RowUpdating">
+        <asp:GridView runat="server" ID="MiscChargeGridView" AutoGenerateColumns="false" DataKeyNames="ExpID" AllowSorting="true" CssClass="gridview highlight" GridLines="None" OnRowDeleting="MiscChargeGridView_RowDeleting" OnRowEditing="MiscChargeGridView_RowEditing" OnRowCancelingEdit="MiscChargeGridView_RowCancelingEdit" OnRowUpdating="MiscChargeGridView_RowUpdating">
             <HeaderStyle CssClass="header" />
             <RowStyle CssClass="row" />
             <AlternatingRowStyle CssClass="altrow" />
@@ -176,7 +176,7 @@
                 <asp:TemplateField>
                     <ItemStyle HorizontalAlign="Center" />
                     <ItemTemplate>
-                        <asp:LinkButton runat="server" ID="btnRecalcSubsidy" Text="Recalculate" OnCommand="btnRecalcSubsidy_Command" CommandArgument='<%#Eval("ClientID")%>'></asp:LinkButton>
+                        <asp:LinkButton runat="server" ID="RecalcSubsidyButton" Text="Recalculate" OnCommand="RecalcSubsidyButton_Command" CommandArgument='<%#Eval("ClientID")%>'></asp:LinkButton>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>

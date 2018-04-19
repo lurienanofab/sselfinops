@@ -18,6 +18,9 @@ namespace sselFinOps.AppCode
         [SetterProperty]
         public IBillingTypeManager BillingTypeManager { get; set; }
 
+        [SetterProperty]
+        public IDataRepository DataRepository { get; set; }
+
         public override ClientPrivilege AuthTypes
         {
             get { return ClientPrivilege.Administrator; }

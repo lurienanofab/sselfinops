@@ -1,12 +1,9 @@
 ﻿using LNF.Cache;
 using LNF.Data;
-using LNF.Models.Data;
-using LNF.Repository.Data;
 using OnlineServices.Api.Billing;
 using sselFinOps.AppCode;
 using sselFinOps.AppCode.DAL;
 using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,26 +23,26 @@ namespace sselFinOps
 
             if (!Page.IsPostBack)
             {
-                txtActDate.Text = pp1.SelectedPeriod.ToString("M/d/yyyy");
+                txtActDate.Text = PeriodPicker1.SelectedPeriod.ToString("M/d/yyyy");
                 LoadGrid();
             }
             else
-                userSelectedValue = string.IsNullOrEmpty(ddlUser.SelectedValue) ? -1 : Convert.ToInt32(ddlUser.SelectedValue);
+                userSelectedValue = string.IsNullOrEmpty(ClientDropDown.SelectedValue) ? -1 : Convert.ToInt32(ClientDropDown.SelectedValue);
         }
 
         private void LoadGrid()
         {
-            gv.DataSource = MiscBillingChargeDA.GetDataByPeriod(pp1.SelectedYear, pp1.SelectedMonth);
-            gv.DataBind();
+            MiscChargeGridView.DataSource = MiscBillingChargeDA.GetDataByPeriod(PeriodPicker1.SelectedYear, PeriodPicker1.SelectedMonth);
+            MiscChargeGridView.DataBind();
         }
 
         private void UpdateAccountDDL()
         {
-            userSelectedValue = string.IsNullOrEmpty(ddlUser.SelectedValue) ? -1 : Convert.ToInt32(ddlUser.SelectedValue);
+            userSelectedValue = string.IsNullOrEmpty(ClientDropDown.SelectedValue) ? -1 : Convert.ToInt32(ClientDropDown.SelectedValue);
             if (userSelectedValue != -1)
             {
                 var client = CacheManager.Current.GetClient(userSelectedValue);
-                var accts = AccountManager.FindActiveInDateRange(client.ClientID, pp1.SelectedPeriod, pp1.SelectedPeriod.AddMonths(1)).ToList();
+                var accts = DataRepository.FindActiveAccountsInDateRange(client.ClientID, PeriodPicker1.SelectedPeriod, PeriodPicker1.SelectedPeriod.AddMonths(1)).ToList();
                 var orderedAccounts = ClientPreferenceUtility.OrderAccountsByUserPreference(client.ClientID, accts);
                 if (orderedAccounts != null)
                 {
@@ -55,7 +52,7 @@ namespace sselFinOps
             }
         }
 
-        protected void btnSave_Click(object sender, EventArgs e)
+        protected void SaveButton_Click(object sender, EventArgs e)
         {
             bool isValid = true;
 
@@ -74,7 +71,7 @@ namespace sselFinOps
             lblDescriptionValidation.Visible = false;
             lblDescriptionValidation.Text = string.Empty;
 
-            if (string.IsNullOrEmpty(ddlUser.SelectedValue))
+            if (string.IsNullOrEmpty(ClientDropDown.SelectedValue))
             {
                 isValid = false;
                 lblUserValidation.Visible = true;
@@ -130,7 +127,7 @@ namespace sselFinOps
 
             if (!isValid) return;
 
-            int clientId = Convert.ToInt32(ddlUser.SelectedValue);
+            int clientId = Convert.ToInt32(ClientDropDown.SelectedValue);
             int accountId = Convert.ToInt32(ddlAccount.SelectedValue);
 
             MiscBillingChargeDA.SaveNewEntry(clientId, accountId, ddlSUBType.SelectedItem.Text, actDate, txtDesc.Text, qty, cost);
@@ -145,21 +142,21 @@ namespace sselFinOps
             }));
         }
 
-        protected void pp1_SelectedPeriodChanged(object sender, EventArgs e)
+        protected void PeriodPicker1_SelectedPeriodChanged(object sender, EventArgs e)
         {
-            txtActDate.Text = pp1.SelectedPeriod.ToString("M/d/yyyy");
+            txtActDate.Text = PeriodPicker1.SelectedPeriod.ToString("M/d/yyyy");
             UpdateAccountDDL();
             LoadGrid();
         }
 
-        protected void ddlUser_DataBound(object sender, EventArgs e)
+        protected void ClientDropDown_DataBound(object sender, EventArgs e)
         {
-            ddlUser.Items.Insert(0, new ListItem("", ""));
+            ClientDropDown.Items.Insert(0, new ListItem("", ""));
             if (userSelectedValue != -1)
-                ddlUser.SelectedIndex = ddlUser.Items.IndexOf(ddlUser.Items.FindByValue(userSelectedValue.ToString()));
+                ClientDropDown.SelectedIndex = ClientDropDown.Items.IndexOf(ClientDropDown.Items.FindByValue(userSelectedValue.ToString()));
         }
 
-        protected void btnRecalcSubsidy_Command(object sender, CommandEventArgs e)
+        protected void RecalcSubsidyButton_Command(object sender, CommandEventArgs e)
         {
             if (DateTime.TryParse(txtActDate.Text, out DateTime actDate))
             { 
@@ -196,12 +193,12 @@ namespace sselFinOps
             //BillingDataProcessStep3.PopulateToolBillingByOrg(period, clientId);
         }
 
-        protected void ddlUser_SelectedIndexChanged(object sender, EventArgs e)
+        protected void ClientDropDown_SelectedIndexChanged(object sender, EventArgs e)
         {
             UpdateAccountDDL();
         }
 
-        protected void gv_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        protected void MiscChargeGridView_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
             int expId = Convert.ToInt32(e.Keys[0]);
 
@@ -226,19 +223,19 @@ namespace sselFinOps
                 throw new Exception(string.Format("Cannot find record with ExpID = {0}", expId));
         }
 
-        protected void gv_RowEditing(object sender, GridViewEditEventArgs e)
+        protected void MiscChargeGridView_RowEditing(object sender, GridViewEditEventArgs e)
         {
-            gv.EditIndex = e.NewEditIndex;
+            MiscChargeGridView.EditIndex = e.NewEditIndex;
             LoadGrid();
         }
 
-        protected void gv_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
+        protected void MiscChargeGridView_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
         {
-            gv.EditIndex = -1;
+            MiscChargeGridView.EditIndex = -1;
             LoadGrid();
         }
 
-        protected void gv_RowUpdating(object sender, GridViewUpdateEventArgs e)
+        protected void MiscChargeGridView_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             int expId = Convert.ToInt32(e.Keys[0]);
 
@@ -246,7 +243,7 @@ namespace sselFinOps
 
             if (dt.Rows.Count > 0)
             {
-                var txtActDate = (TextBox)gv.Rows[e.RowIndex].FindControl("txtActDate");
+                var txtActDate = (TextBox)MiscChargeGridView.Rows[e.RowIndex].FindControl("txtActDate");
 
                 DateTime period = Convert.ToDateTime(txtActDate.Text);
                 string description = Convert.ToString(e.NewValues["Description"]);
@@ -260,7 +257,7 @@ namespace sselFinOps
                 RegisterAsyncTask(new PageAsyncTask(async () =>
                 {
                     await RecalculateSubsidy(period, clientId);
-                    gv.EditIndex = -1;
+                    MiscChargeGridView.EditIndex = -1;
                     LoadGrid();
                 }));
             }
