@@ -13,7 +13,7 @@
         <table class="report-table" border="1">
             <tr>
                 <td colspan="2">
-                    <asp:Button runat="server" ID="btnSave1" CssClass="report-button" Text="Save Changes" OnClick="btnSave_Click"></asp:Button>
+                    <asp:Button runat="server" ID="btnSave1" CssClass="report-button" Text="Save Changes" OnClick="BtnSave_Click"></asp:Button>
                     <asp:LinkButton runat="server" ID="btnBack1" CssClass="back-link" Text="&larr; Back To Main Page" OnClick="BackButton_Click"></asp:LinkButton>
                     <asp:Literal runat="server" ID="litSaveMessage1"></asp:Literal>
                 </td>
@@ -40,7 +40,7 @@
                 <td colspan="2">
                     <div style="background-color: #D3D3D3; padding: 3px; border-bottom: solid 1px #808080">
                         Upload Cost Worksheet:
-                        <asp:FileUpload runat="server" ID="FileUpload1" /><asp:Button runat="server" ID="btnUploadCostWorksheet" Text="Upload" OnClick="btnUploadCostWorksheet_Click" /><asp:Literal runat="server" ID="litUploadMessage"></asp:Literal>
+                        <asp:FileUpload runat="server" ID="FileUpload1" /><asp:Button runat="server" ID="btnUploadCostWorksheet" Text="Upload" OnClick="BtnUploadCostWorksheet_Click" /><asp:Literal runat="server" ID="litUploadMessage"></asp:Literal>
                         <div style="font-style: italic; color: #606060;">
                             You can upload a properly formated Excel file (*.xls, *.xlsx) to load values in the form below. Click
                             <asp:HyperLink runat="server" ID="hypTemplate" NavigateUrl="~/Spreadsheets.ashx?path=templates/sample-tool-cost-worksheet.xls">here</asp:HyperLink>
@@ -55,7 +55,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:Button runat="server" ID="btnSave2" CssClass="report-button" Text="Save Changes" OnClick="btnSave_Click"></asp:Button>
+                    <asp:Button runat="server" ID="btnSave2" CssClass="report-button" Text="Save Changes" OnClick="BtnSave_Click"></asp:Button>
                     <asp:LinkButton runat="server" ID="btnBack2" CssClass="back-link" Text="&larr; Back To Main Page" OnClick="BackButton_Click"></asp:LinkButton>
                     <asp:Literal runat="server" ID="litSaveMessage2"></asp:Literal>
                 </td>

@@ -1,13 +1,12 @@
-﻿using LNF.Cache;
+﻿using LNF;
+using LNF.Cache;
 using LNF.Data;
-using OnlineServices.Api.Billing;
+using LNF.Models.Billing.Process;
 using sselFinOps.AppCode;
 using sselFinOps.AppCode.DAL;
 using System;
 using System.Data;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace sselFinOps
@@ -15,6 +14,8 @@ namespace sselFinOps
     public partial class RepMiscCharge : ReportPage
     {
         private int userSelectedValue = -1;
+
+        protected IProcessClient ProcessClient => ServiceProvider.Current.Billing.Process;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -46,7 +47,7 @@ namespace sselFinOps
                 var orderedAccounts = ClientPreferenceUtility.OrderAccountsByUserPreference(client.ClientID, accts);
                 if (orderedAccounts != null)
                 {
-                    ddlAccount.DataSource = orderedAccounts.Select(x => new {AccountName = x.GetFullAccountName(), AccountID = x.AccountID.ToString()});
+                    ddlAccount.DataSource = orderedAccounts.Select(x => new { AccountName = x.GetFullAccountName(), AccountID = x.AccountID.ToString() });
                     ddlAccount.DataBind();
                 }
             }
@@ -135,11 +136,9 @@ namespace sselFinOps
             //re-calculate the subsidy
             DateTime period = new DateTime(actDate.Year, actDate.Month, 1);
 
-            RegisterAsyncTask(new PageAsyncTask(async () =>
-            {
-                await RecalculateSubsidy(period, clientId);
-                LoadGrid();
-            }));
+            RecalculateSubsidy(period, clientId);
+
+            LoadGrid();
         }
 
         protected void PeriodPicker1_SelectedPeriodChanged(object sender, EventArgs e)
@@ -159,23 +158,20 @@ namespace sselFinOps
         protected void RecalcSubsidyButton_Command(object sender, CommandEventArgs e)
         {
             if (DateTime.TryParse(txtActDate.Text, out DateTime actDate))
-            { 
+            {
                 int clientId = Convert.ToInt32(e.CommandArgument);
                 DateTime period = new DateTime(actDate.Year, actDate.Month, 1);
 
-                RegisterAsyncTask(new PageAsyncTask(async () =>
-                {
-                    await RecalculateSubsidy(period, clientId);
-                    LoadGrid();
-                }));
+                RecalculateSubsidy(period, clientId);
+
+                LoadGrid();
             }
         }
 
-        private async Task RecalculateSubsidy(DateTime period, int clientId)
+        private void RecalculateSubsidy(DateTime period, int clientId)
         {
             //[2015-11-12 jg] only subsidy step4 is needed now
-            using (var billingClient = new BillingClient())
-                await billingClient.BillingProcessStep4("subsidy", period, clientId);
+            ProcessClient.BillingProcessStep4("subsidy", period, clientId);
 
             ////must call BillingDataProcessStep2 because data from here is used in Step4 (only ByAccount tables are needed)
             //BillingDataProcessStep2.PopulateRoomBillingByAccount(period, clientId);
@@ -213,11 +209,9 @@ namespace sselFinOps
 
                 MiscBillingChargeDA.DeleteEntry(expId);
 
-                RegisterAsyncTask(new PageAsyncTask(async () =>
-                {
-                    await RecalculateSubsidy(period, clientId);
-                    LoadGrid();
-                }));
+                RecalculateSubsidy(period, clientId);
+
+                LoadGrid();
             }
             else
                 throw new Exception(string.Format("Cannot find record with ExpID = {0}", expId));
@@ -254,12 +248,11 @@ namespace sselFinOps
 
                 MiscBillingChargeDA.UpdateEntry(expId, period, description, quantity, unitCost);
 
-                RegisterAsyncTask(new PageAsyncTask(async () =>
-                {
-                    await RecalculateSubsidy(period, clientId);
-                    MiscChargeGridView.EditIndex = -1;
-                    LoadGrid();
-                }));
+                RecalculateSubsidy(period, clientId);
+
+                MiscChargeGridView.EditIndex = -1;
+
+                LoadGrid();
             }
             else
                 throw new Exception(string.Format("Cannot find record with ExpID = {0}", expId));

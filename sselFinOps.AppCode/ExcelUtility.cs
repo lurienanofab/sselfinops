@@ -1,9 +1,7 @@
 ﻿using GemBox.ExcelLite;
 using LNF.Billing;
-using LNF.Cache;
 using LNF.CommonTools;
 using LNF.Repository;
-using LNF.Repository.Data;
 using sselFinOps.AppCode.BLL;
 using sselFinOps.AppCode.DAL;
 using System;
@@ -13,7 +11,6 @@ using System.Data;
 using System.Data.OleDb;
 using System.IO;
 using System.Linq;
-using System.Web.SessionState;
 
 namespace sselFinOps.AppCode
 {
@@ -169,199 +166,204 @@ namespace sselFinOps.AppCode
 
         public static string MakeSpreadSheet(int accountId, string invoiceNumber, string deptRef, string orgName, int currentUserClientId, DateTime startPeriod, DateTime endPeriod)
         {
-            using (var dba = DA.Current.GetAdapter())
+            var dtAddress = DA.Command()
+                .Param("Action", "ByAccount")
+                .Param("AccountID", accountId)
+                .FillDataTable("dbo.Address_Select");
+
+            // get client data
+            // using All is hackish. It was ByOrg, but this caused a problem with remote users
+            // the other option is to select for each client, but that is probably even less efficient
+            var dtClient = DA.Command()
+                .Param("Action", "All")
+                .Param("sDate", startPeriod)
+                .Param("eDate", endPeriod)
+                .FillDataTable("dbo.Client_Select");
+
+            dtClient.PrimaryKey = new[] { dtClient.Columns["ClientID"] };
+
+            // NOTE: all reports here are for external users
+            DataRow drUsage;
+            DataTable dtUsage = new DataTable();
+            dtUsage.Columns.Add("Descrip", typeof(string));
+            dtUsage.Columns.Add("Quantity", typeof(double));
+            dtUsage.Columns.Add("Cost", typeof(double));
+
+            DataRow cdr;
+            DataTable dtAggCost;
+            string[] costType = { "Room", "StoreInv", "Tool", "Misc" };
+            Compile mCompile = new Compile();
+            DataTable dtClientWithCharges;
+            double capCost;
+            object temp;
+            double totalCharges;
+
+            //2009-01 this for loop will loop through different Cost types, so when added code for each specific type, remember to distinguish each CostType
+            for (int i = 0; i < costType.Length; i++)
             {
-                DataTable dtAddress = dba.ApplyParameters(new { Action = "ByAccount", accountId }).FillDataTable("Address_Select");
+                dtAggCost = mCompile.CalcCost(costType[i], string.Empty, "AccountID", accountId, startPeriod, 0, 0, Compile.AggType.CliAcct);
+                //dtAggCost is the main table that contains chargeable items
+                //0 ClientID
+                //1 AccountID
+                //2 RoomID
+                //3 TotalCalcCost
+                //4 TotalEntries
+                //5 TotalHours
 
-                // get client data
-                // using All is hackish. It was ByOrg, but this caused a problem with remote users
-                // the other option is to select for each client, but that is probably even less efficient
-                DataTable dtClient = dba.ApplyParameters(new { Action = "All", sDate = startPeriod, eDate = endPeriod }).FillDataTable("Client_Select");
-                dtClient.PrimaryKey = new[] { dtClient.Columns["ClientID"] };
-
-                // NOTE: all reports here are for external users
-                DataRow drUsage;
-                DataTable dtUsage = new DataTable();
-                dtUsage.Columns.Add("Descrip", typeof(string));
-                dtUsage.Columns.Add("Quantity", typeof(double));
-                dtUsage.Columns.Add("Cost", typeof(double));
-
-                DataRow cdr;
-                DataTable dtAggCost;
-                string[] costType = { "Room", "StoreInv", "Tool", "Misc" };
-                Compile mCompile = new Compile();
-                DataTable dtClientWithCharges;
-                double capCost;
-                object temp;
-                double totalCharges;
-
-                //2009-01 this for loop will loop through different Cost types, so when added code for each specific type, remember to distinguish each CostType
-                for (int i = 0; i < costType.Length; i++)
+                //Only Room costtype will execute the code below
+                if (costType[i] == "Room")
                 {
-                    dtAggCost = mCompile.CalcCost(costType[i], string.Empty, "AccountID", accountId, startPeriod, 0, 0, Compile.AggType.CliAcct);
-                    //dtAggCost is the main table that contains chargeable items
-                    //0 ClientID
-                    //1 AccountID
-                    //2 RoomID
-                    //3 TotalCalcCost
-                    //4 TotalEntries
-                    //5 TotalHours
+                    //******** The code below handles the cost of NAP rooms, because at this point, all NAP rooms access data have total cost of zero****
+                    //Get all active NAP Rooms with their costs, all chargetypes are returned
+                    DataTable dtNAPRoomForAllChargeType = RoomManager.GetAllNAPRoomsWithCosts(startPeriod);
 
-                    //Only Room costtype will execute the code below
-                    if (costType[i] == "Room")
+                    //filter out the chargetype so that we only have Internal costs with each NAP room
+                    DataRow[] dtdrsNAPRoomForExternal = dtNAPRoomForAllChargeType.Select(string.Format("ChargeTypeID = {0}", AccountDA.GetChargeType(accountId)));
+
+                    //Loop through each room and find out this specified month's apportionment data.
+                    foreach (DataRow dr1 in dtdrsNAPRoomForExternal)
                     {
-                        //******** The code below handles the cost of NAP rooms, because at this point, all NAP rooms access data have total cost of zero****
-                        //Get all active NAP Rooms with their costs, all chargetypes are returned
-                        DataTable dtNAPRoomForAllChargeType = RoomManager.GetAllNAPRoomsWithCosts(startPeriod);
+                        DataTable dtApportionData = RoomApportionDataManager.GetNAPRoomApportionDataByPeriod(startPeriod, endPeriod, dr1.Field<int>("RoomID"));
 
-                        //filter out the chargetype so that we only have Internal costs with each NAP room
-                        DataRow[] dtdrsNAPRoomForExternal = dtNAPRoomForAllChargeType.Select(string.Format("ChargeTypeID = {0}", AccountDA.GetChargeType(accountId)));
-
-                        //Loop through each room and find out this specified month's apportionment data.
-                        foreach (DataRow dr1 in dtdrsNAPRoomForExternal)
+                        foreach (DataRow dr2 in dtApportionData.Rows)
                         {
-                            DataTable dtApportionData = RoomApportionDataManager.GetNAPRoomApportionDataByPeriod(startPeriod, endPeriod, dr1.Field<int>("RoomID"));
+                            DataRow[] drs = dtAggCost.Select(String.Format("ClientID = {0} AND AccountID = {1} AND RoomID = {2}", dr2["ClientID"], dr2["AccountID"], dr2["RoomID"]));
 
-                            foreach (DataRow dr2 in dtApportionData.Rows)
+                            if (drs.Length == 1)
                             {
-                                DataRow[] drs = dtAggCost.Select(String.Format("ClientID = {0} AND AccountID = {1} AND RoomID = {2}", dr2["ClientID"], dr2["AccountID"], dr2["RoomID"]));
-
-                                if (drs.Length == 1)
-                                {
-                                    //2008-06-19 Sandrine requested all monthly room should have charge of the same across all organizations
-                                    //so if a guy works for two diferent companies, he should be charged full amount for both companeis on all monthly rooms.
-                                    //the only exception is when the apportionment percentage is 0 for this organization.  When it's 0 percent, we simply
-                                    //cannot charge this organizaiton at all
-                                    if (dr2.Field<double>("Percentage") > 0)
-                                        drs[0]["TotalCalcCost"] = dr1["RoomCost"];
-                                }
-                            }
-                        }
-
-                        //2009-01 remember not to charge clean/chem room usage for less than x amount of minutes
-                        int cleanRoomMinMinutes = int.Parse(ConfigurationManager.AppSettings["CleanRoomMinTimeMinute"]);
-                        int chemRoomMinMinutes = int.Parse(ConfigurationManager.AppSettings["ChemRoomMinTimeMinute"]);
-
-                        //we simply set totalCalcCost to 0.0 at this point, then those 0.0 charges items will not be published to excel report
-                        foreach (DataRow drAggCost in dtAggCost.Rows)
-                        {
-                            if (drAggCost.Field<LabRoom>("RoomID") == LabRoom.CleanRoom)
-                            {
-                                if (drAggCost.Field<double>("TotalHours") < cleanRoomMinMinutes / 60)
-                                    drAggCost.SetField("TotalCalcCost", 0.0);
-                            }
-                            else if (drAggCost.Field<LabRoom>("RoomID") == LabRoom.ChemRoom)
-                            {
-                                if (drAggCost.Field<double>("TotalHours") < chemRoomMinMinutes / 60)
-                                    drAggCost.SetField("TotalCalcCost", 0.0);
+                                //2008-06-19 Sandrine requested all monthly room should have charge of the same across all organizations
+                                //so if a guy works for two diferent companies, he should be charged full amount for both companeis on all monthly rooms.
+                                //the only exception is when the apportionment percentage is 0 for this organization.  When it's 0 percent, we simply
+                                //cannot charge this organizaiton at all
+                                if (dr2.Field<double>("Percentage") > 0)
+                                    drs[0]["TotalCalcCost"] = dr1["RoomCost"];
                             }
                         }
                     }
 
-                    if (costType[i] != "Misc")
-                    {
-                        dtClientWithCharges = mCompile.GetTable(1);
-                        capCost = mCompile.CapCost;
+                    //2009-01 remember not to charge clean/chem room usage for less than x amount of minutes
+                    int cleanRoomMinMinutes = int.Parse(ConfigurationManager.AppSettings["CleanRoomMinTimeMinute"]);
+                    int chemRoomMinMinutes = int.Parse(ConfigurationManager.AppSettings["ChemRoomMinTimeMinute"]);
 
-                        foreach (DataRow drCWC in dtClientWithCharges.Rows)
-                        {
-                            temp = dtAggCost.Compute("SUM(TotalCalcCost)", string.Format("ClientID = {0}", drCWC["ClientID"]));
-                            if (temp == null || temp == DBNull.Value)
-                                totalCharges = 0.0;
-                            else
-                                totalCharges = Convert.ToDouble(temp);
-
-                            //BUG FIX: I have to exclude StoreInv charge here since the CapCost for it is always 0
-                            if (totalCharges > capCost && costType[i] != "StoreInv")
-                            {
-                                DataRow[] fdr = dtAggCost.Select(string.Format("ClientID = {0}", drCWC["ClientID"]));
-                                for (int j = 0; j < fdr.Length; j++)
-                                    fdr[j].SetField("TotalCalcCost", fdr[j].Field<double>("TotalCalcCost") * capCost / totalCharges);
-                            }
-                        }
-                    }
-
+                    //we simply set totalCalcCost to 0.0 at this point, then those 0.0 charges items will not be published to excel report
                     foreach (DataRow drAggCost in dtAggCost.Rows)
                     {
-                        cdr = dtClient.Rows.Find(drAggCost.Field<int>("ClientID"));
-
-                        drUsage = dtUsage.NewRow();
-                        if (costType[i] == "Misc")
+                        if (drAggCost.Field<LabRoom>("RoomID") == LabRoom.CleanRoom)
                         {
-                            drUsage["Descrip"] = drAggCost["Description"];
-                            drUsage["Quantity"] = drAggCost["Quantity"];
-                            drUsage["Cost"] = drAggCost["UnitCost"];
+                            if (drAggCost.Field<double>("TotalHours") < cleanRoomMinMinutes / 60)
+                                drAggCost.SetField("TotalCalcCost", 0.0);
                         }
-                        else
+                        else if (drAggCost.Field<LabRoom>("RoomID") == LabRoom.ChemRoom)
                         {
-                            drUsage["Descrip"] = string.Format("{0} usage for {1}. {2}", costType[i].Substring(0, 5), cdr["FName"].ToString().Substring(0, 1), cdr["LName"]);
-                            drUsage["Quantity"] = 1;
-                            drUsage["Cost"] = drAggCost["TotalCalcCost"];
+                            if (drAggCost.Field<double>("TotalHours") < chemRoomMinMinutes / 60)
+                                drAggCost.SetField("TotalCalcCost", 0.0);
                         }
-                        dtUsage.Rows.Add(drUsage);
                     }
                 }
 
-                // Write to excel
-                ExcelLite.SetLicense("EL6N-Z669-AZZG-3LS7");
-                ExcelFile spreadSheet = new ExcelFile();
-                spreadSheet.LoadXls(ExcelUtility.GetTemplatePath("Invoice_Template.xls"));
-                ExcelWorksheet ws = spreadSheet.Worksheets["InvoiceBlank"];
-
-                // show invoice date
-                ws.Cells["F4"].Value = DateTime.Now.ToShortDateString();
-
-                int startRow;
-                int useRow = 0;
-                foreach (DataRow drAddr in dtAddress.Rows)
+                if (costType[i] != "Misc")
                 {
-                    if (drAddr["AddrType"].ToString() == "Billing")
-                        startRow = 7;
-                    else
-                        startRow = 13;
+                    dtClientWithCharges = mCompile.GetTable(1);
+                    capCost = mCompile.CapCost;
 
-                    FillField(ws, "C", startRow, orgName, ref useRow);
-                    FillField(ws, "C", 0, drAddr.Field<string>("InternalAddress"), ref useRow);
-                    FillField(ws, "C", 0, drAddr.Field<string>("StrAddress1"), ref useRow);
-                    FillField(ws, "C", 0, drAddr.Field<string>("StrAddress2"), ref useRow);
-                    FillField(ws, "C", 0, drAddr.Field<string>("City") + ", " + drAddr.Field<string>("State") + " " + drAddr.Field<string>("Zip"), ref useRow);
-                }
-
-                // invoice number that needs to be entered
-                ws.Cells["E12"].Value = invoiceNumber;
-                ws.Cells["I14"].Value = deptRef;
-
-                int rowRef = 21;
-                string rowCell;
-
-                // now print charges
-                foreach (DataRow dr in dtUsage.Rows)
-                {
-                    if (dr.Field<double>("Cost") != 0)
+                    foreach (DataRow drCWC in dtClientWithCharges.Rows)
                     {
-                        rowCell = "C" + rowRef.ToString();
-                        ws.Cells[rowCell].Value = startPeriod.ToString("MM/yyyy");
+                        temp = dtAggCost.Compute("SUM(TotalCalcCost)", string.Format("ClientID = {0}", drCWC["ClientID"]));
+                        if (temp == null || temp == DBNull.Value)
+                            totalCharges = 0.0;
+                        else
+                            totalCharges = Convert.ToDouble(temp);
 
-                        rowCell = "D" + rowRef.ToString();
-                        ws.Cells[rowCell].Value = dr["Descrip"].ToString();
-
-                        rowCell = "H" + rowRef.ToString();
-                        ws.Cells[rowCell].Value = dr["Quantity"];
-
-                        rowCell = "I" + rowRef.ToString();
-                        ws.Cells[rowCell].Value = dr["Cost"];
-
-                        rowRef += 1;
+                        //BUG FIX: I have to exclude StoreInv charge here since the CapCost for it is always 0
+                        if (totalCharges > capCost && costType[i] != "StoreInv")
+                        {
+                            DataRow[] fdr = dtAggCost.Select(string.Format("ClientID = {0}", drCWC["ClientID"]));
+                            for (int j = 0; j < fdr.Length; j++)
+                                fdr[j].SetField("TotalCalcCost", fdr[j].Field<double>("TotalCalcCost") * capCost / totalCharges);
+                        }
                     }
                 }
 
-                string workFilePath = Path.Combine(ExcelUtility.GetWorkPath(currentUserClientId), orgName + ".xls");
-                spreadSheet.SaveXls(workFilePath);
-                spreadSheet = null;
-                GC.Collect();
+                foreach (DataRow drAggCost in dtAggCost.Rows)
+                {
+                    cdr = dtClient.Rows.Find(drAggCost.Field<int>("ClientID"));
 
-                return workFilePath;
+                    drUsage = dtUsage.NewRow();
+                    if (costType[i] == "Misc")
+                    {
+                        drUsage["Descrip"] = drAggCost["Description"];
+                        drUsage["Quantity"] = drAggCost["Quantity"];
+                        drUsage["Cost"] = drAggCost["UnitCost"];
+                    }
+                    else
+                    {
+                        drUsage["Descrip"] = string.Format("{0} usage for {1}. {2}", costType[i].Substring(0, 5), cdr["FName"].ToString().Substring(0, 1), cdr["LName"]);
+                        drUsage["Quantity"] = 1;
+                        drUsage["Cost"] = drAggCost["TotalCalcCost"];
+                    }
+                    dtUsage.Rows.Add(drUsage);
+                }
             }
+
+            // Write to excel
+            ExcelLite.SetLicense("EL6N-Z669-AZZG-3LS7");
+            ExcelFile spreadSheet = new ExcelFile();
+            spreadSheet.LoadXls(ExcelUtility.GetTemplatePath("Invoice_Template.xls"));
+            ExcelWorksheet ws = spreadSheet.Worksheets["InvoiceBlank"];
+
+            // show invoice date
+            ws.Cells["F4"].Value = DateTime.Now.ToShortDateString();
+
+            int startRow;
+            int useRow = 0;
+            foreach (DataRow drAddr in dtAddress.Rows)
+            {
+                if (drAddr["AddrType"].ToString() == "Billing")
+                    startRow = 7;
+                else
+                    startRow = 13;
+
+                FillField(ws, "C", startRow, orgName, ref useRow);
+                FillField(ws, "C", 0, drAddr.Field<string>("InternalAddress"), ref useRow);
+                FillField(ws, "C", 0, drAddr.Field<string>("StrAddress1"), ref useRow);
+                FillField(ws, "C", 0, drAddr.Field<string>("StrAddress2"), ref useRow);
+                FillField(ws, "C", 0, drAddr.Field<string>("City") + ", " + drAddr.Field<string>("State") + " " + drAddr.Field<string>("Zip"), ref useRow);
+            }
+
+            // invoice number that needs to be entered
+            ws.Cells["E12"].Value = invoiceNumber;
+            ws.Cells["I14"].Value = deptRef;
+
+            int rowRef = 21;
+            string rowCell;
+
+            // now print charges
+            foreach (DataRow dr in dtUsage.Rows)
+            {
+                if (dr.Field<double>("Cost") != 0)
+                {
+                    rowCell = "C" + rowRef.ToString();
+                    ws.Cells[rowCell].Value = startPeriod.ToString("MM/yyyy");
+
+                    rowCell = "D" + rowRef.ToString();
+                    ws.Cells[rowCell].Value = dr["Descrip"].ToString();
+
+                    rowCell = "H" + rowRef.ToString();
+                    ws.Cells[rowCell].Value = dr["Quantity"];
+
+                    rowCell = "I" + rowRef.ToString();
+                    ws.Cells[rowCell].Value = dr["Cost"];
+
+                    rowRef += 1;
+                }
+            }
+
+            string workFilePath = Path.Combine(ExcelUtility.GetWorkPath(currentUserClientId), orgName + ".xls");
+            spreadSheet.SaveXls(workFilePath);
+            spreadSheet = null;
+            GC.Collect();
+
+            return workFilePath;
         }
 
         private static void FillField(ExcelWorksheet ws, string col, int row, string data, ref int useRow)

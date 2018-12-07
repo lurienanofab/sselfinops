@@ -19,7 +19,7 @@ namespace sselFinOps
 
         protected void Application_AuthenticateRequest(object sender, EventArgs e)
         {
-            if (Request.IsAuthenticated) 
+            if (Request.IsAuthenticated)
             {
                 FormsIdentity ident = (FormsIdentity)User.Identity;
                 string[] roles = ident.Ticket.UserData.Split('|');
@@ -30,9 +30,9 @@ namespace sselFinOps
         protected void Session_Start(object sender, EventArgs e)
         {
             if (ServiceProvider.Current.IsProduction())
-                CacheManager.Current.Logout = Application["AppServer"].ToString() + "login";
+                CacheManager.Current.SetSessionValue("Logout", Application["AppServer"].ToString() + ServiceProvider.Current.Context.LoginUrl);
             else
-                CacheManager.Current.Logout = "/login";
+                CacheManager.Current.SetSessionValue("Logout", ServiceProvider.Current.Context.LoginUrl);
         }
     }
 }

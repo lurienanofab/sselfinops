@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Data;
-using LNF.CommonTools;
+﻿using LNF.Repository;
+using System;
 
 namespace sselFinOps.AppCode.DAL
 {
@@ -12,18 +7,17 @@ namespace sselFinOps.AppCode.DAL
     {
         public static GlobalCost GetGlobalCost()
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            using (IDataReader dr = dba.ExecuteReader("GlobalCost_Select"))
+            using (var reader = DA.Command().ExecuteReader("dbo.GlobalCost_Select"))
             {
                 GlobalCost gc = new GlobalCost();
 
-                if (dr.Read())
+                if (reader.Read())
                 {
-                    gc.LabAccountID = Convert.ToInt32(dr["LabAccountID"]);
-                    gc.LabCreditAccountID = Convert.ToInt32(dr["labCreditAccountID"]);
-                    gc.Number = dr["Number"].ToString();
-                    gc.ShortCode = dr["ShortCode"].ToString();
-                    gc.SubsidyCreditAccountNumber = dr["SubsidyCreditAccountNumber"].ToString();
+                    gc.LabAccountID = Convert.ToInt32(reader["LabAccountID"]);
+                    gc.LabCreditAccountID = Convert.ToInt32(reader["labCreditAccountID"]);
+                    gc.Number = Convert.ToString(reader["Number"]);
+                    gc.ShortCode = Convert.ToString(reader["ShortCode"]);
+                    gc.SubsidyCreditAccountNumber = Convert.ToString(reader["SubsidyCreditAccountNumber"]);
                 }
                 else
                 {
@@ -34,7 +28,7 @@ namespace sselFinOps.AppCode.DAL
                     gc.ShortCode = string.Empty;
                 }
 
-                dr.Close();
+                reader.Close();
 
                 return gc;
             }

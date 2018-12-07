@@ -1,5 +1,4 @@
-﻿using LNF.CommonTools;
-using LNF.Repository;
+﻿using LNF.Repository;
 using System;
 using System.Data;
 
@@ -9,76 +8,63 @@ namespace sselFinOps.AppCode.DAL
     {
         public static DataTable GetAllInternalAccount(DateTime sDate, DateTime eDate)
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "AllInternalAccounts");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                DataTable dt = dba.FillDataTable("Account_Select");
+            var dt = DA.Command()
+                .Param("Action", "AllInternalAccounts")
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataTable("dbo.Account_Select");
 
-                //Must set primary key because the client code need to find data in this table
-                //should this code below to business logic or data access?
-                dt.PrimaryKey = new[] {dt.Columns["AccountID"]};
+            //Must set primary key because the client code need to find data in this table
+            //should this code below to business logic or data access?
+            dt.PrimaryKey = new[] { dt.Columns["AccountID"] };
 
-                return dt;
-            }
+            return dt;
         }
 
         public static DataView GetAllAccount(int year, int month)
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            {
-                DateTime sDate = new DateTime(year, month, 1);
-                dba.AddParameter("@Action", "AllActive");
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", sDate.AddMonths(1));
-                DataTable dt = dba.FillDataTable("Account_Select");
-                DataView dv = dt.DefaultView;
-                dv.Sort = "Name";
-                return dv;
-            }
+            DateTime sDate = new DateTime(year, month, 1);
+
+            var dt = DA.Command()
+                .Param("Action", "AllActive")
+                .Param("sDate", sDate)
+                .Param("eDate", sDate.AddMonths(1))
+                .FillDataTable("dbo.Account_Select");
+
+            dt.DefaultView.Sort = "Name";
+
+            return dt.DefaultView;
         }
 
         public static int GetChargeType(int accountId)
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "GetChargeType");
-                dba.AddParameter("@AccountID", accountId);
-                int chargetypeId = dba.ExecuteScalar<int>("Account_Select");
-                return chargetypeId;
-            }
+            return DA.Command()
+                .Param("Action", "GetChargeType")
+                .Param("AccountID", accountId)
+                .ExecuteScalar<int>("dbo.Account_Select");
         }
 
-        public static DataTable  GetAccountsByClientID(int clientId)
+        public static DataTable GetAccountsByClientID(int clientId)
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "GetAccountsByClientID");
-                dba.AddParameter("@ClientID", clientId);
-                return dba.FillDataTable("Account_Select");
-            }
+            return DA.Command()
+                .Param("Action", "GetAccountsByClientID")
+                .Param("ClientID", clientId)
+                .FillDataTable("dbo.Account_Select");
         }
 
-        public static DataTable  GetAccountsByClientIDAndDate(int clientId, DateTime sDate, DateTime eDate)
+        public static DataTable GetAccountsByClientIDAndDate(int clientId, DateTime sDate, DateTime eDate)
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "GetAccountsByClientIDAndDate");
-                dba.AddParameter("@ClientID", clientId);
-                dba.AddParameter("@sDate", sDate);
-                dba.AddParameter("@eDate", eDate);
-                return dba.FillDataTable("Account_Select");
-            }
+            return DA.Command()
+                .Param("Action", "GetAccountsByClientIDAndDate")
+                .Param("ClientID", clientId)
+                .Param("sDate", sDate)
+                .Param("eDate", eDate)
+                .FillDataTable("dbo.Account_Select");
         }
 
         public static DataTable GetNonBillingAccount()
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "GetAllNonBillingAccounts");
-                return dba.FillDataTable("Account_Select");
-            }
+            return DA.Command().Param("Action", "GetAllNonBillingAccounts").FillDataTable("dbo.Account_Select");
         }
     }
 }

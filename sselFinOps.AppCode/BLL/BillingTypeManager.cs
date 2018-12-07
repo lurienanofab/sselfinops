@@ -1,5 +1,4 @@
-﻿using LNF.CommonTools;
-using LNF.Repository;
+﻿using LNF.Repository;
 using LNF.Repository.Billing;
 using System;
 using System.Data;
@@ -10,13 +9,14 @@ namespace sselFinOps.AppCode.BLL
     {
         public static DataTable GetBillingTypes()
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-                return dba.ApplyParameters(new {Action="All"}).FillDataTable("BillingType_Select");
+            return DA.Command()
+                .Param("Action", "All")
+                .FillDataTable("dbo.BillingType_Select");
         }
 
-	    public static double GetTotalCostByBillingType(int billingTypeId, double hours, double entries, LabRoom room, double totalCalcCost)
+        public static double GetTotalCostByBillingType(int billingTypeId, double hours, double entries, LabRoom room, double totalCalcCost)
         {
-		    double result = 0;
+            double result = 0;
 
             if (room == LabRoom.CleanRoom)
             {
@@ -77,27 +77,21 @@ namespace sselFinOps.AppCode.BLL
             else
                 return 99999;
 
-		    return result;
-	    }
+            return result;
+        }
 
-	    public static string GetBillingTypeName(int clientOrgId)
+        public static string GetBillingTypeName(int clientOrgId)
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
+            try
             {
-                dba.AddParameter("@Action", "GetCurrentTypeName");
-                dba.AddParameter("@ClientOrgID", clientOrgId);
-
-                string billingtype = string.Empty;
-
-                try
-                {
-                    billingtype = dba.ExecuteScalar<string>("ClientOrgBillingTypeTS_Select");
-                    return billingtype;
-                }
-                catch (Exception ex)
-                {
-                    return string.Format("Error, there is no billing type with this user [{0}]", ex.Message);
-                }
+                return DA.Command()
+                    .Param("Action", "GetCurrentTypeName")
+                    .Param("ClientOrgID", clientOrgId)
+                    .ExecuteScalar<string>("dbo.ClientOrgBillingTypeTS_Select");
+            }
+            catch (Exception ex)
+            {
+                return $"Error, there is no billing type with this user [{ex.Message}]";
             }
         }
     }

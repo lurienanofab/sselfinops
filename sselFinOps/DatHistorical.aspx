@@ -24,14 +24,14 @@
                 <tr>
                     <td>Organization:</td>
                     <td>
-                        <asp:DropDownList runat="server" ID="ddlOrg" CssClass="report-select" AutoPostBack="True" OnSelectedIndexChanged="ddlOrg_SelectedIndexChanged">
+                        <asp:DropDownList runat="server" ID="ddlOrg" CssClass="report-select" AutoPostBack="True" OnSelectedIndexChanged="DdlOrg_SelectedIndexChanged">
                         </asp:DropDownList>
                     </td>
                 </tr>
                 <tr>
                     <td>Time frame:</td>
                     <td>
-                        <asp:RadioButtonList runat="server" ID="rblTimeFrame" RepeatDirection="Horizontal" TextAlign="Left" AutoPostBack="True" OnSelectedIndexChanged="rblTimeFrame_SelectedIndexChanged">
+                        <asp:RadioButtonList runat="server" ID="rblTimeFrame" RepeatDirection="Horizontal" TextAlign="Left" AutoPostBack="True" OnSelectedIndexChanged="RblTimeFrame_SelectedIndexChanged">
                             <asp:ListItem Value="-3">3 months</asp:ListItem>
                             <asp:ListItem Value="-6">6 months</asp:ListItem>
                             <asp:ListItem Value="-12" Selected="True">1 Year</asp:ListItem>
@@ -44,10 +44,10 @@
                 <tr>
                     <td>Select an account:</td>
                     <td>
-                        <asp:DropDownList runat="server" ID="ddlAccount" CssClass="report-select" Width="300" AutoPostBack="True" OnSelectedIndexChanged="ddlAccount_SelectedIndexChanged">
+                        <asp:DropDownList runat="server" ID="ddlAccount" CssClass="report-select" Width="300" AutoPostBack="True" OnSelectedIndexChanged="DdlAccount_SelectedIndexChanged">
                         </asp:DropDownList>
                         <span style="padding-left: 10px;">
-                            <asp:RadioButtonList runat="server" ID="rblAcctDisplay" RepeatDirection="Horizontal" TextAlign="Left" AutoPostBack="True" RepeatLayout="Flow" OnSelectedIndexChanged="rblAcctDisplay_SelectedIndexChanged">
+                            <asp:RadioButtonList runat="server" ID="rblAcctDisplay" RepeatDirection="Horizontal" TextAlign="Left" AutoPostBack="True" RepeatLayout="Flow" OnSelectedIndexChanged="RblAcctDisplay_SelectedIndexChanged">
                                 <asp:ListItem Value="Name" Selected="True">Name</asp:ListItem>
                                 <asp:ListItem Value="Number">Number</asp:ListItem>
                                 <asp:ListItem Value="Project">Project</asp:ListItem>
@@ -74,7 +74,7 @@
             </tr>
             <tr>
                 <td>
-                    <asp:DataGrid runat="server" ID="dgReport" AutoGenerateColumns="False" OnItemDataBound="dgReport_ItemDataBound">
+                    <asp:DataGrid runat="server" ID="dgReport" AutoGenerateColumns="False" OnItemDataBound="DgReport_ItemDataBound">
                         <HeaderStyle CssClass="header" />
                         <Columns>
                             <asp:BoundColumn DataField="Period" HeaderText="Period" DataFormatString="{0: MMM yyyy}">

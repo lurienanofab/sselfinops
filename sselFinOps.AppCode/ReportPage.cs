@@ -30,12 +30,12 @@ namespace sselFinOps.AppCode
         {
             base.OnInit(e);
 
-            ServiceProvider.Current.Resolver.BuildUp(this);
+            ServiceProvider.Current.BuildUp(this);
 
             if (!CacheManager.Current.CurrentUser.HasPriv(AuthTypes))
             {
                 CacheManager.Current.AbandonSession();
-                Response.Redirect(CacheManager.Current.GetLoginUrl() + "?Action=Exit");
+                Response.Redirect(ServiceProvider.Current.Context.LoginUrl + "?Action=Exit");
             }
         }
 

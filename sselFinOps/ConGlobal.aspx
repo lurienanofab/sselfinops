@@ -49,7 +49,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:Button runat="server" ID="btnSave" CssClass="report-button StoreButton" Text="Save Changes" CausesValidation="False" OnClick="btnSave_Click"></asp:Button>
+                    <asp:Button runat="server" ID="btnSave" CssClass="report-button StoreButton" Text="Save Changes" CausesValidation="False" OnClick="BtnSave_Click"></asp:Button>
                     <asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton>
                 </td>
             </tr>

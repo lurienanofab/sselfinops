@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
 using System.Xml.Linq;
 
@@ -14,9 +13,11 @@ namespace sselFinOps.Data
     /// <summary>
     /// Summary description for index
     /// </summary>
-    public class Index : HttpTaskAsyncHandler
+    public class Index : IHttpHandler
     {
-        public override async Task ProcessRequestAsync(HttpContext context)
+        public bool IsReusable => false;
+
+        public void ProcessRequest(HttpContext context)
         {
             string report = context.Request.QueryString["report"];
             string charge = context.Request.QueryString["charge"];
@@ -32,13 +33,13 @@ namespace sselFinOps.Data
             switch (report)
             {
                 case "sub":
-                    xdoc = await GetSubReport(charge, sd, ed, clientId);
+                    xdoc = GetSubReport(charge, sd, ed, clientId);
                     break;
                 case "ju-a":
                 case "ju-b":
                 case "ju-c":
                 case "ju-all":
-                    xdoc = await GetJuReport(GetJuType(report), charge, sd, ed, clientId);
+                    xdoc = GetJuReport(GetJuType(report), charge, sd, ed, clientId);
                     break;
                 default:
                     throw new InvalidOperationException($"Invalid report: {report}");
@@ -65,7 +66,7 @@ namespace sselFinOps.Data
             }
         }
 
-        private async Task<XDocument> GetSubReport(string charge, DateTime sd, DateTime ed, int clientId)
+        private XDocument GetSubReport(string charge, DateTime sd, DateTime ed, int clientId)
         {
             RoomSUB roomSUB;
             ToolSUB toolSUB;
@@ -76,21 +77,21 @@ namespace sselFinOps.Data
             switch (charge)
             {
                 case "all":
-                    roomSUB = await ReportFactory.GetReportRoomSUB(sd, ed, clientId);
-                    toolSUB = await ReportFactory.GetReportToolSUB(sd, ed, clientId);
-                    storeSUB = await ReportFactory.GetReportStoreSUB(sd, ed, false, clientId);
+                    roomSUB = ReportFactory.GetReportRoomSUB(sd, ed, clientId);
+                    toolSUB = ReportFactory.GetReportToolSUB(sd, ed, clientId);
+                    storeSUB = ReportFactory.GetReportStoreSUB(sd, ed, false, clientId);
                     allItems = ReportFactory.GetAllSUB(roomSUB, toolSUB, storeSUB, out total);
                     break;
                 case "room":
-                    roomSUB = await ReportFactory.GetReportRoomSUB(sd, ed, clientId);
+                    roomSUB = ReportFactory.GetReportRoomSUB(sd, ed, clientId);
                     allItems = ReportFactory.GetSUB(roomSUB, out total);
                     break;
                 case "tool":
-                    toolSUB = await ReportFactory.GetReportToolSUB(sd, ed, clientId);
+                    toolSUB = ReportFactory.GetReportToolSUB(sd, ed, clientId);
                     allItems = ReportFactory.GetSUB(toolSUB, out total);
                     break;
                 case "store":
-                    storeSUB = await ReportFactory.GetReportStoreSUB(sd, ed, false, clientId);
+                    storeSUB = ReportFactory.GetReportStoreSUB(sd, ed, false, clientId);
                     allItems = ReportFactory.GetSUB(storeSUB, out total);
                     break;
                 default:
@@ -154,7 +155,7 @@ namespace sselFinOps.Data
             return result;
         }
 
-        private async Task<XDocument> GetJuReport(JournalUnitTypes juType, string charge, DateTime sd, DateTime ed, int clientId)
+        private XDocument GetJuReport(JournalUnitTypes juType, string charge, DateTime sd, DateTime ed, int clientId)
         {
             RoomJU roomJU;
             RoomJU roomJUA;
@@ -175,17 +176,17 @@ namespace sselFinOps.Data
                         case JournalUnitTypes.A:
                         case JournalUnitTypes.B:
                         case JournalUnitTypes.C:
-                            roomJU = await ReportFactory.GetReportRoomJU(sd, ed, juType, clientId);
-                            toolJU = await ReportFactory.GetReportToolJU(sd, ed, juType, clientId);
+                            roomJU = ReportFactory.GetReportRoomJU(sd, ed, juType, clientId);
+                            toolJU = ReportFactory.GetReportToolJU(sd, ed, juType, clientId);
                             allItems = ReportFactory.GetAllJU(roomJU, toolJU, out total);
                             break;
                         case JournalUnitTypes.All:
-                            roomJUA = await ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.A, clientId);
-                            toolJUA = await ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.A, clientId);
-                            roomJUB = await ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.B, clientId);
-                            toolJUB = await ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.B, clientId);
-                            roomJUC = await ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.C, clientId);
-                            toolJUC = await ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.C, clientId);
+                            roomJUA = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.A, clientId);
+                            toolJUA = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.A, clientId);
+                            roomJUB = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.B, clientId);
+                            toolJUB = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.B, clientId);
+                            roomJUC = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.C, clientId);
+                            toolJUC = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.C, clientId);
 
                             total = 0;
 
@@ -210,13 +211,13 @@ namespace sselFinOps.Data
                         case JournalUnitTypes.A:
                         case JournalUnitTypes.B:
                         case JournalUnitTypes.C:
-                            roomJU = await ReportFactory.GetReportRoomJU(sd, ed, juType, clientId);
+                            roomJU = ReportFactory.GetReportRoomJU(sd, ed, juType, clientId);
                             allItems = ReportFactory.GetAllJU(roomJU, null, out total);
                             break;
                         case JournalUnitTypes.All:
-                            roomJUA = await ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.A, clientId);
-                            roomJUB = await ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.B, clientId);
-                            roomJUC = await ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.C, clientId);
+                            roomJUA = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.A, clientId);
+                            roomJUB = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.B, clientId);
+                            roomJUC = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.C, clientId);
 
                             total = 0;
 
@@ -241,13 +242,13 @@ namespace sselFinOps.Data
                         case JournalUnitTypes.A:
                         case JournalUnitTypes.B:
                         case JournalUnitTypes.C:
-                            toolJU = await ReportFactory.GetReportToolJU(sd, ed, juType, clientId);
+                            toolJU = ReportFactory.GetReportToolJU(sd, ed, juType, clientId);
                             allItems = ReportFactory.GetAllJU(null, toolJU, out total);
                             break;
                         case JournalUnitTypes.All:
-                            toolJUA = await ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.A, clientId);
-                            toolJUB = await ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.B, clientId);
-                            toolJUC = await ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.C, clientId);
+                            toolJUA = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.A, clientId);
+                            toolJUB = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.B, clientId);
+                            toolJUC = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.C, clientId);
 
                             total = 0;
 

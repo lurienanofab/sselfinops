@@ -1,58 +1,44 @@
-﻿using LNF.Models.Billing;
+﻿using LNF;
+using LNF.Models.Billing;
+using LNF.Models.Billing.Reports;
 using LNF.Models.Billing.Reports.ServiceUnitBilling;
-using OnlineServices.Api;
-using OnlineServices.Api.Billing;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace sselFinOps.AppCode
 {
     public static class ReportFactory
     {
-        public static async Task<RoomJU> GetReportRoomJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
+        private static IReportClient ReportClient => ServiceProvider.Current.Billing.Report;
+
+        public static RoomJU GetReportRoomJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
         {
-            using (var billingClient = new BillingClient())
-            {
-                RoomJU report = await billingClient.GetRoomJU(sd, ed, type, id);
-                return report;
-            }
+            return ReportClient.GetRoomJU(sd, ed, type.ToString(), id);
         }
 
-        public static async Task<ToolJU> GetReportToolJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
+        public static ToolJU GetReportToolJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
         {
-            using (var billingClient = new BillingClient())
-            {
-                ToolJU report = await billingClient.GetToolJU(sd, ed, type, id);
-                return report;
-            }
+            return ReportClient.GetToolJU(sd, ed, type.ToString(), id);
         }
 
-        public static async Task<RoomSUB> GetReportRoomSUB(DateTime sd, DateTime ed, int id)
+        public static RoomSUB GetReportRoomSUB(DateTime sd, DateTime ed, int id)
         {
-            using (var billingClient = new BillingClient())
-            {
-                RoomSUB report = await billingClient.GetRoomSUB(sd, ed, id);
-                return report;
-            }
+            return ReportClient.GetRoomSUB(sd, ed, id);
         }
 
-        public static async Task<ToolSUB> GetReportToolSUB(DateTime sd, DateTime ed, int id)
+        public static ToolSUB GetReportToolSUB(DateTime sd, DateTime ed, int id)
         {
-            using (var billingClient = new BillingClient())
-            {
-                ToolSUB report = await billingClient.GetToolSUB(sd, ed, id);
-                return report;
-            }
+            return ReportClient.GetToolSUB(sd, ed, id);
         }
 
-        public static async Task<StoreSUB> GetReportStoreSUB(DateTime sd, DateTime ed, bool twoCreditAccounts, int id)
+        public static StoreSUB GetReportStoreSUB(DateTime sd, DateTime ed, bool twoCreditAccounts, int id)
         {
-            using (var billingClient = new BillingClient())
-            {
-                StoreSUB report = await billingClient.GetStoreSUB(sd, ed, twoCreditAccounts, id);
-                return report;
-            }
+            string option = null;
+
+            if (twoCreditAccounts)
+                option = "two-credit-accounts";
+
+            return ReportClient.GetStoreSUB(sd, ed, id, option);
         }
 
         public static List<JournalUnitReportItem> GetAllRoomJU(RoomJU juA, RoomJU juB, RoomJU juC, out double total)
@@ -92,14 +78,14 @@ namespace sselFinOps.AppCode
             total = 0;
             var allItems = new List<JournalUnitReportItem>();
 
-            if (roomJU !=null)
-            { 
+            if (roomJU != null)
+            {
                 allItems.AddRange(roomJU.Items);
                 total += roomJU.CreditEntry.MerchandiseAmount;
             }
 
-            if (toolJU !=null)
-            { 
+            if (toolJU != null)
+            {
                 allItems.AddRange(toolJU.Items);
                 total += toolJU.CreditEntry.MerchandiseAmount;
             }

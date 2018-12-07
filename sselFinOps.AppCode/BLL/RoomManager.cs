@@ -1,5 +1,4 @@
-﻿using LNF.CommonTools;
-using LNF.Repository;
+﻿using LNF.Repository;
 using System;
 using System.Data;
 
@@ -20,12 +19,10 @@ namespace sselFinOps.AppCode.BLL
     {
         public static DataTable GetAllNAPRoomsWithCosts(DateTime period)
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            {
-                dba.AddParameter("@Action", "NAPRoomsWithCost");
-                dba.AddParameter("@Period", period);
-                return dba.FillDataTable("Room_Select");
-            }
+            return DA.Command()
+                .Param("Action", "NAPRoomsWithCost")
+                .Param("Period", period)
+                .FillDataTable("dbo.Room_Select");
         }
     }
 }

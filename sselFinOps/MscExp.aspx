@@ -22,10 +22,10 @@
                 |
                 <asp:LinkButton runat="server" ID="btnConToolCost" CommandArgument="Tool" Text="Configure Exp Tool Charges" OnCommand="ConfigureCost_Command" />
                 |
-                <asp:LinkButton runat="server" ID="btnConFormula" Text="Configure Exp Costing Formulas" OnClick="btnConFormula_Click" />
+                <asp:LinkButton runat="server" ID="btnConFormula" Text="Configure Exp Costing Formulas" OnClick="BtnConFormula_Click" />
             </div>
             <div class="criteria-item">
-                <asp:Button runat="server" ID="btnReport" CssClass="report-button" Text="Caclulate Experimental Costs" OnClick="btnReport_Click" />
+                <asp:Button runat="server" ID="btnReport" CssClass="report-button" Text="Caclulate Experimental Costs" OnClick="BtnReport_Click" />
                 <asp:LinkButton runat="server" ID="btnBack" Text="&laquo; Back to Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton>
             </div>
         </div>

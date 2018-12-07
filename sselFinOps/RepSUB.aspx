@@ -1,4 +1,4 @@
-﻿<%@ Page Title="SUB Reports" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="RepSUB.aspx.cs" Inherits="sselFinOps.RepSUB" Async="true" %>
+﻿<%@ Page Title="SUB Reports" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="RepSUB.aspx.cs" Inherits="sselFinOps.RepSUB" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
@@ -47,69 +47,69 @@
         <table class="controls">
             <tr>
                 <td colspan="5">
-                    <asp:CheckBox runat="server" ID="chkHTML" Text="HTML ONLY" OnCheckedChanged="chkHTML_CheckChanged" AutoPostBack="true" />
+                    <asp:CheckBox runat="server" ID="chkHTML" Text="HTML ONLY" OnCheckedChanged="ChkHTML_CheckChanged" AutoPostBack="true" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    <asp:Button ID="btnReportLabtime" runat="server" Text="Labtime Report" Width="180" OnClick="btnReportLabtime_Click" />
+                    <asp:Button ID="btnReportLabtime" runat="server" Text="Labtime Report" Width="180" OnClick="BtnReportLabtime_Click" />
                 </td>
                 <td>
-                    <asp:Button ID="btnRoomJUA" runat="server" Text="JU A" CommandArgument="A" Width="65" OnCommand="btnRoomJU_Command" />
+                    <asp:Button ID="btnRoomJUA" runat="server" Text="JU A" CommandArgument="A" Width="65" OnCommand="BtnRoomJU_Command" />
                 </td>
                 <td>
-                    <asp:Button ID="btnRoomJUB" runat="server" Text="JU B" CommandArgument="B" Width="65" OnCommand="btnRoomJU_Command" />
+                    <asp:Button ID="btnRoomJUB" runat="server" Text="JU B" CommandArgument="B" Width="65" OnCommand="BtnRoomJU_Command" />
                 </td>
                 <td>
-                    <asp:Button ID="btnRoomJUC" runat="server" Text="JU C" CommandArgument="C" Width="65" OnCommand="btnRoomJU_Command" />
+                    <asp:Button ID="btnRoomJUC" runat="server" Text="JU C" CommandArgument="C" Width="65" OnCommand="BtnRoomJU_Command" />
                 </td>
                 <td>
-                    <asp:Button ID="btnAllRoomJU" runat="server" Text="All Room JU" OnClick="btnAllRoomJU_Click" Width="100" Enabled="false" />
-                </td>
-            </tr>
-            <tr>
-                <td>
-                    <asp:Button ID="btnReportTool" runat="server" Text="Tool Report" Width="180" OnClick="btnReportTool_Click" />
-                </td>
-                <td>
-                    <asp:Button ID="btnToolJUA" runat="server" Text="JU A" CommandArgument="A" Width="65" OnCommand="btnToolJU_Command" />
-                </td>
-                <td>
-                    <asp:Button ID="btnToolJUB" runat="server" Text="JU B" CommandArgument="B" Width="65" OnCommand="btnToolJU_Command" />
-                </td>
-                <td>
-                    <asp:Button ID="btnToolJUC" runat="server" Text="JU C" CommandArgument="C" Width="65" OnCommand="btnToolJU_Command" />
-                </td>
-                <td>
-                    <asp:Button ID="btnAllToolJU" runat="server" Text="All Tool JU" OnClick="btnAllToolJU_Click" Width="100" Enabled="false" />
+                    <asp:Button ID="btnAllRoomJU" runat="server" Text="All Room JU" OnClick="BtnAllRoomJU_Click" Width="100" Enabled="false" />
                 </td>
             </tr>
             <tr>
                 <td>
-                    <asp:Button ID="btnReportStore" runat="server" Text="Store Report" Width="180" OnClick="btnReportStore_Click" />
+                    <asp:Button ID="btnReportTool" runat="server" Text="Tool Report" Width="180" OnClick="BtnReportTool_Click" />
+                </td>
+                <td>
+                    <asp:Button ID="btnToolJUA" runat="server" Text="JU A" CommandArgument="A" Width="65" OnCommand="BtnToolJU_Command" />
+                </td>
+                <td>
+                    <asp:Button ID="btnToolJUB" runat="server" Text="JU B" CommandArgument="B" Width="65" OnCommand="BtnToolJU_Command" />
+                </td>
+                <td>
+                    <asp:Button ID="btnToolJUC" runat="server" Text="JU C" CommandArgument="C" Width="65" OnCommand="BtnToolJU_Command" />
+                </td>
+                <td>
+                    <asp:Button ID="btnAllToolJU" runat="server" Text="All Tool JU" OnClick="BtnAllToolJU_Click" Width="100" Enabled="false" />
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <asp:Button ID="btnReportStore" runat="server" Text="Store Report" Width="180" OnClick="BtnReportStore_Click" />
                 </td>
                 <td colspan="4">&nbsp;</td>
             </tr>
             <tr>
                 <td>
-                    <asp:Button ID="btnAllSUB" runat="server" Text="All SUB" Width="180" OnClick="btnAllSUB_Click" Enabled="false" />
+                    <asp:Button ID="btnAllSUB" runat="server" Text="All SUB" Width="180" OnClick="BtnAllSUB_Click" Enabled="false" />
                 </td>
                 <td>
-                    <asp:Button ID="btnAllJUA" runat="server" Text="All JU A" CommandArgument="A" OnCommand="btnAllJU_Command" Width="65" Enabled="false" />
+                    <asp:Button ID="btnAllJUA" runat="server" Text="All JU A" CommandArgument="A" OnCommand="BtnAllJU_Command" Width="65" Enabled="false" />
                 </td>
                 <td>
-                    <asp:Button ID="btnAllJUB" runat="server" Text="All JU B" CommandArgument="B" OnCommand="btnAllJU_Command" Width="65" Enabled="false" />
+                    <asp:Button ID="btnAllJUB" runat="server" Text="All JU B" CommandArgument="B" OnCommand="BtnAllJU_Command" Width="65" Enabled="false" />
                 </td>
                 <td>
-                    <asp:Button ID="btnAllJUC" runat="server" Text="All JU C" CommandArgument="C" OnCommand="btnAllJU_Command" Width="65" Enabled="false" />
+                    <asp:Button ID="btnAllJUC" runat="server" Text="All JU C" CommandArgument="C" OnCommand="BtnAllJU_Command" Width="65" Enabled="false" />
                 </td>
                 <td>
-                    <asp:Button ID="btnAllJU" runat="server" Text="All JU" CommandArgument="all" OnCommand="btnAllJU_Command" Width="100" Enabled="false" />
+                    <asp:Button ID="btnAllJU" runat="server" Text="All JU" CommandArgument="all" OnCommand="BtnAllJU_Command" Width="100" Enabled="false" />
                 </td>
             </tr>
             <tr>
                 <td colspan="5" style="padding-top: 20px;">
-                    <asp:Button ID="btnReportStoreTwoAccounts" runat="server" Text="Deprecated:Store Report (two credit accounts)" OnClick="btnReportStoreTwoAccounts_Click" />
+                    <asp:Button ID="btnReportStoreTwoAccounts" runat="server" Text="Deprecated:Store Report (two credit accounts)" OnClick="BtnReportStoreTwoAccounts_Click" />
                 </td>
             </tr>
             <tr>

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
-using System.Web.UI.WebControls;
-using System.Data;
+﻿using LNF.CommonTools;
 using LNF.Repository;
-using LNF.CommonTools;
 using sselFinOps.AppCode;
+using System;
+using System.Data;
+using System.Web.UI.WebControls;
 
 namespace sselFinOps
 {
@@ -23,16 +19,14 @@ namespace sselFinOps
             Response.Redirect(string.Format("~/ConCost.aspx?ItemType={0}&Exp=Exp", e.CommandArgument));
         }
 
-        protected void btnConFormula_Click(object sender, EventArgs e)
+        protected void BtnConFormula_Click(object sender, EventArgs e)
         {
             Response.Redirect("~/ConFormula.aspx?Exp=Exp");
         }
 
-        protected void btnReport_Click(object sender, EventArgs e)
+        protected void BtnReport_Click(object sender, EventArgs e)
         {
-            int numMonths = 0;
-            
-            if (!int.TryParse(txtNumMonths.Text, out numMonths)) return;
+            if (!int.TryParse(txtNumMonths.Text, out int numMonths)) return;
 
             if (numMonths == 0 || numMonths > 12) return;
 
@@ -45,50 +39,44 @@ namespace sselFinOps
             DataTable dtOrg = null;
             DataTable dtClientOrg = null;
 
-            using (var dba = DA.Current.GetAdapter())
-            {
-                dba.AddParameter("@Action", "ForExpCost");
-                dtClientOrg = dba.FillDataTable("ClientOrg_Select");
+            dtClientOrg = DA.Command().Param("Action", "ForExpCost").FillDataTable("dbo.ClientOrg_Select");
 
+            for (int i = 0; i < numMonths; i++)
+            {
+                dtClientOrg.Columns.Add(string.Format("mn{0}Room", i), typeof(double));
+                dtClientOrg.Columns.Add(string.Format("mn{0}Tool", i), typeof(double));
+            }
+
+            foreach (DataRow dr in dtClientOrg.Rows)
+            {
                 for (int i = 0; i < numMonths; i++)
                 {
-                    dtClientOrg.Columns.Add(string.Format("mn{0}Room", i), typeof(double));
-                    dtClientOrg.Columns.Add(string.Format("mn{0}Tool", i), typeof(double));
-                }
-
-                foreach (DataRow dr in dtClientOrg.Rows)
-                {
-                    for (int i = 0; i < numMonths; i++)
-                    {
-                        dr.SetField(string.Format("mn{0}Room", i), 0);
-                        dr.SetField(string.Format("mn{0}Tool", i), 0);
-                    }
+                    dr.SetField(string.Format("mn{0}Room", i), 0);
+                    dr.SetField(string.Format("mn{0}Tool", i), 0);
                 }
             }
 
-            using (var dba = DA.Current.GetAdapter())
-            {
-                dba.AddParameter("@Action", "AllActive");
-                dba.AddParameter("@sDate", sd);
-                dba.AddParameter("@eDate", ed);
-                dtOrg = dba.MapSchema().FillDataTable("Org_Select");
-            }
+            dtOrg = DA.Command().MapSchema()
+                .Param("Action", "AllActive")
+                .Param("sDate", sd)
+                .Param("eDate", ed)
+                .FillDataTable("dbo.Org_Select");
 
             // loop by month, then org - follow example in invoice to sum and cap
 
             DataRow[] drClientOrg;
             DataTable dtAggCost;
-            string[] CostType = {"Room", "Tool"};
+            string[] CostType = { "Room", "Tool" };
             Compile mCompile = new Compile();
             DataTable dtClientWithCharges;
             double CapCost;
             double TotalCharges;
 
-            for(int mnOff = 0; mnOff < numMonths; mnOff++)
+            for (int mnOff = 0; mnOff < numMonths; mnOff++)
             {
                 foreach (DataRow drOrg in dtOrg.Rows)
                 {
-                    for (int i = 0; i <  CostType.Length; i++)
+                    for (int i = 0; i < CostType.Length; i++)
                     {
                         dtAggCost = mCompile.CalcCost(CostType[i], string.Empty, "OrgID", drOrg.Field<int>("OrgID"), sd.AddMonths(mnOff), 0, 0, Compile.AggType.CliAcct, true, "Exp");
                         dtClientWithCharges = mCompile.GetTable(1);

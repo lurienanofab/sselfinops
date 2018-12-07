@@ -1,6 +1,5 @@
 ﻿using LNF.Billing;
 using LNF.Cache;
-using LNF.CommonTools;
 using LNF.Models.Data;
 using LNF.Repository;
 using sselFinOps.AppCode;
@@ -77,62 +76,71 @@ namespace sselFinOps
 
         private void RetrieveAllCostData()
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+            dsCost = new DataSet("ConCost");
+
+            bool experimental = !string.IsNullOrEmpty(Request.QueryString["Exp"]);
+            if (experimental)
             {
-                dsCost = new DataSet("ConCost");
-
-                bool experimental = !string.IsNullOrEmpty(Request.QueryString["Exp"]);
-                if (experimental)
-                {
-                    CacheManager.Current.Exp(Request.QueryString["Exp"]);
-                    tableNamePrefix = CacheManager.Current.Exp();
-                    btnBack1.Text = "Return to Experimental Cost Config";
-                    btnBack2.Text = "Return to Experimental Cost Config";
-                }
-
-                switch (ItemType)
-                {
-                    case "Tool":
-                        litHeader.Text = string.Format("Configure {0} costs for: ", tableNamePrefix)
-                            + string.Format("Tool | <a href=\"{0}Room{1}\">Room</a> | <a href=\"{0}Store{1}\">Store</a>", Request.Url.GetLeftPart(UriPartial.Path) + "?ItemType=", (experimental ? "&Exp=Exp" : string.Empty));
-                        break;
-                    case "Room":
-                        litHeader.Text = string.Format("Configure {0} costs for: ", tableNamePrefix)
-                            + string.Format("<a href=\"{0}Tool{1}\">Tool</a> | Room | <a href=\"{0}Store{1}\">Store</a>", Request.Url.GetLeftPart(UriPartial.Path) + "?ItemType=", (experimental ? "&Exp=Exp" : string.Empty));
-                        break;
-                    case "Store":
-                        litHeader.Text = string.Format("Configure {0} costs for: ", tableNamePrefix)
-                            + string.Format("<a href=\"{0}Tool{1}\">Tool</a> | <a href=\"{0}Room{1}\">Room</a> | Store", Request.Url.GetLeftPart(UriPartial.Path) + "?ItemType=", (experimental ? "&Exp=Exp" : string.Empty));
-                        break;
-                }
-
-                litAuxCostHdr.Text = ItemType + " Auxilliary Costs";
-                if (ItemType == "Store")
-                    litCostHdr.Text = "Rebates";
-                else
-                    litCostHdr.Text = ItemType + " Costs";
-
-                // gets list of appropriate items
-                dba.ApplyParameters(new { ItemType = ItemType, IsActive = 1 }).FillDataSet(dsCost, "Item_Select", ItemType);
-
-                // charge type is needed
-                dba.ApplyParameters(new { Action = "All" }).FillDataSet(dsCost, "ChargeType_Select", "ChargeType");
-
-                // get multipliers
-                dba.ApplyParameters(new { TableNameOrDescript = ItemType + "[a-z]%Cost", ChargeDate = DateTime.Now }).FillDataSet(dsCost, tableNamePrefix + "Cost_Select", "AuxCost");
-
-                dsCost.Tables["AuxCost"].PrimaryKey = new DataColumn[] { dsCost.Tables["AuxCost"].Columns["CostID"] };
-                dsCost.Tables["AuxCost"].PrimaryKey[0].AutoIncrement = true;
-                dsCost.Tables["AuxCost"].PrimaryKey[0].AutoIncrementSeed = -1;
-                dsCost.Tables["AuxCost"].PrimaryKey[0].AutoIncrementStep = -1;
-
-                dba.ApplyParameters(new { TableNameOrDescript = ItemType + "Cost", ChargeDate = DateTime.Now }).FillDataSet(dsCost, tableNamePrefix + "Cost_Select", "Cost");
-
-                dsCost.Tables["Cost"].PrimaryKey = new DataColumn[] { dsCost.Tables["Cost"].Columns["CostID"] };
-                dsCost.Tables["Cost"].PrimaryKey[0].AutoIncrement = true;
-                dsCost.Tables["Cost"].PrimaryKey[0].AutoIncrementSeed = -1;
-                dsCost.Tables["Cost"].PrimaryKey[0].AutoIncrementStep = -1;
+                CacheManager.Current.Exp(Request.QueryString["Exp"]);
+                tableNamePrefix = CacheManager.Current.Exp();
+                btnBack1.Text = "Return to Experimental Cost Config";
+                btnBack2.Text = "Return to Experimental Cost Config";
             }
+
+            switch (ItemType)
+            {
+                case "Tool":
+                    litHeader.Text = string.Format("Configure {0} costs for: ", tableNamePrefix)
+                        + string.Format("Tool | <a href=\"{0}Room{1}\">Room</a> | <a href=\"{0}Store{1}\">Store</a>", Request.Url.GetLeftPart(UriPartial.Path) + "?ItemType=", (experimental ? "&Exp=Exp" : string.Empty));
+                    break;
+                case "Room":
+                    litHeader.Text = string.Format("Configure {0} costs for: ", tableNamePrefix)
+                        + string.Format("<a href=\"{0}Tool{1}\">Tool</a> | Room | <a href=\"{0}Store{1}\">Store</a>", Request.Url.GetLeftPart(UriPartial.Path) + "?ItemType=", (experimental ? "&Exp=Exp" : string.Empty));
+                    break;
+                case "Store":
+                    litHeader.Text = string.Format("Configure {0} costs for: ", tableNamePrefix)
+                        + string.Format("<a href=\"{0}Tool{1}\">Tool</a> | <a href=\"{0}Room{1}\">Room</a> | Store", Request.Url.GetLeftPart(UriPartial.Path) + "?ItemType=", (experimental ? "&Exp=Exp" : string.Empty));
+                    break;
+            }
+
+            litAuxCostHdr.Text = $"{ItemType} Auxilliary Costs";
+
+            if (ItemType == "Store")
+                litCostHdr.Text = "Rebates";
+            else
+                litCostHdr.Text = $"{ItemType} Costs";
+
+            // gets list of appropriate items
+            DA.Command()
+                .Param("ItemType", ItemType)
+                .Param("IsActive", 1)
+                .FillDataSet(dsCost, "dbo.Item_Select", ItemType);
+
+            // charge type is needed
+            DA.Command()
+                .Param("Action", "All")
+                .FillDataSet(dsCost, "dbo.ChargeType_Select", "ChargeType");
+
+            // get multipliers
+            DA.Command()
+                .Param("TableNameOrDescript", $"{ItemType}[a-z]%Cost")
+                .Param("ChargeDate", DateTime.Now)
+                .FillDataSet(dsCost, $"dbo.{tableNamePrefix}Cost_Select", "AuxCost");
+
+            dsCost.Tables["AuxCost"].PrimaryKey = new[] { dsCost.Tables["AuxCost"].Columns["CostID"] };
+            dsCost.Tables["AuxCost"].PrimaryKey[0].AutoIncrement = true;
+            dsCost.Tables["AuxCost"].PrimaryKey[0].AutoIncrementSeed = -1;
+            dsCost.Tables["AuxCost"].PrimaryKey[0].AutoIncrementStep = -1;
+
+            DA.Command()
+                .Param("TableNameOrDescript", $"{ItemType}Cost")
+                .Param("ChargeDate", DateTime.Now)
+                .FillDataSet(dsCost, $"dbo.{tableNamePrefix}Cost_Select", "Cost");
+
+            dsCost.Tables["Cost"].PrimaryKey = new[] { dsCost.Tables["Cost"].Columns["CostID"] };
+            dsCost.Tables["Cost"].PrimaryKey[0].AutoIncrement = true;
+            dsCost.Tables["Cost"].PrimaryKey[0].AutoIncrementSeed = -1;
+            dsCost.Tables["Cost"].PrimaryKey[0].AutoIncrementStep = -1;
         }
 
         private void BuildCostTableHeader(string costType)
@@ -168,70 +176,82 @@ namespace sselFinOps
 
             // first header row - ChargeType names
             tr = new TableRow();
-            th = new TableHeaderCell();
-            th.VerticalAlign = VerticalAlign.Bottom;
-            th.CssClass = "right-border-thick";
+            th = new TableHeaderCell
+            {
+                VerticalAlign = VerticalAlign.Bottom,
+                CssClass = "right-border-thick",
+                Text = "&nbsp;"
+            };
             th.Style.Add("width", nameColumnWidth);
-            th.Text = "&nbsp;";
             tr.Cells.Add(th);
 
             foreach (DataRow dr in dtChargeTypes.Rows)
             {
-                th = new TableHeaderCell();
-                th.VerticalAlign = VerticalAlign.Bottom;
-                th.CssClass = "right-border-thick";
-                th.ColumnSpan = colspan;
-                th.Text = dr.Field<string>("ChargeType");
-                tr.Cells.Add(th);
+                tr.Cells.Add(new TableHeaderCell
+                {
+                    VerticalAlign = VerticalAlign.Bottom,
+                    CssClass = "right-border-thick",
+                    ColumnSpan = colspan,
+                    Text = dr.Field<string>("ChargeType")
+                });
             }
 
             if (costType == "Cost")
             {
-                th = new TableHeaderCell();
-                th.CssClass = "right-border-thick";
-                th.VerticalAlign = VerticalAlign.Bottom;
-                th.Text = "&nbsp;";
-                tr.Cells.Add(th);
+                tr.Cells.Add(new TableHeaderCell
+                {
+                    CssClass = "right-border-thick",
+                    VerticalAlign = VerticalAlign.Bottom,
+                    Text = "&nbsp;"
+                });
             }
 
             tbl.Rows.Add(tr);
 
             // second header row - three columns per charge type
             tr = new TableRow();
-            th = new TableHeaderCell();
-            th.CssClass = "right-border-thick";
+            th = new TableHeaderCell
+            {
+                CssClass = "right-border-thick",
+                VerticalAlign = VerticalAlign.Bottom,
+                Text = nameColumnHeaderText
+            };
             th.Style.Add("text-align", "left");
-            th.VerticalAlign = VerticalAlign.Bottom;
-            th.Text = nameColumnHeaderText;
             tr.Cells.Add(th);
 
             foreach (DataRow dr in dtChargeTypes.Rows)
             {
                 if (costType == "Cost")
                 {
-                    th = new TableHeaderCell();
-                    th.VerticalAlign = VerticalAlign.Bottom;
-                    th.Text = "Acct Per";
-                    tr.Cells.Add(th);
+                    tr.Cells.Add(new TableHeaderCell
+                    {
+                        VerticalAlign = VerticalAlign.Bottom,
+                        Text = "Acct Per"
+                    });
                 }
-                th = new TableHeaderCell();
-                th.VerticalAlign = VerticalAlign.Bottom;
-                th.Text = "Per Use Charge";
-                tr.Cells.Add(th);
-                th = new TableHeaderCell();
-                th.VerticalAlign = VerticalAlign.Bottom;
-                th.CssClass = "right-border-thick";
-                th.Text = perPeriodColumnHeaderText;
-                tr.Cells.Add(th);
+
+                tr.Cells.Add(new TableHeaderCell
+                {
+                    VerticalAlign = VerticalAlign.Bottom,
+                    Text = "Per Use Charge"
+                });
+
+                tr.Cells.Add(new TableHeaderCell
+                {
+                    VerticalAlign = VerticalAlign.Bottom,
+                    CssClass = "right-border-thick",
+                    Text = perPeriodColumnHeaderText
+                });
             }
 
             if (costType == "Cost")
             {
-                th = new TableHeaderCell();
-                th.CssClass = "right-border-thick";
-                th.VerticalAlign = VerticalAlign.Bottom;
-                th.Text = "Modified";
-                tr.Cells.Add(th);
+                tr.Cells.Add(new TableHeaderCell
+                {
+                    CssClass = "right-border-thick",
+                    VerticalAlign = VerticalAlign.Bottom,
+                    Text = "Modified"
+                });
             }
 
             tbl.Rows.Add(tr);
@@ -319,18 +339,14 @@ namespace sselFinOps
                 dtItemAuxCost.Columns.Add(string.Format("MulVal{0}", drChargeType.Field<int>("ChargeTypeID")), typeof(string));
             }
 
-            //Dim cnSselData As SqlConnection = New SqlConnection(ConfigurationManager.ConnectionStrings("cnSselData").ConnectionString)
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-            {
-                DataTable dtAuxCost = dba.ApplyParameters(new { CostType = ItemType }).FillDataTable("AuxCost_Select");
+            DataTable dtAuxCost = DA.Command().Param("CostType", ItemType).FillDataTable("dbo.AuxCost_Select");
 
-                // force rows into the AuxCost table - one per each type of AuxCost item
-                // cannot pull from DB since rows may not yet exist
-                // force rows into the AuxCost table - one per each type of AuxCost item
-                // cannot pull from DB since rows may not yet exist
-                foreach (DataRow dr in dtAuxCost.Rows)
-                    AddNewAuxCostRow(dtItemAuxCost, dsCost.Tables["ChargeType"].Rows.Count, dr.Field<string>("AuxCostParm"), dr.Field<bool>("AllowPerUse"), dr.Field<bool>("AllowPerPeriod"));
-            }
+            // force rows into the AuxCost table - one per each type of AuxCost item
+            // cannot pull from DB since rows may not yet exist
+            // force rows into the AuxCost table - one per each type of AuxCost item
+            // cannot pull from DB since rows may not yet exist
+            foreach (DataRow dr in dtAuxCost.Rows)
+                AddNewAuxCostRow(dtItemAuxCost, dsCost.Tables["ChargeType"].Rows.Count, dr.Field<string>("AuxCostParm"), dr.Field<bool>("AllowPerUse"), dr.Field<bool>("AllowPerPeriod"));
 
             DataRow drNew;
             DataRow[] fdr;
@@ -586,43 +602,43 @@ namespace sselFinOps
 
         private void AddGroupRow(DataRow dr, int index)
         {
-            TableRow tr = new TableRow();
-            tr.CssClass = "cost-group";
+            TableRow tr = new TableRow { CssClass = "cost-group" };
+            TableCell td = new TableCell { CssClass = "name-column right-border-thick" };
 
-            TableCell td = new TableCell();
-            HiddenField hid;
-            Literal lit;
-            td.CssClass = "name-column right-border-thick";
+            td.Controls.Add(new HiddenField
+            {
+                ID = $"hidRecordID_{index}",
+                Value = dr.Field<int>("GroupID").ToString()
+            });
 
-            hid = new HiddenField();
-            hid.ID = "hidRecordID_" + index.ToString();
-            hid.Value = dr.Field<int>("GroupID").ToString();
-            td.Controls.Add(hid);
+            td.Controls.Add(new HiddenField
+            {
+                ID = $"hidRowType_{index}",
+                Value = "group"
+            });
 
-            hid = new HiddenField();
-            hid.ID = "hidRowType_" + index.ToString();
-            hid.Value = "group";
-            td.Controls.Add(hid);
-
-            lit = new Literal();
-            lit.ID = "litRecordName_" + index.ToString();
-            lit.Text = dr.Field<string>("GroupName");
-            td.Controls.Add(lit);
+            td.Controls.Add(new Literal
+            {
+                ID = $"litRecordName_{index}",
+                Text = dr.Field<string>("GroupName")
+            });
 
             tr.Cells.Add(td);
 
             foreach (int chargeTypeId in ChargeTypeIDs)
             {
-                td = new TableCell();
-                td.ColumnSpan = 3;
-                td.CssClass = "right-border-thick";
-                tr.Cells.Add(td);
+                tr.Cells.Add(new TableCell
+                {
+                    ColumnSpan = 3,
+                    CssClass = "right-border-thick"
+                });
             }
 
-            td = new TableCell();
-            td.CssClass = "right-border-thick";
-            td.Text = "&nbsp;";
-            tr.Cells.Add(td);
+            tr.Cells.Add(new TableCell
+            {
+                CssClass = "right-border-thick",
+                Text = "&nbsp;"
+            });
 
             tblCost.Rows.Add(tr);
         }
@@ -632,31 +648,30 @@ namespace sselFinOps
             TableRow tr = new TableRow();
             if (group) tr.CssClass = "cost-item";
 
-            TableCell td;
-            Literal lit;
-            HiddenField hid;
             DropDownList ddl;
             TextBox txt;
 
             tr.CssClass += (index % 2 == 0) ? " item" : " alt-item";
 
-            td = new TableCell();
-            td.CssClass = "name-column right-border-thick";
+            var td = new TableCell { CssClass = "name-column right-border-thick" };
 
-            hid = new HiddenField();
-            hid.ID = "hidRecordID_" + index.ToString();
-            hid.Value = dr.Field<int>("RecordID").ToString();
-            td.Controls.Add(hid);
+            td.Controls.Add(new HiddenField()
+            {
+                ID = $"hidRecordID_{index}",
+                Value = dr.Field<int>("RecordID").ToString()
+            });
 
-            hid = new HiddenField();
-            hid.ID = "hidRowType_" + index.ToString();
-            hid.Value = "item";
-            td.Controls.Add(hid);
+            td.Controls.Add(new HiddenField
+            {
+                ID = $"hidRowType_{index}",
+                Value = "item"
+            });
 
-            lit = new Literal();
-            lit.ID = "litRecordName_" + index.ToString();
-            lit.Text = dr.Field<string>("RecordName");
-            td.Controls.Add(lit);
+            td.Controls.Add(new Literal
+            {
+                ID = $"litRecordName_{index}",
+                Text = dr.Field<string>("RecordName")
+            });
 
             tr.Cells.Add(td);
 
@@ -666,56 +681,56 @@ namespace sselFinOps
                 string idSuffix = "_" + chargeTypeId.ToString() + "_" + index.ToString();
                 string colSuffix = "_" + chargeTypeId.ToString();
 
-                td = new TableCell();
-                td.CssClass = "right-border-none";
+                td = new TableCell { CssClass = "right-border-none" };
                 td.Style.Add("text-align", "center");
-                ddl = new DropDownList();
-                ddl.ID = "ddlAcctPer" + idSuffix;
-                ddl.Attributes.Add("onchange", "markModified(this, " + index.ToString() + ");");
+                ddl = new DropDownList { ID = $"ddlAcctPer{idSuffix}" };
+                ddl.Attributes.Add("onchange", $"markModified(this, {index});");
                 ddl.DataTextField = "AcctPerText";
                 ddl.DataValueField = "AcctPerValue";
                 ddl.DataSource = AcctPers(dr.Field<bool>("ShowHourly"));
                 ddl.DataBind();
                 if (!Page.IsPostBack)
-                    ddl.SelectedValue = dr.Field<string>("AcctPer" + colSuffix);
+                    ddl.SelectedValue = dr.Field<string>($"AcctPer{colSuffix}");
                 td.Controls.Add(ddl);
                 tr.Cells.Add(td);
 
-                td = new TableCell();
-                td.CssClass = "right-border-none";
+                td = new TableCell { CssClass = "right-border-none" };
                 td.Style.Add("text-align", "center");
-                txt = new TextBox();
-                txt.ID = "txtAddVal" + idSuffix;
-                txt.Attributes.Add("onchange", "markModified(this, " + index.ToString() + ");");
+                txt = new TextBox { ID = $"txtAddVal{idSuffix}" };
+                txt.Attributes.Add("onchange", $"markModified(this, {index});");
                 txt.CssClass = "numeric-text";
                 if (!Page.IsPostBack)
-                    txt.Text = GetDoubleValue(dr, "AddVal" + colSuffix).ToString();
+                    txt.Text = GetDoubleValue(dr, $"AddVal{colSuffix}").ToString();
                 td.Controls.Add(txt);
                 tr.Cells.Add(td);
 
-                td = new TableCell();
-                td.CssClass = "right-border-thick";
+                td = new TableCell { CssClass = "right-border-thick" };
                 td.Style.Add("text-align", "center");
-                txt = new TextBox();
-                txt.ID = "txtMulVal" + idSuffix;
-                txt.Attributes.Add("onchange", "markModified(this, " + index.ToString() + ");");
+                txt = new TextBox { ID = $"txtMulVal{idSuffix}" };
+                txt.Attributes.Add("onchange", $"markModified(this, {index});");
                 txt.CssClass = "numeric-text";
                 if (!Page.IsPostBack)
-                    txt.Text = GetDoubleValue(dr, "MulVal" + colSuffix).ToString();
+                    txt.Text = GetDoubleValue(dr, $"MulVal{colSuffix}").ToString();
                 td.Controls.Add(txt);
                 tr.Cells.Add(td);
             }
 
-            td = new TableCell();
-            td.ColumnSpan = 3;
-            td.CssClass = "right-border-thick";
+            td = new TableCell()
+            {
+                ColumnSpan = 3,
+                CssClass = "right-border-thick"
+            };
+
             td.Style.Add("text-align", "center");
-            CheckBox chk = new CheckBox();
-            chk.ID = "chkModified_" + index.ToString();
-            chk.CssClass = "modified-checkbox index-" + index.ToString();
-            chk.Enabled = false;
-            chk.Checked = false;
-            td.Controls.Add(chk);
+
+            td.Controls.Add(new CheckBox
+            {
+                ID = $"chkModified_{index}",
+                CssClass = $"modified-checkbox index-{index}",
+                Enabled = false,
+                Checked = false
+            });
+
             tr.Cells.Add(td);
 
             tblCost.Rows.Add(tr);
@@ -727,8 +742,7 @@ namespace sselFinOps
 
             if (obj != null && obj != DBNull.Value)
             {
-                double result;
-                if (double.TryParse(obj.ToString(), out result))
+                if (double.TryParse(obj.ToString(), out double result))
                     return result;
                 else
                     return 0;
@@ -739,42 +753,46 @@ namespace sselFinOps
 
         private void AddCategoryRow(DataRow dr, int index)
         {
-            TableRow tr = new TableRow();
-            tr.CssClass = "cost-category";
+            TableRow tr = new TableRow { CssClass = "cost-category" };
+            TableCell td = new TableCell { CssClass = "name-column right-border-thick" };
 
-            TableCell td = new TableCell();
-            HiddenField hid;
-            Literal lit;
-            td.CssClass = "name-column right-border-thick";
+            td.Controls.Add(new HiddenField
+            {
+                ID = $"hidRecordID_{index}",
+                Value = dr.Field<int>("CategoryID").ToString()
+            });
 
-            hid = new HiddenField();
-            hid.ID = "hidRecordID_" + index.ToString();
-            hid.Value = dr.Field<int>("CategoryID").ToString();
-            td.Controls.Add(hid);
+            td.Controls.Add(new HiddenField
+            {
+                ID = $"hidRowType_{index}",
+                Value = "category"
+            });
 
-            hid = new HiddenField();
-            hid.ID = "hidRowType_" + index.ToString();
-            hid.Value = "category";
-            td.Controls.Add(hid);
-
-            lit = new Literal();
-            lit.ID = "litRecordName_" + index.ToString();
-            lit.Text = dr.Field<string>("CategoryName");
-            td.Controls.Add(lit);
+            td.Controls.Add(new Literal
+            {
+                ID = $"litRecordName_{index}",
+                Text = dr.Field<string>("CategoryName")
+            });
 
             tr.Cells.Add(td);
 
             foreach (int chargeTypeId in ChargeTypeIDs)
             {
-                td = new TableCell();
-                td.ColumnSpan = 3;
-                td.CssClass = "right-border-thick";
+                td = new TableCell()
+                {
+                    ColumnSpan = 3,
+                    CssClass = "right-border-thick"
+                };
+
                 tr.Cells.Add(td);
             }
 
-            td = new TableCell();
-            td.CssClass = "right-border-thick";
-            td.Text = "&nbsp;";
+            td = new TableCell()
+            {
+                CssClass = "right-border-thick",
+                Text = "&nbsp;"
+            };
+
             tr.Cells.Add(td);
 
             tblCost.Rows.Add(tr);
@@ -790,15 +808,25 @@ namespace sselFinOps
 
             tr.CssClass = (index % 2 == 0) ? "item" : "alt-item";
 
-            td = new TableCell();
-            td.CssClass = "right-border-thick";
-            hid = new HiddenField();
-            hid.ID = "hidAuxCostItem_" + index.ToString();
-            hid.Value = dr.Field<string>("AuxCostItem");
+            td = new TableCell()
+            {
+                CssClass = "right-border-thick"
+            };
+
+            hid = new HiddenField()
+            {
+                ID = "hidAuxCostItem_" + index.ToString(),
+                Value = dr.Field<string>("AuxCostItem")
+            };
+
             td.Controls.Add(hid);
-            lit = new Literal();
-            lit.ID = "litAuxCostItem_" + index.ToString();
-            lit.Text = dr.Field<string>("AuxCostItem");
+
+            lit = new Literal()
+            {
+                ID = "litAuxCostItem_" + index.ToString(),
+                Text = dr.Field<string>("AuxCostItem")
+            };
+
             td.Controls.Add(lit);
             tr.Cells.Add(td);
 
@@ -808,32 +836,48 @@ namespace sselFinOps
                 string idSuffix = "_" + chargeTypeId.ToString() + "_" + index.ToString();
                 string colSuffix = "_" + chargeTypeId.ToString();
 
-                td = new TableCell();
-                td.CssClass = "right-border-none";
+                td = new TableCell()
+                {
+                    CssClass = "right-border-none"
+                };
+
                 td.Style.Add("text-align", "center");
                 object addval = dr["AddVal" + colSuffix];
+
                 if (addval != DBNull.Value)
                 {
-                    txt = new TextBox();
-                    txt.ID = "txtAuxAddVal" + idSuffix;
-                    txt.CssClass = "numeric-text";
+                    txt = new TextBox()
+                    {
+                        ID = "txtAuxAddVal" + idSuffix,
+                        CssClass = "numeric-text"
+                    };
+
                     if (!Page.IsPostBack)
                         txt.Text = Convert.ToDouble(addval).ToString();
+
                     td.Controls.Add(txt);
                 }
                 tr.Cells.Add(td);
 
-                td = new TableCell();
-                td.CssClass = "right-border-thick";
+                td = new TableCell()
+                {
+                    CssClass = "right-border-thick"
+                };
+
                 td.Style.Add("text-align", "center");
                 object mulval = dr["MulVal" + colSuffix];
+
                 if (mulval != DBNull.Value)
                 {
-                    txt = new TextBox();
-                    txt.ID = "txtAuxMulVal" + idSuffix;
-                    txt.CssClass = "numeric-text";
+                    txt = new TextBox()
+                    {
+                        ID = "txtAuxMulVal" + idSuffix,
+                        CssClass = "numeric-text"
+                    };
+
                     if (!Page.IsPostBack)
                         txt.Text = Convert.ToDouble(mulval).ToString();
+
                     td.Controls.Add(txt);
                 }
                 tr.Cells.Add(td);
@@ -873,13 +917,13 @@ namespace sselFinOps
             return result;
         }
 
-        protected void btnUploadCostWorksheet_Click(object sender, EventArgs e)
+        protected void BtnUploadCostWorksheet_Click(object sender, EventArgs e)
         {
             if (FileUpload1.HasFile)
             {
                 HttpPostedFile postedFile = FileUpload1.PostedFile;
                 FileInfo fi = new FileInfo(postedFile.FileName);
-                string fileName = CacheManager.Current.ClientID.ToString() + "_" + DateTime.Now.ToString("yyyyMMddHHmmss") + "_" + postedFile.FileName;
+                string fileName = $"{CacheManager.Current.CurrentUser.ClientID}_{DateTime.Now:yyyyMMddHHmmss}_{postedFile.FileName}";
                 string filePath = Server.MapPath(Path.Combine(ConfigurationManager.AppSettings["SpreadsheetsDirectory"], fileName));
                 string connstr = string.Empty;
                 switch (fi.Extension)
@@ -946,8 +990,7 @@ namespace sselFinOps
                         string acctPer = dr["AcctPer"].ToString();
                         double addVal = Convert.ToDouble(dr["AddVal"]);
                         double mulVal = Convert.ToDouble(dr["MulVal"]);
-                        int index = 0;
-                        TableRow tr = GetTableRowByRecordID(recordId, out index);
+                        TableRow tr = GetTableRowByRecordID(recordId, out int index);
                         if (tr != null)
                             SetValues(tr, index, chargeTypeId, acctPer, addVal, mulVal);
                     }
@@ -1017,7 +1060,7 @@ namespace sselFinOps
                 chk.Checked = true;
         }
 
-        protected void btnSave_Click(object sender, EventArgs e)
+        protected void BtnSave_Click(object sender, EventArgs e)
         {
             Save();
         }
@@ -1026,9 +1069,9 @@ namespace sselFinOps
         {
             SetSaveMessage(string.Empty);
 
+
             DateTime d = DateTime.Now;
-            bool valid;
-            DataTable dtModifiedCost = GetModifiedCostValues(d, out valid);
+            DataTable dtModifiedCost = GetModifiedCostValues(d, out bool valid);
 
             if (!valid)
             {
@@ -1057,24 +1100,26 @@ namespace sselFinOps
             litSaveMessage2.Text = text;
         }
 
-        private void SaveModifiedCostValues(DataTable dt)
+        private int SaveModifiedCostValues(DataTable dt)
         {
             if (dt.Rows.Count > 0)
             {
                 tableNamePrefix = CacheManager.Current.Exp();
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+
+                return DA.Command().Update(dt, cfg =>
                 {
-                    dba.InsertCommand
-                        .AddParameter("@ChargeTypeID", SqlDbType.Int)
-                        .AddParameter("@TableNameOrDescript", SqlDbType.NVarChar, 50)
-                        .AddParameter("@RecordID", SqlDbType.Int)
-                        .AddParameter("@AcctPer", SqlDbType.NVarChar, 25)
-                        .AddParameter("@AddVal", SqlDbType.Float)
-                        .AddParameter("@MulVal", SqlDbType.Float)
-                        .AddParameter("@EffDate", SqlDbType.DateTime);
-                    dba.UpdateDataTable(dt, tableNamePrefix + "Cost_Insert");
-                }
+                    cfg.Insert.AddParameter("ChargeTypeID", SqlDbType.Int);
+                    cfg.Insert.AddParameter("TableNameOrDescript", SqlDbType.NVarChar, 50);
+                    cfg.Insert.AddParameter("RecordID", SqlDbType.Int);
+                    cfg.Insert.AddParameter("AcctPer", SqlDbType.NVarChar, 25);
+                    cfg.Insert.AddParameter("AddVal", SqlDbType.Float);
+                    cfg.Insert.AddParameter("MulVal", SqlDbType.Float);
+                    cfg.Insert.AddParameter("EffDate", SqlDbType.DateTime);
+                    cfg.Insert.SetCommandText($"dbo.{tableNamePrefix}Cost_Insert");
+                });
             }
+
+            return 0;
         }
 
         private DataTable GetModifiedCostValues(DateTime d, out bool valid)
@@ -1089,11 +1134,12 @@ namespace sselFinOps
             object acctPer;
             object addVal;
             object mulVal;
-            string rowType;
+
             valid = true;
+
             while (r < tblCost.Rows.Count)
             {
-                recordId = GetRecordID(r, out rowType);
+                recordId = GetRecordID(r, out string rowType);
                 if (rowType == "item")
                 {
                     foreach (int chargeTypeId in ChargeTypeIDs)
@@ -1105,11 +1151,11 @@ namespace sselFinOps
                         addVal = GetCostVal(chargeTypeId, r, tblCost, "txtAddVal");
                         mulVal = GetCostVal(chargeTypeId, r, tblCost, "txtMulVal");
 
-                        double dbl;
                         if (addVal != DBNull.Value)
-                            valid = valid && double.TryParse(addVal.ToString(), out dbl);
+                            valid = valid && double.TryParse(addVal.ToString(), out double dbl);
+
                         if (mulVal != DBNull.Value)
-                            valid = valid && double.TryParse(mulVal.ToString(), out dbl);
+                            valid = valid && double.TryParse(mulVal.ToString(), out double dbl);
 
                         if (!valid) return dt;
 

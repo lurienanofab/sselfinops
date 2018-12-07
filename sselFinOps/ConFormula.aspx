@@ -14,7 +14,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:RadioButtonList runat="server" ID="rblFormulaType" RepeatDirection="Horizontal" AutoPostBack="True" OnSelectedIndexChanged="rblFormulaType_SelectedIndexChanged">
+                    <asp:RadioButtonList runat="server" ID="rblFormulaType" RepeatDirection="Horizontal" AutoPostBack="True" OnSelectedIndexChanged="RblFormulaType_SelectedIndexChanged">
                         <asp:ListItem Value="0">Room</asp:ListItem>
                         <asp:ListItem Value="1">Tool</asp:ListItem>
                         <asp:ListItem Value="2">StoreInv</asp:ListItem>
@@ -39,10 +39,10 @@
             </tr>
             <tr>
                 <td style="text-align: center;">
-                    <asp:Button runat="server" ID="btnValidate" CssClass="StoreButton" Text="Validate Formula" Enabled="False" OnClick="btnValidate_Click"></asp:Button>
+                    <asp:Button runat="server" ID="btnValidate" CssClass="StoreButton" Text="Validate Formula" Enabled="False" OnClick="BtnValidate_Click"></asp:Button>
                 </td>
                 <td style="text-align: center;">
-                    <asp:Button runat="server" ID="btnRevert" CssClass="QuitStoreButton" Text="Revert to Saved" Enabled="False" OnClick="btnRevert_Click"></asp:Button>
+                    <asp:Button runat="server" ID="btnRevert" CssClass="QuitStoreButton" Text="Revert to Saved" Enabled="False" OnClick="BtnRevert_Click"></asp:Button>
                 </td>
             </tr>
             <tr>
@@ -55,7 +55,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:Button runat="server" ID="btnSave" Text="Save Changes" CausesValidation="False" OnClick="btnSave_Click" CssClass="report-button"></asp:Button>
+                    <asp:Button runat="server" ID="btnSave" Text="Save Changes" CausesValidation="False" OnClick="BtnSave_Click" CssClass="report-button"></asp:Button>
                     <asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton>
                 </td>
             </tr>

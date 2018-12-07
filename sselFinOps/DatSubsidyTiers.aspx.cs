@@ -1,5 +1,4 @@
-﻿using LNF.CommonTools;
-using LNF.Repository;
+﻿using LNF.Repository;
 using sselFinOps.AppCode;
 using System;
 using System.Data;
@@ -16,8 +15,7 @@ namespace sselFinOps
             {
                 if (!string.IsNullOrEmpty(Request.QueryString["period"]))
                 {
-                    DateTime period;
-                    if (DateTime.TryParse(Request.QueryString["period"], out period))
+                    if (DateTime.TryParse(Request.QueryString["period"], out DateTime period))
                     {
                         pp1.SelectedPeriod = period;
                     }
@@ -27,7 +25,7 @@ namespace sselFinOps
             }
         }
 
-        protected void btnReport_Click(object sender, EventArgs e)
+        protected void BtnReport_Click(object sender, EventArgs e)
         {
             LoadTiers();
         }
@@ -35,7 +33,7 @@ namespace sselFinOps
         private void LoadTiers()
         {
             litPeriod.Text = pp1.SelectedPeriod.ToString("MMM yyyy");
-            
+
             var dt0 = SubsidyTiersData(0);
             rptSubsidyTiersGroup0.DataSource = dt0;
             rptSubsidyTiersGroup0.DataBind();
@@ -60,18 +58,17 @@ namespace sselFinOps
 
         private DataTable SubsidyTiersData(int groupId)
         {
-            using (var dba = new SQLDBAccess("cnSselData"))
-            {
-                if (dsTieredSubsidyBilling == null)
-                    dsTieredSubsidyBilling = dba.ApplyParameters(new { Action = "PopulateTieredSubsidyBilling", Period = pp1.SelectedPeriod }).FillDataSet("TieredSubsidyBilling_Select");
-                DataTable dt = FormatTierData(dsTieredSubsidyBilling.Tables[2], groupId);
-                return dt;
-            }
+            if (dsTieredSubsidyBilling == null)
+                dsTieredSubsidyBilling = DA.Command().Param("Action", "PopulateTieredSubsidyBilling").Param("Period", pp1.SelectedPeriod).FillDataSet("dbo.TieredSubsidyBilling_Select");
+
+            var dt = FormatTierData(dsTieredSubsidyBilling.Tables[2], groupId);
+
+            return dt;
         }
 
         private DataTable FormatTierData(DataTable dtRaw, int groupId)
         {
-            DataTable dt = new DataTable();
+            var dt = new DataTable();
             dt.Columns.Add("AnnualFees", typeof(string));
             dt.Columns.Add("LNF", typeof(string));
             dt.Columns.Add("PI", typeof(string));
@@ -180,8 +177,7 @@ namespace sselFinOps
 
         private void SetPercentages(DataRow dr, out double lnf, out double pi)
         {
-            double d = 0;
-            if (double.TryParse(dr["UserPaymentPercentage"].ToString(), out d))
+            if (double.TryParse(dr["UserPaymentPercentage"].ToString(), out double d))
             {
                 pi = d;
                 lnf = 1 - pi;

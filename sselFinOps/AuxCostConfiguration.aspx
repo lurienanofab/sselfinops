@@ -12,7 +12,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:DataGrid runat="server" ID="dgRoomAuxCost" CssClass="aux-cost-table" GridLines="None" ShowFooter="True" AutoGenerateColumns="false" OnItemCommand="dgRoomAuxCost_ItemCommand" OnItemDataBound="dgRoomAuxCost_ItemDataBound">
+                    <asp:DataGrid runat="server" ID="dgRoomAuxCost" CssClass="aux-cost-table" GridLines="None" ShowFooter="True" AutoGenerateColumns="false" OnItemCommand="DgRoomAuxCost_ItemCommand" OnItemDataBound="DgRoomAuxCost_ItemDataBound">
                         <HeaderStyle CssClass="aux-cost-header" />
                         <ItemStyle CssClass="aux-cost-row" />
                         <AlternatingItemStyle CssClass="aux-cost-altrow" />
@@ -71,7 +71,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:DataGrid runat="server" ID="dgToolAuxCost" CssClass="aux-cost-table" GridLines="None" ShowFooter="True" AutoGenerateColumns="False" OnItemCommand="dgToolAuxCost_ItemCommand" OnItemDataBound="dgToolAuxCost_ItemDataBound">
+                    <asp:DataGrid runat="server" ID="dgToolAuxCost" CssClass="aux-cost-table" GridLines="None" ShowFooter="True" AutoGenerateColumns="False" OnItemCommand="DgToolAuxCost_ItemCommand" OnItemDataBound="DgToolAuxCost_ItemDataBound">
                         <HeaderStyle CssClass="aux-cost-header" />
                         <ItemStyle CssClass="aux-cost-row" />
                         <AlternatingItemStyle CssClass="aux-cost-altrow" />
@@ -130,7 +130,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:DataGrid runat="server" ID="dgStoreAuxCost" CssClass="aux-cost-table" GridLines="None" ShowFooter="True" AutoGenerateColumns="False" OnItemCommand="dgStoreAuxCost_ItemCommand" OnItemDataBound="dgStoreAuxCost_ItemDataBound">
+                    <asp:DataGrid runat="server" ID="dgStoreAuxCost" CssClass="aux-cost-table" GridLines="None" ShowFooter="True" AutoGenerateColumns="False" OnItemCommand="DgStoreAuxCost_ItemCommand" OnItemDataBound="DgStoreAuxCost_ItemDataBound">
                         <HeaderStyle CssClass="aux-cost-header" />
                         <ItemStyle CssClass="aux-cost-row" />
                         <AlternatingItemStyle CssClass="aux-cost-altrow" />
@@ -186,7 +186,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:Button runat="server" ID="btnSave" CssClass="report-button" Text="Save Changes" OnClick="btnSave_Click" />
+                    <asp:Button runat="server" ID="btnSave" CssClass="report-button" Text="Save Changes" OnClick="BtnSave_Click" />
                     <asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click"></asp:LinkButton>
                 </td>
             </tr>

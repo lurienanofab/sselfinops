@@ -2,7 +2,6 @@
 using LNF.Repository;
 using sselFinOps.AppCode;
 using System;
-using System.Data;
 
 namespace sselFinOps
 {
@@ -20,7 +19,7 @@ namespace sselFinOps
                 ShowCharges();
         }
 
-        protected void pp1_SelectedPeriodChanged(object sender, EventArgs e)
+        protected void Pp1_SelectedPeriodChanged(object sender, EventArgs e)
         {
             ShowCharges();
         }
@@ -33,17 +32,15 @@ namespace sselFinOps
             DateTime sd = pp1.SelectedPeriod;
             DateTime ed = sd.AddMonths(1);
 
-            using (var dba = DA.Current.GetAdapter())
-            {
-                // get client data
-                dba.AddParameter("@Action", "ExtUserToolUsage");
-                dba.AddParameter("@sDate", sd);
-                dba.AddParameter("@eDate", ed);
-                DataTable dt = dba.FillDataTable("sselScheduler_Select");
+            // get client data
+            var dt = DA.Command()
+                .Param("Action", "ExtUserToolUsage")
+                .Param("sDate", sd)
+                .Param("eDate", ed)
+                .FillDataTable("dbo.sselScheduler_Select");
 
-                dgTool.DataSource = dt;
-                dgTool.DataBind();
-            }
+            dgTool.DataSource = dt;
+            dgTool.DataBind();
 
             Table1.Visible = true;
         }

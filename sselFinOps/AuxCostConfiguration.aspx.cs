@@ -1,5 +1,4 @@
 ﻿using LNF.Cache;
-using LNF.CommonTools;
 using LNF.Repository;
 using LNF.Web;
 using sselFinOps.AppCode;
@@ -27,11 +26,9 @@ namespace sselFinOps
             else
             {
                 CacheManager.Current.RemoveCacheData(); //remove anything left in cache
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
-                {
-                    dsAuxCost = new DataSet("ConAuxCost");
-                    dba.ApplyParameters(new { CostType = "All" }).MapSchema().FillDataSet(dsAuxCost, "AuxCost_Select", "AuxCost");
-                }
+
+                dsAuxCost = new DataSet("ConAuxCost");
+                DA.Command().Param("CostType", "All").MapSchema().FillDataSet(dsAuxCost, "dbo.AuxCost_Select", "AuxCost");
 
                 CacheManager.Current.CacheData(dsAuxCost);
 
@@ -91,7 +88,7 @@ namespace sselFinOps
             BindGrids();
         }
 
-        protected void dgRoomAuxCost_ItemCommand(object source, DataGridCommandEventArgs e)
+        protected void DgRoomAuxCost_ItemCommand(object source, DataGridCommandEventArgs e)
         {
             // must be the add button - there is nothing else
             if (ValidateEntry(((TextBox)e.Item.FindControl("txtRoomAuxCost")).Text.Trim(), "Room"))
@@ -100,7 +97,7 @@ namespace sselFinOps
                 ServerJScript.JSAlert(this, "AuxCost parameter invalid - it must begin with Room and must be unique");
         }
 
-        protected void dgToolAuxCost_ItemCommand(object source, DataGridCommandEventArgs e)
+        protected void DgToolAuxCost_ItemCommand(object source, DataGridCommandEventArgs e)
         {
             // must be the add button - there is nothing else
             if (ValidateEntry(((TextBox)e.Item.FindControl("txtToolAuxCost")).Text.Trim(), "Tool"))
@@ -109,7 +106,7 @@ namespace sselFinOps
                 ServerJScript.JSAlert(this, "AuxCost parameter invalid - it must begin with Tool and must be unique");
         }
 
-        protected void dgStoreAuxCost_ItemCommand(object source, DataGridCommandEventArgs e)
+        protected void DgStoreAuxCost_ItemCommand(object source, DataGridCommandEventArgs e)
         {
             // must be the add button - there is nothing else
             if (ValidateEntry(((TextBox)e.Item.FindControl("txtStoreAuxCost")).Text.Trim(), "Store"))
@@ -118,21 +115,21 @@ namespace sselFinOps
                 ServerJScript.JSAlert(this, "AuxCost parameter invalid - it must begin with Store and must be unique");
         }
 
-        protected void dgRoomAuxCost_ItemDataBound(object sender, DataGridItemEventArgs e)
+        protected void DgRoomAuxCost_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
             DataRowView drv = (DataRowView)e.Item.DataItem;
             if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
                 BindRow(e.Item, drv, "Room");
         }
 
-        protected void dgToolAuxCost_ItemDataBound(object sender, DataGridItemEventArgs e)
+        protected void DgToolAuxCost_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
             DataRowView drv = (DataRowView)e.Item.DataItem;
             if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
                 BindRow(e.Item, drv, "Tool");
         }
 
-        protected void dgStoreAuxCost_ItemDataBound(object sender, DataGridItemEventArgs e)
+        protected void DgStoreAuxCost_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
             DataRowView drv = (DataRowView)e.Item.DataItem;
             if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
@@ -147,20 +144,18 @@ namespace sselFinOps
             ((Label)dgi.FindControl("lbl" + type + "Description")).Text = drv["Description"].ToString();
         }
 
-        protected void btnSave_Click(object sender, EventArgs e)
+        protected void BtnSave_Click(object sender, EventArgs e)
         {
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+            DA.Command().Update(dsAuxCost.Tables["AuxCost"], cfg =>
             {
-                dba.InsertCommand
-                    .AddParameter("@AuxCostParam", SqlDbType.NVarChar, 25)
-                    .AddParameter("@AllowPerUse", SqlDbType.Bit)
-                    .AddParameter("@AllowPerPeriod", SqlDbType.Bit)
-                    .AddParameter("@Desc", SqlDbType.NVarChar, 150);
+                cfg.Insert.AddParameter("AuxCostParam", SqlDbType.NVarChar, 25);
+                cfg.Insert.AddParameter("AllowPerUse", SqlDbType.Bit);
+                cfg.Insert.AddParameter("AllowPerPeriod", SqlDbType.Bit);
+                cfg.Insert.AddParameter("Desc", SqlDbType.NVarChar, 150);
+                cfg.Insert.SetCommandText("dbo.AuxCost_Insert");
+            });
 
-                dba.UpdateDataTable(dsAuxCost.Tables["AuxCost"], "AuxCost_Insert");
-
-                Back();
-            }
+            Back();
         }
     }
 }

@@ -16,13 +16,13 @@
                         <tr>
                             <td style="padding: 2px;">Select period:</td>
                             <td style="padding: 2px;">
-                                <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="pp1_SelectedPeriodChanged" />
+                                <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="Pp1_SelectedPeriodChanged" />
                             </td>
                         </tr>
                     </table>
                 </div>
                 <div class="criteria-item">
-                    <asp:CheckBox runat="server" ID="chkShowRemote" Text="Includes Remote Processing" Checked="false" AutoPostBack="true" OnCheckedChanged="chkShowRemote_CheckedChanged" CssClass="show-remote" />
+                    <asp:CheckBox runat="server" ID="chkShowRemote" Text="Includes Remote Processing" Checked="false" AutoPostBack="true" OnCheckedChanged="ChkShowRemote_CheckedChanged" CssClass="show-remote" />
                 </div>
                 <div class="criteria-item">
                     <asp:LinkButton runat="server" ID="btnBack" Text="&larr; Back to Main Page" OnClick="BackButton_Click"></asp:LinkButton>
@@ -56,7 +56,7 @@
                             </FooterTemplate>
                         </asp:Repeater>
                         <div style="margin-top: 10px;">
-                            <asp:Button runat="server" ID="btnDownloadAll" Text="Create Zip File For All Invoices" OnClick="btnDownloadAll_Click" OnClientClick="downloadAll(this);" UseSubmitBehavior="false" />
+                            <asp:Button runat="server" ID="btnDownloadAll" Text="Create Zip File For All Invoices" OnClick="BtnDownloadAll_Click" OnClientClick="downloadAll(this);" UseSubmitBehavior="false" />
                             <div class="download-all-working" style="display: none;">Working...</div>
                             <asp:Literal runat="server" ID="litDownloadAllWorkingMessage"></asp:Literal>
                         </div>

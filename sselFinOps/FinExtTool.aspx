@@ -11,7 +11,7 @@
                 <tr>
                     <td>Select period:</td>
                     <td>
-                        <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="pp1_SelectedPeriodChanged" />
+                        <lnf:PeriodPicker runat="server" ID="pp1" AutoPostBack="true" OnSelectedPeriodChanged="Pp1_SelectedPeriodChanged" />
                     </td>
                 </tr>
             </table>

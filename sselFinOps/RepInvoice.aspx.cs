@@ -4,7 +4,6 @@ using LNF.Models.Data;
 using sselFinOps.AppCode;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -70,7 +69,7 @@ namespace sselFinOps
             }
         }
 
-        protected void pp1_SelectedPeriodChanged(object sender, EventArgs e)
+        protected void Pp1_SelectedPeriodChanged(object sender, EventArgs e)
         {
             // StartPeriod is always pp1.SelectedPeriod
             // EndPeriod is always one month after StartPeriod
@@ -148,7 +147,8 @@ namespace sselFinOps
             return string.Format(VirtualPathUtility.ToAbsolute("~/RepInvoiceView.aspx?AccountID={0}&StartPeriod={1:yyyy-MM-dd}&EndPeriod={2:yyyy-MM-dd}&ReportType={3}&ShowRemote={4}"), accountId, StartPeriod, EndPeriod, reportType, ShowRemote);
         }
 
-        protected void dgOrg_ItemDataBound(object sender, DataGridItemEventArgs e)
+        // nothing uses this, can it be deleted?
+        protected void DgOrg_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
             if (e.Item.ItemType == ListItemType.AlternatingItem || e.Item.ItemType == ListItemType.Item)
             {
@@ -206,11 +206,11 @@ namespace sselFinOps
             if (StartPeriod >= July2009)
             {
                 string alert = string.Empty;
-                filePath = ExcelUtility.GenerateInvoiceExcelReport(inv, CacheManager.Current.ClientID, string.Empty, true, ref alert);
+                filePath = ExcelUtility.GenerateInvoiceExcelReport(inv, CacheManager.Current.CurrentUser.ClientID, string.Empty, true, ref alert);
                 ShowAlert(alert);
             }
             else
-                filePath = ExcelUtility.MakeSpreadSheet(inv.Header.AccountID, inv.Header.InvoiceNumber, inv.Header.DeptRef, inv.Header.OrgName, CacheManager.Current.ClientID, StartPeriod, EndPeriod);
+                filePath = ExcelUtility.MakeSpreadSheet(inv.Header.AccountID, inv.Header.InvoiceNumber, inv.Header.DeptRef, inv.Header.OrgName, CacheManager.Current.CurrentUser.ClientID, StartPeriod, EndPeriod);
 
             // display excel spreadsheet
             if (!string.IsNullOrEmpty(filePath))
@@ -224,17 +224,17 @@ namespace sselFinOps
         {
             if (!string.IsNullOrEmpty(message))
             {
-                Page.ClientScript.RegisterStartupScript(this.GetType(), "alert-" + alertCount.ToString(), "alert('" + message + "');", true);
+                Page.ClientScript.RegisterStartupScript(GetType(), $"alert-{alertCount}", $"alert('{message}');", true);
                 alertCount += 1;
             }
         }
 
-        protected void chkShowRemote_CheckedChanged(object sender, EventArgs e)
+        protected void ChkShowRemote_CheckedChanged(object sender, EventArgs e)
         {
             MakeOrgGrid(false);
         }
 
-        protected void btnDownloadAll_Click(object sender, EventArgs e)
+        protected void BtnDownloadAll_Click(object sender, EventArgs e)
         {
             MakeOrgGrid(false);
 
@@ -252,7 +252,7 @@ namespace sselFinOps
                     // get datarows for Org and Account
                     var inv = invoices.First(x => x.Header.AccountID == accountId);
                     string alert = string.Empty;
-                    string fileName = ExcelUtility.GenerateInvoiceExcelReport(i, CacheManager.Current.ClientID, "Zip", del, ref alert);
+                    string fileName = ExcelUtility.GenerateInvoiceExcelReport(i, CacheManager.Current.CurrentUser.ClientID, "Zip", del, ref alert);
                     del = false;
                 }
 

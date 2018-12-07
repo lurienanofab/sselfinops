@@ -25,7 +25,7 @@ namespace sselFinOps
 
             if (Page.IsPostBack)
             {
-                dsFormula = (DataSet)CacheManager.Current.CacheData();
+                dsFormula = CacheManager.Current.CacheData();
                 if (dsFormula == null)
                     Response.Redirect("~");
                 else if (dsFormula.DataSetName != "ConFormula")
@@ -35,27 +35,24 @@ namespace sselFinOps
             {
                 CacheManager.Current.RemoveCacheData(); //remove anything left in cache
 
-                using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+                CacheManager.Current.ItemType(Request.QueryString["ItemType"]);
+                CacheManager.Current.Exp(Request.QueryString["Exp"]);
+                string exp = CacheManager.Current.Exp();
+                if (!string.IsNullOrEmpty(exp))
                 {
-                    CacheManager.Current.ItemType(Request.QueryString["ItemType"]);
-                    CacheManager.Current.Exp(Request.QueryString["Exp"]);
-                    string exp = CacheManager.Current.Exp();
-                    if (!string.IsNullOrEmpty(exp))
-                    {
-                        tableNamePrefix = exp;
-                        btnBack.Text = "Return to Experimental Cost Config";
-                    }
-
-                    litHeader.Text = string.Format("Configure {0} costing fomulas", tableNamePrefix);
-                    dsFormula = new DataSet("ConFormula");
-                    dba.ApplyParameters(new { sDate = DateTime.Now }).MapSchema().FillDataSet(dsFormula, tableNamePrefix + "CostFormula_Select", "Formula");
+                    tableNamePrefix = exp;
+                    btnBack.Text = "Return to Experimental Cost Config";
                 }
+
+                litHeader.Text = string.Format("Configure {0} costing fomulas", tableNamePrefix);
+                dsFormula = new DataSet("ConFormula");
+                DA.Command().Param("sDate", DateTime.Now).MapSchema().FillDataSet(dsFormula, $"dbo.{tableNamePrefix}CostFormula_Select", "Formula");
 
                 CacheManager.Current.CacheData(dsFormula);
             }
         }
 
-        protected void rblFormulaType_SelectedIndexChanged(object sender, EventArgs e)
+        protected void RblFormulaType_SelectedIndexChanged(object sender, EventArgs e)
         {
             dgSample.DataSource = null;
             dgSample.DataBind();
@@ -96,7 +93,7 @@ namespace sselFinOps
                 btnRevert.Enabled = false;
         }
 
-        protected void btnRevert_Click(object sender, EventArgs e)
+        protected void BtnRevert_Click(object sender, EventArgs e)
         {
             DataRow[] fdr = dsFormula.Tables["Formula"].Select(string.Format("FormulaType = '{0}'", rblFormulaType.SelectedItem.Text), "EffDate ASC");
             if (fdr.Length > 1) // must be true, but checking is a good thing
@@ -106,7 +103,7 @@ namespace sselFinOps
             txtFormula.Text = fdr[0]["Formula"].ToString();
         }
 
-        protected void btnValidate_Click(object sender, EventArgs e)
+        protected void BtnValidate_Click(object sender, EventArgs e)
         {
             tableNamePrefix = CacheManager.Current.Exp();
 
@@ -139,8 +136,7 @@ namespace sselFinOps
                     BoundColumn bc;
                     for (i = 0; i < mCompile.aryVars[selType].Length; i++)
                     {
-                        bc = new BoundColumn();
-                        bc.DataField = mCompile.aryVars[selType][i];
+                        bc = new BoundColumn { DataField = mCompile.aryVars[selType][i] };
                         bc.ItemStyle.HorizontalAlign = HorizontalAlign.Right;
                         bc.HeaderText = mCompile.aryVars[selType][i];
                         bc.HeaderStyle.Font.Bold = true;
@@ -177,7 +173,7 @@ namespace sselFinOps
             btnRevert.Enabled = true;
         }
 
-        protected void btnSave_Click(object sender, EventArgs e)
+        protected void BtnSave_Click(object sender, EventArgs e)
         {
             // only store formulas once they have been validated.
             // formulas are stored as strings - no compiler stuff going on here
@@ -185,13 +181,12 @@ namespace sselFinOps
             CacheManager.Current.ItemType(Request.QueryString["ItemType"]);
             tableNamePrefix = CacheManager.Current.Exp();
 
-            using (SQLDBAccess dba = new SQLDBAccess("cnSselData"))
+            DA.Command().Update(dsFormula.Tables["Formula"], cfg =>
             {
-                dba.InsertCommand
-                    .AddParameter("@FormulaType", SqlDbType.NVarChar, 25)
-                    .AddParameter("@Formula", SqlDbType.NVarChar, 4000);
-                dba.UpdateDataTable(dsFormula.Tables["Formula"], tableNamePrefix + "CostFormula_Insert");
-            }
+                cfg.Insert.AddParameter("FormulaType", SqlDbType.NVarChar, 25);
+                cfg.Insert.AddParameter("Formula", SqlDbType.NVarChar, 4000);
+                cfg.Insert.SetCommandText($"dbo.{tableNamePrefix}CostFormula_Insert");
+            });
 
             BackButton_Click(sender, e);
         }

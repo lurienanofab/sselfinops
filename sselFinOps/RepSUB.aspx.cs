@@ -10,9 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace sselFinOps
@@ -52,8 +50,7 @@ namespace sselFinOps
         {
             if (!string.IsNullOrEmpty(Request.QueryString["ClientID"]))
             {
-                int clientId = 0;
-                if (int.TryParse(Request.QueryString["ClientID"], out clientId))
+                if (int.TryParse(Request.QueryString["ClientID"], out int clientId))
                     return clientId;
             }
 
@@ -93,30 +90,27 @@ namespace sselFinOps
             SetTotalText(creditEntry.MerchandiseAmount);
         }
 
-        protected void btnReportLabtime_Click(object sender, EventArgs e)
+        protected void BtnReportLabtime_Click(object sender, EventArgs e)
         {
-            RegisterAsyncTask(new PageAsyncTask(async () =>
-            {
-                if (chkHTML.Checked)
-                    await ProcessHtmlRoomSUB();
-                else
-                    await ProcessExcelRoomSUB();
-            }));
+            if (chkHTML.Checked)
+                ProcessHtmlRoomSUB();
+            else
+                ProcessExcelRoomSUB();
         }
 
-        private async Task ProcessHtmlRoomSUB()
+        private void ProcessHtmlRoomSUB()
         {
-            RoomSUB report = await ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
+            RoomSUB report = ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
             LoadGridSUB(report.Items, report.Summaries);
             SetLinkText("sub", "room");
         }
 
-        private async Task ProcessExcelRoomSUB()
+        private void ProcessExcelRoomSUB()
         {
             string filePath;
             if (StartPeriod >= July2009)
             {
-                RoomSUB report = await ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
+                RoomSUB report = ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
                 filePath = GenerateExcelSUB(report.Items, report.Summaries, "Labtime");
             }
             else
@@ -130,19 +124,16 @@ namespace sselFinOps
             OutputExcel(filePath);
         }
 
-        protected void btnRoomJU_Command(object sender, CommandEventArgs e)
+        protected void BtnRoomJU_Command(object sender, CommandEventArgs e)
         {
             var juType = (JournalUnitTypes)Enum.Parse(typeof(JournalUnitTypes), e.CommandArgument.ToString());
 
-            RegisterAsyncTask(new PageAsyncTask(async () =>
-            {
-                RoomJU report = await ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, juType, GetClientID());
+            RoomJU report = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, juType, GetClientID());
 
-                if (chkHTML.Checked)
-                    ProcessHtmlRoomJU(report);
-                else
-                    ProcessExcelRoomJU(report);
-            }));
+            if (chkHTML.Checked)
+                ProcessHtmlRoomJU(report);
+            else
+                ProcessExcelRoomJU(report);
         }
 
         private void ProcessHtmlRoomJU(RoomJU report)
@@ -157,19 +148,18 @@ namespace sselFinOps
             OutputExcel(filePath);
         }
 
-        protected void btnAllRoomJU_Click(object sender, EventArgs e)
+        protected void BtnAllRoomJU_Click(object sender, EventArgs e)
         {
-            RegisterAsyncTask(new PageAsyncTask(ProcessHtmlAllRoomJU));
+            ProcessHtmlAllRoomJU();
         }
 
-        private async Task ProcessHtmlAllRoomJU()
+        private void ProcessHtmlAllRoomJU()
         {
-            var juA = await ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
-            var juB = await ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
-            var juC = await ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
+            var juA = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
+            var juB = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
+            var juC = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
 
-            double total;
-            List<JournalUnitReportItem> allItems = ReportFactory.GetAllRoomJU(juA, juB, juC, out total);
+            List<JournalUnitReportItem> allItems = ReportFactory.GetAllRoomJU(juA, juB, juC, out double total);
 
             gvJU.Columns[1].Visible = false;
             gvJU.Columns[2].Visible = true;
@@ -180,31 +170,28 @@ namespace sselFinOps
             SetLinkText("ju-all", "room");
         }
 
-        protected void btnReportTool_Click(object sender, EventArgs e)
+        protected void BtnReportTool_Click(object sender, EventArgs e)
         {
-            RegisterAsyncTask(new PageAsyncTask(async () =>
-            {
-                if (chkHTML.Checked)
-                    await ProcessHtmlToolSUB();
-                else
-                    await ProcessExcelToolSUB();
-            }));
+            if (chkHTML.Checked)
+                ProcessHtmlToolSUB();
+            else
+                ProcessExcelToolSUB();
         }
 
-        private async Task ProcessHtmlToolSUB()
+        private void ProcessHtmlToolSUB()
         {
-            ToolSUB report = await ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
+            ToolSUB report = ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
             LoadGridSUB(report.Items, report.Summaries);
             SetLinkText("sub", "tool");
         }
 
-        private async Task ProcessExcelToolSUB()
+        private void ProcessExcelToolSUB()
         {
             string filePath;
 
             if (StartPeriod >= July2009)
             {
-                ToolSUB report = await ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
+                ToolSUB report = ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
                 filePath = GenerateExcelSUB(report.Items, report.Summaries, "Tool");
             }
             else
@@ -218,19 +205,16 @@ namespace sselFinOps
             OutputExcel(filePath);
         }
 
-        protected void btnToolJU_Command(object sender, CommandEventArgs e)
+        protected void BtnToolJU_Command(object sender, CommandEventArgs e)
         {
             JournalUnitTypes juType = (JournalUnitTypes)Enum.Parse(typeof(JournalUnitTypes), e.CommandArgument.ToString());
 
-            RegisterAsyncTask(new PageAsyncTask(async () =>
-            {
-                ToolJU report = await ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, juType, GetClientID());
+            ToolJU report = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, juType, GetClientID());
 
-                if (chkHTML.Checked)
-                    ProcessHtmlToolJU(report);
-                else
-                    ProcessExcelToolJU(report);
-            }));
+            if (chkHTML.Checked)
+                ProcessHtmlToolJU(report);
+            else
+                ProcessExcelToolJU(report);
         }
 
         private void ProcessHtmlToolJU(ToolJU report)
@@ -245,19 +229,18 @@ namespace sselFinOps
             OutputExcel(filePath);
         }
 
-        protected void btnAllToolJU_Click(object sender, EventArgs e)
+        protected void BtnAllToolJU_Click(object sender, EventArgs e)
         {
-            RegisterAsyncTask(new PageAsyncTask(ProcessAllToolJUHTML));
+            ProcessAllToolJUHTML();
         }
 
-        private async Task ProcessAllToolJUHTML()
+        private void ProcessAllToolJUHTML()
         {
-            var juA = await ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
-            var juB = await ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
-            var juC = await ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
+            var juA = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
+            var juB = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
+            var juC = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
 
-            double total;
-            List<JournalUnitReportItem> allItems = ReportFactory.GetAllToolJU(juA, juB, juC, out total);
+            List<JournalUnitReportItem> allItems = ReportFactory.GetAllToolJU(juA, juB, juC, out double total);
 
             gvJU.Columns[1].Visible = false;
             gvJU.Columns[2].Visible = true;
@@ -268,43 +251,37 @@ namespace sselFinOps
             SetLinkText("ju-all", "tool");
         }
 
-        protected void btnReportStore_Click(object sender, EventArgs e)
+        protected void BtnReportStore_Click(object sender, EventArgs e)
         {
-            RegisterAsyncTask(new PageAsyncTask(async () =>
-            {
-                if (chkHTML.Checked)
-                    await ProcessHtmlStoreSUB(false);
-                else
-                    await ProcessExcelStoreSUB(false);
-            }));
+            if (chkHTML.Checked)
+                ProcessHtmlStoreSUB(false);
+            else
+                ProcessExcelStoreSUB(false);
         }
 
-        protected void btnReportStoreTwoAccounts_Click(object sender, EventArgs e)
+        protected void BtnReportStoreTwoAccounts_Click(object sender, EventArgs e)
         {
-            RegisterAsyncTask(new PageAsyncTask(async () =>
-            {
-                if (chkHTML.Checked)
-                    await ProcessHtmlStoreSUB(true);
-                else
-                    await ProcessExcelStoreSUB(true);
-            }));
+            if (chkHTML.Checked)
+                ProcessHtmlStoreSUB(true);
+            else
+                ProcessExcelStoreSUB(true);
         }
 
-        private async Task ProcessHtmlStoreSUB(bool twoCreditAccounts)
+        private void ProcessHtmlStoreSUB(bool twoCreditAccounts)
         {
-            StoreSUB report = await ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
+            StoreSUB report = ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
             LoadGridSUB(report.Items, report.Summaries);
             SetLinkText("sub", "store", twoCreditAccounts);
         }
 
-        private async Task ProcessExcelStoreSUB(bool twoCreditAccounts)
+        private void ProcessExcelStoreSUB(bool twoCreditAccounts)
         {
             string filePath = string.Empty;
             if (twoCreditAccounts)
             {
                 if (StartPeriod >= July2009)
                 {
-                    StoreSUB report = await ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
+                    StoreSUB report = ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
                     filePath = GenerateExcelSUB(report.Items, report.Summaries, "Store");
                 }
                 else
@@ -320,7 +297,7 @@ namespace sselFinOps
             {
                 if (StartPeriod >= July2009)
                 {
-                    StoreSUB report = await ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
+                    StoreSUB report = ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
                     filePath = GenerateExcelSUB(report.Items, report.Summaries, "Store");
                 }
                 else
@@ -336,19 +313,18 @@ namespace sselFinOps
             OutputExcel(filePath);
         }
 
-        protected void btnAllSUB_Click(object sender, EventArgs e)
+        protected void BtnAllSUB_Click(object sender, EventArgs e)
         {
-            RegisterAsyncTask(new PageAsyncTask(ProcessHtmlAllSUB));
+            ProcessHtmlAllSUB();
         }
 
-        private async Task ProcessHtmlAllSUB()
+        private void ProcessHtmlAllSUB()
         {
-            RoomSUB roomSUB = await ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
-            ToolSUB toolSUB = await ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
-            StoreSUB storeSUB = await ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, false, GetClientID());
+            RoomSUB roomSUB = ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
+            ToolSUB toolSUB = ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
+            StoreSUB storeSUB = ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, false, GetClientID());
 
-            double total;
-            IEnumerable<ServiceUnitBillingReportItem> allItems = ReportFactory.GetAllSUB(roomSUB, toolSUB, storeSUB, out total);
+            IEnumerable<ServiceUnitBillingReportItem> allItems = ReportFactory.GetAllSUB(roomSUB, toolSUB, storeSUB, out double total);
 
             gvSUB.Columns[1].Visible = true;
             gvSUB.Columns[2].Visible = EndPeriod != StartPeriod.AddMonths(1);
@@ -358,17 +334,13 @@ namespace sselFinOps
             SetLinkText("sub", "all");
         }
 
-        protected void btnAllJU_Command(object sender, CommandEventArgs e)
+        protected void BtnAllJU_Command(object sender, CommandEventArgs e)
         {
             JournalUnitTypes juType = (JournalUnitTypes)Enum.Parse(typeof(JournalUnitTypes), e.CommandArgument.ToString(), true);
-
-            RegisterAsyncTask(new PageAsyncTask(async () =>
-            {
-                await ProcessHtmlAllJU(juType);
-            }));
+            ProcessHtmlAllJU(juType);
         }
 
-        private async Task ProcessHtmlAllJU(JournalUnitTypes juType)
+        private void ProcessHtmlAllJU(JournalUnitTypes juType)
         {
             double total;
             List<JournalUnitReportItem> allItems;
@@ -378,17 +350,17 @@ namespace sselFinOps
                 case JournalUnitTypes.A:
                 case JournalUnitTypes.B:
                 case JournalUnitTypes.C:
-                    RoomJU roomJU = await ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, juType, GetClientID());
-                    ToolJU toolJU = await ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, juType, GetClientID());
+                    RoomJU roomJU = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, juType, GetClientID());
+                    ToolJU toolJU = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, juType, GetClientID());
                     allItems = ReportFactory.GetAllJU(roomJU, toolJU, out total);
                     break;
                 case JournalUnitTypes.All:
-                    RoomJU roomJUA = await ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
-                    ToolJU toolJUA = await ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
-                    RoomJU roomJUB = await ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
-                    ToolJU toolJUB = await ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
-                    RoomJU roomJUC = await ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
-                    ToolJU toolJUC = await ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
+                    RoomJU roomJUA = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
+                    ToolJU toolJUA = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
+                    RoomJU roomJUB = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
+                    ToolJU toolJUB = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
+                    RoomJU roomJUC = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
+                    ToolJU toolJUC = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
 
                     double temp;
                     total = 0;
@@ -704,7 +676,7 @@ namespace sselFinOps
             //Response.End();
         }
 
-        protected void chkHTML_CheckChanged(object sender, EventArgs e)
+        protected void ChkHTML_CheckChanged(object sender, EventArgs e)
         {
             btnAllSUB.Enabled = chkHTML.Checked;
             btnAllRoomJU.Enabled = chkHTML.Checked;

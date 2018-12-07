@@ -38,23 +38,21 @@ namespace sselFinOps
             {
                 CacheManager.Current.RemoveCacheData(); //remove anything left in cache
 
-                using (var dba = new SQLDBAccess("cnSselData"))
+                dsReport = new DataSet("DatHistorical");
+
+                DA.Command().Param("Action", "All").Param("sDate", DateTime.Parse("1/1/2000")).FillDataSet(dsReport, "dbo.Client_Select", "Client");
+
+                dsReport.Tables["Client"].PrimaryKey = new[] { dsReport.Tables["Client"].Columns["ClientID"] };
+
+                using (var reader = DA.Command().Param("Action", "All").ExecuteReader("dbo.Org_Select"))
                 {
-                    dsReport = new DataSet("DatHistorical");
-
-                    dba.ApplyParameters(new { Action = "All", sDate = DateTime.Parse("1/1/2000") }).FillDataSet(dsReport, "Client_Select", "Client");
-                    dsReport.Tables["Client"].PrimaryKey = new[] { dsReport.Tables["Client"].Columns["ClientID"] };
-
-                    using (var reader = dba.ApplyParameters(new { Action = "All" }).ExecuteReader("Org_Select"))
-                    {
-                        ddlOrg.DataSource = reader;
-                        ddlOrg.DataValueField = "OrgID";
-                        ddlOrg.DataTextField = "OrgName";
-                        ddlOrg.DataBind();
-                        ddlOrg.Items.Insert(0, new ListItem("-- Select --", "0"));
-                        ddlOrg.ClearSelection();
-                        reader.Close();
-                    }
+                    ddlOrg.DataSource = reader;
+                    ddlOrg.DataValueField = "OrgID";
+                    ddlOrg.DataTextField = "OrgName";
+                    ddlOrg.DataBind();
+                    ddlOrg.Items.Insert(0, new ListItem("-- Select --", "0"));
+                    ddlOrg.ClearSelection();
+                    reader.Close();
                 }
 
                 CacheManager.Current.CacheData(dsReport);
@@ -63,7 +61,7 @@ namespace sselFinOps
             }
         }
 
-        protected void ddlOrg_SelectedIndexChanged(object sender, EventArgs e)
+        protected void DdlOrg_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ddlOrg.SelectedIndex != 0)
             {
@@ -72,11 +70,11 @@ namespace sselFinOps
                 if (dsReport.Tables.Contains("Account"))
                     dsReport.Tables.Remove(dsReport.Tables["Account"]);
 
-                using (var dba = new SQLDBAccess("cnSselData"))
-                {
-                    // get account and clientAccount info
-                    dba.ApplyParameters(new { Action = "AllByOrg", OrgID = int.Parse(ddlOrg.SelectedValue) }).FillDataSet(dsReport, "Account_Select", "Account");
-                }
+                // get account and clientAccount info
+                DA.Command()
+                    .Param("Action", "AllByOrg")
+                    .Param("OrgID", int.Parse(ddlOrg.SelectedValue))
+                    .FillDataSet(dsReport, "dbo.Account_Select", "Account");
 
                 CacheManager.Current.CacheData(dsReport);
 
@@ -84,7 +82,7 @@ namespace sselFinOps
             }
         }
 
-        protected void rblAcctDisplay_SelectedIndexChanged(object sender, EventArgs e)
+        protected void RblAcctDisplay_SelectedIndexChanged(object sender, EventArgs e)
         {
             LoadAccounts();
         }
@@ -117,13 +115,13 @@ namespace sselFinOps
             }
         }
 
-        protected void rblTimeFrame_SelectedIndexChanged(object sender, EventArgs e)
+        protected void RblTimeFrame_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (ddlAccount.Items.Count > 0)
                 MakeSummary();
         }
 
-        protected void ddlAccount_SelectedIndexChanged(object sender, EventArgs e)
+        protected void DdlAccount_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (!bDisplayUpdate)
                 MakeSummary();
@@ -208,7 +206,7 @@ namespace sselFinOps
             Table1.Visible = true;
         }
 
-        protected void dgReport_ItemDataBound(object sender, DataGridItemEventArgs e)
+        protected void DgReport_ItemDataBound(object sender, DataGridItemEventArgs e)
         {
             int rowCntr = 0;
             DataRowView drv = (DataRowView)e.Item.DataItem;

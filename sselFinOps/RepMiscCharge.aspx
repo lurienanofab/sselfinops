@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Misc Charges" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="RepMiscCharge.aspx.cs" Inherits="sselFinOps.RepMiscCharge" Async="true" %>
+﻿<%@ Page Title="Misc Charges" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="RepMiscCharge.aspx.cs" Inherits="sselFinOps.RepMiscCharge" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style type="text/css">
