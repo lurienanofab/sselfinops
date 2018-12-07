@@ -137,7 +137,8 @@
     <Content Include="data\index.ashx" />
     <None Include="packages.config" />
     <None Include="Properties\PublishProfiles\Production %28Apps%29.pubxml" />
-    <Content Include="ToolBillingReport.aspx" />
+    <Content Include="ReportFinancialManager.aspx" />
+    <Content Include="ReportToolBilling.aspx" />
     <Content Include="scripts\jquery.remoteproc.js" />
     <Content Include="Spreadsheets.ashx" />
     <None Include="Web.Debug.config">
