@@ -82,8 +82,8 @@
             </tr>
             <tr>
                 <td>
+                    <asp:Button runat="server" ID="btnReportToolBilling" CssClass="CommandButton" Visible='<%#HasPriv(ClientPrivilege.Administrator)%>' Text="Tool Billing Report" ToolTip="Display tool billing data by reservation" OnCommand="Button_Command" CommandName="navigate" CommandArgument="~/ReportToolBilling.aspx" />
                     <asp:Button runat="server" ID="btnRepLabTimeJE" CssClass="CommandButton" Visible="false" Text="Labtime JE" ToolTip="Creates a UM Journal Entry spreadsheet for internal user time-in-lab usage" OnCommand="Button_Command" CommandName="navigate" CommandArgument="~/RepLabTimeJE.aspx" />
-                    <asp:Button runat="server" ID="btnMscToolBillingReport" CssClass="CommandButton" Visible='<%#HasPriv(ClientPrivilege.Administrator)%>' Text="Tool Billing Report" ToolTip="Display tool billing data by reservation" OnCommand="Button_Command" CommandName="navigate" CommandArgument="~/ToolBillingReport.aspx" />
                 </td>
                 <td>
                     <asp:Button runat="server" ID="btnConRoomCost" CssClass="CommandButton" Visible='<%#HasPriv(ClientPrivilege.Administrator | ClientPrivilege.Executive)%>' Text="Configure Room Charges" ToolTip="Used to define the cost model and values for each of the access controlled room within the SSEL" OnCommand="Button_Command" CommandName="navigate" CommandArgument="~/ConCost.aspx?ItemType=Room" />
@@ -106,6 +106,7 @@
             </tr>
             <tr>
                 <td>
+                    <asp:Button runat="server" ID="btnReportFinancialManager" CssClass="CommandButton" Visible='<%#HasPriv(ClientPrivilege.Administrator)%>' Text="Financial Manager Report" ToolTip="Display tool billing data by reservation" OnCommand="Button_Command" CommandName="navigate" CommandArgument="~/ReportFinancialManager.aspx" />
                     <asp:Button runat="server" ID="btnRepSUBStore" CssClass="CommandButton" Visible="false" Text="Old SUB (2007 June)" ToolTip="All SUB Reports Before July 2009" OnCommand="Button_Command" CommandName="navigate" CommandArgument="~/RepSUBStore.aspx" />
                 </td>
                 <td>

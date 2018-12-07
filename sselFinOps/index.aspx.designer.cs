@@ -139,6 +139,15 @@ namespace sselFinOps {
         protected global::System.Web.UI.WebControls.Button btnDatCurrentCosts;
         
         /// <summary>
+        /// btnReportToolBilling control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnReportToolBilling;
+        
+        /// <summary>
         /// btnRepLabTimeJE control.
         /// </summary>
         /// <remarks>
@@ -146,15 +155,6 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepLabTimeJE;
-        
-        /// <summary>
-        /// btnMscToolBillingReport control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMscToolBillingReport;
         
         /// <summary>
         /// btnConRoomCost control.
@@ -209,6 +209,15 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnMscInternalSpecial;
+        
+        /// <summary>
+        /// btnReportFinancialManager control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnReportFinancialManager;
         
         /// <summary>
         /// btnRepSUBStore control.
