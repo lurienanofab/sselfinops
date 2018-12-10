@@ -23,9 +23,9 @@
     <appSettings>
         <add key="7zLibPath" value="xxxxx" />
         <add key="SpreadsheetsDirectory" value="xxxxx" />
-        <add key="ApiHost" value="xxxxx" />
-        <add key="as:AudienceId" value="xxxxx" />
-        <add key="as:AudienceSecret" value="xxxxx" />
+        <add key="ApiBaseUrl" value="xxxxx" />
+        <add key="BasicAuthUsername" value="xxxxx" />
+        <add key="BasicAuthPassword" value="xxxxx" />
         <add key="StaticHost" value="xxxxx" />
         <add key="MongoConnectionString" value="xxxxx" />
     </appSettings>
