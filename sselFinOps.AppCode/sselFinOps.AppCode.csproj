@@ -108,7 +108,6 @@
     <Compile Include="DAL\GlobalCostDA.cs" />
     <Compile Include="DAL\AccountDA.cs" />
     <Compile Include="DAL\ClientDA.cs" />
-    <Compile Include="DAL\MiscBillingChargeDA.cs" />
     <Compile Include="DAL\RoomBillingDA.cs" />
     <Compile Include="DAL\RoomUsageData.cs" />
     <Compile Include="DAL\StoreBillingDA.cs" />
@@ -141,10 +140,6 @@
     <ProjectReference Include="..\..\LNF\LNF\LNF.csproj">
       <Project>{e3b73410-869b-4ba2-99ac-ad6708a27ade}</Project>
       <Name>LNF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\lnf\OnlineServices.Api\OnlineServices.Api.csproj">
-      <Project>{d0c76fe8-7233-4da5-b106-8e4f51a32ad2}</Project>
-      <Name>OnlineServices.Api</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

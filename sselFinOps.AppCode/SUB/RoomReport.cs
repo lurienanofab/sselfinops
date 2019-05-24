@@ -1,5 +1,6 @@
 ﻿using LNF.Billing;
 using LNF.CommonTools;
+using LNF.Models.Billing;
 using LNF.Models.Billing.Reports.ServiceUnitBilling;
 using LNF.Repository;
 using LNF.Repository.Billing;

@@ -13,8 +13,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LNF.Web", "..\LNF\LNF.Web\L
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "sselFinOps.AppCode", "sselFinOps.AppCode\sselFinOps.AppCode.csproj", "{7CFCFE27-D4C2-4F8D-873B-0FAF88ADE11E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OnlineServices.Api", "..\lnf\OnlineServices.Api\OnlineServices.Api.csproj", "{D0C76FE8-7233-4DA5-B106-8E4F51A32AD2}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LNF.WebApi", "..\lnf\LNF.WebApi\LNF.WebApi.csproj", "{85BE7662-47C8-4E82-8090-3F2BD61CC0F7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LNF.Models", "..\lnf\LNF.Models\LNF.Models.csproj", "{98C7F73D-EF9D-4A87-8B79-A1208085CFBD}"
@@ -45,10 +43,6 @@ Global
 		{7CFCFE27-D4C2-4F8D-873B-0FAF88ADE11E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7CFCFE27-D4C2-4F8D-873B-0FAF88ADE11E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7CFCFE27-D4C2-4F8D-873B-0FAF88ADE11E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D0C76FE8-7233-4DA5-B106-8E4F51A32AD2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D0C76FE8-7233-4DA5-B106-8E4F51A32AD2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D0C76FE8-7233-4DA5-B106-8E4F51A32AD2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D0C76FE8-7233-4DA5-B106-8E4F51A32AD2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{85BE7662-47C8-4E82-8090-3F2BD61CC0F7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{85BE7662-47C8-4E82-8090-3F2BD61CC0F7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85BE7662-47C8-4E82-8090-3F2BD61CC0F7}.Release|Any CPU.ActiveCfg = Release|Any CPU

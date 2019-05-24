@@ -1,5 +1,6 @@
 ﻿using LNF.Cache;
 using LNF.Models.Data;
+using LNF.Web;
 using LNF.Web.Content;
 using System;
 using System.Web.UI.WebControls;
@@ -28,7 +29,7 @@ namespace sselFinOps
                 {
                     if (int.TryParse(Request.QueryString["ClientID"].Trim(), out int clientId))
                     {
-                        if (CacheManager.Current.CurrentUser.ClientID != clientId)
+                        if (CurrentUser.ClientID != clientId)
                         {
                             Session.Abandon();
                             Response.Redirect("~");
@@ -36,7 +37,7 @@ namespace sselFinOps
                     }
                 }
 
-                lblName.Text = CacheManager.Current.CurrentUser.DisplayName;
+                lblName.Text = CurrentUser.DisplayName;
             }
         }
 
@@ -51,8 +52,8 @@ namespace sselFinOps
 
         protected void btnLogout_Click(object sender, EventArgs e)
         {
-            CacheManager.Current.RemoveCacheData(); //remove anything left in cache
-            CacheManager.Current.AbandonSession();
+            ContextBase.RemoveCacheData(); //remove anything left in cache
+            Session.Abandon();
             Response.Redirect("/sselonline/Blank.aspx");
         }
     }

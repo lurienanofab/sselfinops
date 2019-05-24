@@ -17,7 +17,7 @@ namespace sselFinOps
         {
             if (Page.IsPostBack)
             {
-                dsAuxCost = CacheManager.Current.CacheData();
+                dsAuxCost = ContextBase.CacheData();
                 if (dsAuxCost == null)
                     Response.Redirect("~");
                 else if (dsAuxCost.DataSetName != "ConAuxCost")
@@ -25,12 +25,12 @@ namespace sselFinOps
             }
             else
             {
-                CacheManager.Current.RemoveCacheData(); //remove anything left in cache
+                ContextBase.RemoveCacheData(); //remove anything left in cache
 
                 dsAuxCost = new DataSet("ConAuxCost");
                 DA.Command().Param("CostType", "All").MapSchema().FillDataSet(dsAuxCost, "dbo.AuxCost_Select", "AuxCost");
 
-                CacheManager.Current.CacheData(dsAuxCost);
+                ContextBase.CacheData(dsAuxCost);
 
                 BindGrids();
             }
@@ -83,7 +83,7 @@ namespace sselFinOps
             dr["Description"] = ((TextBox)dgi.FindControl("txt" + type + "Description")).Text.Trim();
             dsAuxCost.Tables["AuxCost"].Rows.Add(dr);
 
-            CacheManager.Current.CacheData(dsAuxCost);
+            ContextBase.CacheData(dsAuxCost);
 
             BindGrids();
         }

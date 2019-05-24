@@ -2,6 +2,7 @@
 using LNF.Cache;
 using LNF.CommonTools;
 using LNF.Repository;
+using LNF.Web;
 using sselFinOps.AppCode;
 using System;
 using System.Collections.Generic;
@@ -25,7 +26,7 @@ namespace sselFinOps
 
             if (Page.IsPostBack)
             {
-                dsFormula = CacheManager.Current.CacheData();
+                dsFormula = ContextBase.CacheData();
                 if (dsFormula == null)
                     Response.Redirect("~");
                 else if (dsFormula.DataSetName != "ConFormula")
@@ -33,11 +34,13 @@ namespace sselFinOps
             }
             else
             {
-                CacheManager.Current.RemoveCacheData(); //remove anything left in cache
+                ContextBase.RemoveCacheData(); //remove anything left in cache
 
-                CacheManager.Current.ItemType(Request.QueryString["ItemType"]);
-                CacheManager.Current.Exp(Request.QueryString["Exp"]);
-                string exp = CacheManager.Current.Exp();
+                Session["ItemType"] = Request.QueryString["ItemType"];
+                Session["Exp"] = Request.QueryString["Exp"];
+
+                string exp = Convert.ToString(Session["Exp"]);
+
                 if (!string.IsNullOrEmpty(exp))
                 {
                     tableNamePrefix = exp;
@@ -48,7 +51,7 @@ namespace sselFinOps
                 dsFormula = new DataSet("ConFormula");
                 DA.Command().Param("sDate", DateTime.Now).MapSchema().FillDataSet(dsFormula, $"dbo.{tableNamePrefix}CostFormula_Select", "Formula");
 
-                CacheManager.Current.CacheData(dsFormula);
+                ContextBase.CacheData(dsFormula);
             }
         }
 
@@ -105,7 +108,7 @@ namespace sselFinOps
 
         protected void BtnValidate_Click(object sender, EventArgs e)
         {
-            tableNamePrefix = CacheManager.Current.Exp();
+            tableNamePrefix = Convert.ToString(Session["Exp"]);
 
             // create instance of compile class
             Compile mCompile = new Compile();
@@ -169,7 +172,8 @@ namespace sselFinOps
             ndr["EffDate"] = DateTime.Now;
             dsFormula.Tables["Formula"].Rows.Add(ndr);
 
-            CacheManager.Current.CacheData(dsFormula);
+            ContextBase.CacheData(dsFormula);
+
             btnRevert.Enabled = true;
         }
 
@@ -178,8 +182,8 @@ namespace sselFinOps
             // only store formulas once they have been validated.
             // formulas are stored as strings - no compiler stuff going on here
             // update the rebates for each category
-            CacheManager.Current.ItemType(Request.QueryString["ItemType"]);
-            tableNamePrefix = CacheManager.Current.Exp();
+            Session["ItemType"] = Request.QueryString["ItemType"];
+            tableNamePrefix = Convert.ToString(Session["Exp"]);
 
             DA.Command().Update(dsFormula.Tables["Formula"], cfg =>
             {
@@ -193,9 +197,8 @@ namespace sselFinOps
 
         protected override void Back()
         {
-            //CacheManager.Current.Updated(false);
-            CacheManager.Current.RemoveCacheData(); //remove anything left in cache
-            if (string.IsNullOrEmpty(CacheManager.Current.Exp()))
+            ContextBase.RemoveCacheData(); //remove anything left in cache
+            if (string.IsNullOrEmpty(Convert.ToString(Session["Exp"])))
                 Response.Redirect("~");
             else
                 Response.Redirect("~/MscExp.aspx");

@@ -54,7 +54,7 @@ namespace sselFinOps
         {
             if (!Page.IsPostBack)
             {
-                DateTime period = CacheManager.Current.StartPeriod();
+                DateTime period = Convert.ToDateTime(Session["StartPeriod"]);
 
                 if (period != default(DateTime))
                     pp1.SelectedPeriod = period;
@@ -74,9 +74,9 @@ namespace sselFinOps
             // StartPeriod is always pp1.SelectedPeriod
             // EndPeriod is always one month after StartPeriod
 
-            // store the dates in the sessio
-            CacheManager.Current.StartPeriod(StartPeriod);
-            CacheManager.Current.EndPeriod(EndPeriod);
+            // store the dates in the session
+            Session["StartPeriod"] = StartPeriod;
+            Session["EndPeriod"] = EndPeriod;
 
             MakeOrgGrid(true);
         }
@@ -206,11 +206,11 @@ namespace sselFinOps
             if (StartPeriod >= July2009)
             {
                 string alert = string.Empty;
-                filePath = ExcelUtility.GenerateInvoiceExcelReport(inv, CacheManager.Current.CurrentUser.ClientID, string.Empty, true, ref alert);
+                filePath = ExcelUtility.GenerateInvoiceExcelReport(inv, CurrentUser.ClientID, string.Empty, true, ref alert);
                 ShowAlert(alert);
             }
             else
-                filePath = ExcelUtility.MakeSpreadSheet(inv.Header.AccountID, inv.Header.InvoiceNumber, inv.Header.DeptRef, inv.Header.OrgName, CacheManager.Current.CurrentUser.ClientID, StartPeriod, EndPeriod);
+                filePath = ExcelUtility.MakeSpreadSheet(inv.Header.AccountID, inv.Header.InvoiceNumber, inv.Header.DeptRef, inv.Header.OrgName, CurrentUser.ClientID, StartPeriod, EndPeriod);
 
             // display excel spreadsheet
             if (!string.IsNullOrEmpty(filePath))
@@ -252,7 +252,7 @@ namespace sselFinOps
                     // get datarows for Org and Account
                     var inv = invoices.First(x => x.Header.AccountID == accountId);
                     string alert = string.Empty;
-                    string fileName = ExcelUtility.GenerateInvoiceExcelReport(i, CacheManager.Current.CurrentUser.ClientID, "Zip", del, ref alert);
+                    string fileName = ExcelUtility.GenerateInvoiceExcelReport(i, CurrentUser.ClientID, "Zip", del, ref alert);
                     del = false;
                 }
 

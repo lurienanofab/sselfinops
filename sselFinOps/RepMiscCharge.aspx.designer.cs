@@ -22,13 +22,13 @@ namespace sselFinOps {
         protected global::LNF.Web.Controls.PeriodPicker PeriodPicker1;
         
         /// <summary>
-        /// ClientDropDown control.
+        /// ddlClient control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ClientDropDown;
+        protected global::System.Web.UI.WebControls.DropDownList ddlClient;
         
         /// <summary>
         /// lblUserValidation control.
@@ -38,15 +38,6 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblUserValidation;
-        
-        /// <summary>
-        /// odsClient control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.ObjectDataSource odsClient;
         
         /// <summary>
         /// ddlAccount control.
@@ -148,13 +139,13 @@ namespace sselFinOps {
         protected global::System.Web.UI.WebControls.Label lblDescriptionValidation;
         
         /// <summary>
-        /// SaveButton control.
+        /// btnSave control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button SaveButton;
+        protected global::System.Web.UI.WebControls.Button btnSave;
         
         /// <summary>
         /// btnBack2 control.
@@ -166,12 +157,30 @@ namespace sselFinOps {
         protected global::System.Web.UI.WebControls.LinkButton btnBack2;
         
         /// <summary>
-        /// MiscChargeGridView control.
+        /// litDebug control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView MiscChargeGridView;
+        protected global::System.Web.UI.WebControls.Literal litDebug;
+        
+        /// <summary>
+        /// hidPeriod control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hidPeriod;
+        
+        /// <summary>
+        /// gvMiscCharge control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvMiscCharge;
     }
 }

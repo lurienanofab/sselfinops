@@ -87,7 +87,7 @@ namespace sselFinOps.AppCode.BLL
                 return DA.Command()
                     .Param("Action", "GetCurrentTypeName")
                     .Param("ClientOrgID", clientOrgId)
-                    .ExecuteScalar<string>("dbo.ClientOrgBillingTypeTS_Select");
+                    .ExecuteScalar<string>("dbo.ClientOrgBillingTypeTS_Select").Value;
             }
             catch (Exception ex)
             {

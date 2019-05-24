@@ -9,7 +9,7 @@ namespace sselFinOps.AppCode
 {
     public static class ReportFactory
     {
-        private static IReportClient ReportClient => ServiceProvider.Current.Billing.Report;
+        private static IReportManager ReportClient => ServiceProvider.Current.Billing.Report;
 
         public static RoomJU GetReportRoomJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
         {

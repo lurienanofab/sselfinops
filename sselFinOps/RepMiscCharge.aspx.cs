@@ -1,8 +1,11 @@
 ﻿using LNF;
 using LNF.Cache;
+using LNF.CommonTools;
 using LNF.Data;
+using LNF.Models.Billing;
 using LNF.Models.Billing.Process;
 using sselFinOps.AppCode;
+using sselFinOps.AppCode.BLL;
 using sselFinOps.AppCode.DAL;
 using System;
 using System.Data;
@@ -15,8 +18,6 @@ namespace sselFinOps
     {
         private int userSelectedValue = -1;
 
-        protected IProcessClient ProcessClient => ServiceProvider.Current.Billing.Process;
-
         protected void Page_Load(object sender, EventArgs e)
         {
             lblUserValidation.Visible = false;
@@ -24,36 +25,140 @@ namespace sselFinOps
 
             if (!Page.IsPostBack)
             {
+                var command = Request.QueryString["Command"];
+
+                switch (command)
+                {
+                    case "RecalcSubsidy":
+                        if (string.IsNullOrEmpty(Request.QueryString["ClientID"]))
+                            throw new Exception("Missing required QueryString parameter: ClientID");
+
+                        if (!int.TryParse(Request.QueryString["ClientID"], out var clientId))
+                            throw new Exception("Invalid QueryString value: ClientID");
+
+                        if (string.IsNullOrEmpty(Request.QueryString["Period"]))
+                            throw new Exception("Missing required QueryString parameter: Period");
+
+                        if (!DateTime.TryParse(Request.QueryString["Period"], out var period))
+                            throw new Exception("Invalid QueryString value: Period");
+
+                        RecalculateSubsidy(period, clientId);
+                        break;
+                }
+
+                LoadClients();
+
+                int updateAccounts = 0;
+
+                if (Session["MiscCharge_Period"] != null)
+                {
+                    ++updateAccounts;
+                    PeriodPicker1.SelectedPeriod = Convert.ToDateTime(Session["MiscCharge_Period"]);
+                    txtActDate.Text = PeriodPicker1.SelectedPeriod.ToString("M/d/yyyy");
+                    Session.Remove("MiscCharge_Period");
+                }
+
+                if (Session["MiscCharge_ClientID"] != null)
+                {
+                    ++updateAccounts;
+                    ddlClient.SelectedValue = Convert.ToInt32(Session["MiscCharge_ClientID"]).ToString();
+                    Session.Remove("MiscCharge_ClientID");
+                }
+
+                if (updateAccounts == 2)
+                {
+                    LoadAccounts();
+                }
+
+                if (Session["MiscCharge_AccountID"] != null)
+                {
+                    var item = ddlAccount.Items.FindByValue(Convert.ToInt32(Session["MiscCharge_AccountID"]).ToString());
+                    if (item != null) ddlAccount.SelectedValue = item.Value;
+                    Session.Remove("MiscCharge_AccountID");
+                }
+
+                if (Session["MiscCharge_UsageType"] != null)
+                {
+                    ddlSUBType.SelectedValue = Convert.ToString(Session["MiscCharge_UsageType"]);
+                    Session.Remove("MiscCharge_UsageType");
+                }
+
+                if (Session["MiscCharge_Quantity"] != null)
+                {
+                    txtQuantity.Text = Convert.ToDouble(Session["MiscCharge_Quantity"]).ToString("0.00");
+                    Session.Remove("MiscCharge_Quantity");
+                }
+
+                if (Session["MiscCharge_UnitCost"] != null)
+                {
+                    txtCost.Text = Convert.ToDouble(Session["MiscCharge_UnitCost"]).ToString("0.00");
+                    Session.Remove("MiscCharge_UnitCost");
+                }
+
+                if (Session["MiscCharge_Description"] != null)
+                {
+                    txtDesc.Text = Convert.ToString(Session["MiscCharge_Description"]);
+                    Session.Remove("MiscCharge_Description");
+                }
+
                 txtActDate.Text = PeriodPicker1.SelectedPeriod.ToString("M/d/yyyy");
+
                 LoadGrid();
             }
             else
-                userSelectedValue = string.IsNullOrEmpty(ClientDropDown.SelectedValue) ? -1 : Convert.ToInt32(ClientDropDown.SelectedValue);
+            {
+                userSelectedValue = string.IsNullOrEmpty(ddlClient.SelectedValue) ? -1 : Convert.ToInt32(ddlClient.SelectedValue);
+            }
+        }
+
+        private void LoadClients()
+        {
+            var dt = ClientBL.GetAllClientByDate(PeriodPicker1.SelectedYear, PeriodPicker1.SelectedMonth);
+
+            ddlClient.DataSource = dt;
+            ddlClient.DataBind();
+
+            var item = ddlClient.Items.FindByValue(userSelectedValue.ToString());
+
+            if (item != null)
+                item.Selected = true;
+            else
+            { 
+                userSelectedValue = -1;
+                ddlClient.ClearSelection();
+            }
+        }
+
+        private void LoadAccounts()
+        {
+            userSelectedValue = string.IsNullOrEmpty(ddlClient.SelectedValue) ? -1 : Convert.ToInt32(ddlClient.SelectedValue);
+
+            if (userSelectedValue != -1)
+            {
+                var client = CacheManager.Current.GetClient(userSelectedValue);
+                var accts = AccountManager.GetActiveAccounts(client.ClientID, PeriodPicker1.SelectedPeriod, PeriodPicker1.SelectedPeriod.AddMonths(1)).ToList();
+                var util = new ClientPreferenceUtility(Provider);
+                var orderedAccounts = util.OrderAccountsByUserPreference(client, accts);
+                if (orderedAccounts != null)
+                {
+                    ddlAccount.DataSource = orderedAccounts.Select(x => new { AccountName = x.FullAccountName, AccountID = x.AccountID.ToString() });
+                    ddlAccount.DataBind();
+                }
+            }
+            else
+            {
+                ddlAccount.Items.Clear();
+            }
         }
 
         private void LoadGrid()
         {
-            MiscChargeGridView.DataSource = MiscBillingChargeDA.GetDataByPeriod(PeriodPicker1.SelectedYear, PeriodPicker1.SelectedMonth);
-            MiscChargeGridView.DataBind();
+            hidPeriod.Value = PeriodPicker1.SelectedPeriod.ToString("yyyy-MM-dd");
+            gvMiscCharge.DataSource = ServiceProvider.Current.Billing.Misc.GetMiscBillingCharges(PeriodPicker1.SelectedPeriod);
+            gvMiscCharge.DataBind();
         }
 
-        private void UpdateAccountDDL()
-        {
-            userSelectedValue = string.IsNullOrEmpty(ClientDropDown.SelectedValue) ? -1 : Convert.ToInt32(ClientDropDown.SelectedValue);
-            if (userSelectedValue != -1)
-            {
-                var client = CacheManager.Current.GetClient(userSelectedValue);
-                var accts = DataRepository.FindActiveAccountsInDateRange(client.ClientID, PeriodPicker1.SelectedPeriod, PeriodPicker1.SelectedPeriod.AddMonths(1)).ToList();
-                var orderedAccounts = ClientPreferenceUtility.OrderAccountsByUserPreference(client.ClientID, accts);
-                if (orderedAccounts != null)
-                {
-                    ddlAccount.DataSource = orderedAccounts.Select(x => new { AccountName = x.GetFullAccountName(), AccountID = x.AccountID.ToString() });
-                    ddlAccount.DataBind();
-                }
-            }
-        }
-
-        protected void SaveButton_Click(object sender, EventArgs e)
+        protected void BtnSave_Click(object sender, EventArgs e)
         {
             bool isValid = true;
 
@@ -72,7 +177,7 @@ namespace sselFinOps
             lblDescriptionValidation.Visible = false;
             lblDescriptionValidation.Text = string.Empty;
 
-            if (string.IsNullOrEmpty(ClientDropDown.SelectedValue))
+            if (string.IsNullOrEmpty(ddlClient.SelectedValue))
             {
                 isValid = false;
                 lblUserValidation.Visible = true;
@@ -124,19 +229,32 @@ namespace sselFinOps
             if (!DateTime.TryParse(txtActDate.Text, out DateTime actDate))
             {
                 isValid = false;
+                litDebug.Text = "'Apply period' is required.";
             }
 
             if (!isValid) return;
 
-            int clientId = Convert.ToInt32(ClientDropDown.SelectedValue);
+            DateTime period = actDate.FirstOfMonth();
+            int clientId = Convert.ToInt32(ddlClient.SelectedValue);
             int accountId = Convert.ToInt32(ddlAccount.SelectedValue);
 
-            MiscBillingChargeDA.SaveNewEntry(clientId, accountId, ddlSUBType.SelectedItem.Text, actDate, txtDesc.Text, qty, cost);
+            // Save Misc Charge
+            var expId = ServiceProvider.Current.Billing.Misc.CreateMiscBillingCharge(new MiscBillingChargeCreateArgs
+            {
+                ClientID = clientId,
+                AccountID = accountId,
+                SUBType = ddlSUBType.SelectedItem.Text,
+                Period = period,
+                ActDate = actDate,
+                Description = txtDesc.Text,
+                Quantity = qty,
+                UnitCost = Convert.ToDecimal(cost)
+            });
 
-            //re-calculate the subsidy
-            DateTime period = new DateTime(actDate.Year, actDate.Month, 1);
-
-            RecalculateSubsidy(period, clientId);
+            if (expId == 0)
+                SetDebugError(period, clientId, "Failed to create new MiscBillingCharge.");
+            else
+                RecalculateSubsidy(period, clientId);
 
             LoadGrid();
         }
@@ -144,34 +262,49 @@ namespace sselFinOps
         protected void PeriodPicker1_SelectedPeriodChanged(object sender, EventArgs e)
         {
             txtActDate.Text = PeriodPicker1.SelectedPeriod.ToString("M/d/yyyy");
-            UpdateAccountDDL();
+            LoadClients();
+            LoadAccounts();
             LoadGrid();
         }
 
-        protected void ClientDropDown_DataBound(object sender, EventArgs e)
+        protected void DdlClient_DataBound(object sender, EventArgs e)
         {
-            ClientDropDown.Items.Insert(0, new ListItem("", ""));
+            ddlClient.Items.Insert(0, new ListItem("", ""));
             if (userSelectedValue != -1)
-                ClientDropDown.SelectedIndex = ClientDropDown.Items.IndexOf(ClientDropDown.Items.FindByValue(userSelectedValue.ToString()));
+                ddlClient.SelectedIndex = ddlClient.Items.IndexOf(ddlClient.Items.FindByValue(userSelectedValue.ToString()));
         }
 
-        protected void RecalcSubsidyButton_Command(object sender, CommandEventArgs e)
+        protected string GetRecalcSubsidyUrl(object item)
         {
+            var i = (MiscBillingChargeItem)item;
+
             if (DateTime.TryParse(txtActDate.Text, out DateTime actDate))
-            {
-                int clientId = Convert.ToInt32(e.CommandArgument);
-                DateTime period = new DateTime(actDate.Year, actDate.Month, 1);
+                return GetRecalcSubsidyUrl(actDate, i.ClientID);
+            else
+                return GetRecalcSubsidyUrl(PeriodPicker1.SelectedPeriod, i.ClientID);
+        }
 
-                RecalculateSubsidy(period, clientId);
-
-                LoadGrid();
-            }
+        private string GetRecalcSubsidyUrl(DateTime period, int clientId)
+        {
+            return $"~/RepMiscCharge.aspx?Command=RecalcSubsidy&Period={period:yyyy-MM-dd}&ClientID={clientId}";
         }
 
         private void RecalculateSubsidy(DateTime period, int clientId)
         {
             //[2015-11-12 jg] only subsidy step4 is needed now
-            ProcessClient.BillingProcessStep4("subsidy", period, clientId);
+            try
+            {
+                ServiceProvider.Current.Billing.Process.BillingProcessStep4(new BillingProcessStep4Command
+                {
+                    Command = "subsidy",
+                    Period = period,
+                    ClientID = clientId
+                });
+            }
+            catch (Exception ex)
+            {
+                SetDebugError(period, clientId, ex.ToString());
+            }
 
             ////must call BillingDataProcessStep2 because data from here is used in Step4 (only ByAccount tables are needed)
             //BillingDataProcessStep2.PopulateRoomBillingByAccount(period, clientId);
@@ -189,73 +322,98 @@ namespace sselFinOps
             //BillingDataProcessStep3.PopulateToolBillingByOrg(period, clientId);
         }
 
-        protected void ClientDropDown_SelectedIndexChanged(object sender, EventArgs e)
+        private void SetDebugError(string errmsg)
         {
-            UpdateAccountDDL();
+            if (string.IsNullOrEmpty(errmsg))
+                litDebug.Text = string.Empty;
+            else
+                litDebug.Text = $"<pre class=\"debug\">{errmsg}</pre>";
         }
 
-        protected void MiscChargeGridView_RowDeleting(object sender, GridViewDeleteEventArgs e)
+        private void SetDebugError(DateTime period, int clientId, string errmsg)
+        {
+            SetDebugError($"period: {period:yyyy-MM-dd HH:mm:ss}, clientId: {clientId}{Environment.NewLine}--------------------{Environment.NewLine}{errmsg}");
+        }
+
+        protected void DdlClient_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            LoadAccounts();
+        }
+
+        protected void GvMiscCharge_RowDeleting(object sender, GridViewDeleteEventArgs e)
         {
             int expId = Convert.ToInt32(e.Keys[0]);
 
-            var dt = MiscBillingChargeDA.GetByExpID(expId);
+            var mbc = ServiceProvider.Current.Billing.Misc.GetMiscBillingCharge(expId);
 
-            if (dt.Rows.Count > 0)
-            {
-                var dr = dt.Rows[0];
+            int deleted = ServiceProvider.Current.Billing.Misc.DeleteMiscBillingCharge(expId);
 
-                DateTime period = dr.Field<DateTime>("Period");
-                int clientId = dr.Field<int>("ClientID");
-
-                MiscBillingChargeDA.DeleteEntry(expId);
-
-                RecalculateSubsidy(period, clientId);
-
-                LoadGrid();
-            }
+            if (deleted == 0)
+                SetDebugError($"Cannot find record with ExpID = {expId}");
             else
-                throw new Exception(string.Format("Cannot find record with ExpID = {0}", expId));
-        }
+                RecalculateSubsidy(mbc.Period, mbc.ClientID);
 
-        protected void MiscChargeGridView_RowEditing(object sender, GridViewEditEventArgs e)
-        {
-            MiscChargeGridView.EditIndex = e.NewEditIndex;
             LoadGrid();
         }
 
-        protected void MiscChargeGridView_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
+        protected void GvMiscCharge_RowEditing(object sender, GridViewEditEventArgs e)
         {
-            MiscChargeGridView.EditIndex = -1;
+            gvMiscCharge.EditIndex = e.NewEditIndex;
             LoadGrid();
         }
 
-        protected void MiscChargeGridView_RowUpdating(object sender, GridViewUpdateEventArgs e)
+        protected void GvMiscCharge_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
+        {
+            gvMiscCharge.EditIndex = -1;
+            LoadGrid();
+        }
+
+        protected void GvMiscCharge_RowUpdating(object sender, GridViewUpdateEventArgs e)
         {
             int expId = Convert.ToInt32(e.Keys[0]);
 
-            DataTable dt = MiscBillingChargeDA.GetByExpID(expId);
+            var mbc = ServiceProvider.Current.Billing.Misc.GetMiscBillingCharge(expId);
 
-            if (dt.Rows.Count > 0)
+            var txtActDate = (TextBox)gvMiscCharge.Rows[e.RowIndex].FindControl("txtActDate");
+
+            var actDate = Convert.ToDateTime(txtActDate.Text);
+            var period = actDate.FirstOfMonth();
+
+            var args = new MiscBillingChargeUpdateArgs
             {
-                var txtActDate = (TextBox)MiscChargeGridView.Rows[e.RowIndex].FindControl("txtActDate");
+                ExpID = expId,
+                Period = period,
+                Description = Convert.ToString(e.NewValues["Description"]),
+                Quantity = Convert.ToDouble(e.NewValues["Quantity"]),
+                UnitCost = Convert.ToDecimal(e.NewValues["UnitCost"])
+            };
 
-                DateTime period = Convert.ToDateTime(txtActDate.Text);
-                string description = Convert.ToString(e.NewValues["Description"]);
-                double quantity = Convert.ToDouble(e.NewValues["Quantity"]);
-                double unitCost = Convert.ToDouble(e.NewValues["UnitCost"]);
+            var updated = ServiceProvider.Current.Billing.Misc.UpdateMiscBilling(args);
 
-                int clientId = dt.Rows[0].Field<int>("ClientID");
+            if (updated == 0)
+                SetDebugError($"Cannot find record with ExpID = {expId}");
+            else
+            {
+                RecalculateSubsidy(period, mbc.ClientID);
 
-                MiscBillingChargeDA.UpdateEntry(expId, period, description, quantity, unitCost);
+                if (period != mbc.Period)
+                    RecalculateSubsidy(mbc.Period, mbc.ClientID);
+            }
 
+            gvMiscCharge.EditIndex = -1;
+
+            LoadGrid();
+        }
+
+        protected void BtnRecalcSubsidy_Command(object sender, CommandEventArgs e)
+        {
+            if (e.CommandName == "reclac")
+            {
+                var period = DateTime.Parse(hidPeriod.Value);
+                var clientId = Convert.ToInt32(e.CommandArgument);
                 RecalculateSubsidy(period, clientId);
-
-                MiscChargeGridView.EditIndex = -1;
-
                 LoadGrid();
             }
-            else
-                throw new Exception(string.Format("Cannot find record with ExpID = {0}", expId));
         }
     }
 }

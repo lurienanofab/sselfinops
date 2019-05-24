@@ -41,7 +41,7 @@ namespace sselFinOps.AppCode.DAL
             return DA.Command()
                 .Param("Action", "GetChargeType")
                 .Param("AccountID", accountId)
-                .ExecuteScalar<int>("dbo.Account_Select");
+                .ExecuteScalar<int>("dbo.Account_Select").Value;
         }
 
         public static DataTable GetAccountsByClientID(int clientId)

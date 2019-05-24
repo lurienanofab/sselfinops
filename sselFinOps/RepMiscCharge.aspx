@@ -39,11 +39,16 @@
             }
 
         span.validation-error {
-            color: #FF0000;
+            color: #ff0000;
         }
 
         .report-text.date-picker {
             width: 80px;
+        }
+
+        .debug {
+            font-family: 'Courier New';
+            color: #ff0000;
         }
     </style>
 </asp:Content>
@@ -69,15 +74,9 @@
                 <tr>
                     <td>Client:</td>
                     <td>
-                        <asp:DropDownList ID="ClientDropDown" DataSourceID="odsClient" runat="server" AutoPostBack="true" DataValueField="ClientID" DataTextField="DisplayName" CssClass="user-select report-select" OnDataBound="ClientDropDown_DataBound" OnSelectedIndexChanged="ClientDropDown_SelectedIndexChanged">
+                        <asp:DropDownList ID="ddlClient" runat="server" AutoPostBack="true" DataValueField="ClientID" DataTextField="DisplayName" CssClass="user-select report-select" OnDataBound="DdlClient_DataBound" OnSelectedIndexChanged="DdlClient_SelectedIndexChanged">
                         </asp:DropDownList>
                         <asp:Label runat="server" ID="lblUserValidation" CssClass="validation-error" Visible="false"></asp:Label>
-                        <asp:ObjectDataSource ID="odsClient" runat="server" TypeName="sselFinOps.AppCode.BLL.ClientBL" SelectMethod="GetAllClientByDate">
-                            <SelectParameters>
-                                <asp:ControlParameter ControlID="PeriodPicker1" Type="Int32" Name="year" PropertyName="SelectedYear" />
-                                <asp:ControlParameter ControlID="PeriodPicker1" Type="Int32" Name="month" PropertyName="SelectedMonth" />
-                            </SelectParameters>
-                        </asp:ObjectDataSource>
                     </td>
                 </tr>
                 <tr>
@@ -88,7 +87,7 @@
                         <asp:Label runat="server" ID="lblAccountValidation" CssClass="validation-error" Visible="false"></asp:Label>
                         <asp:ObjectDataSource ID="odsAccount" runat="server" TypeName="sselFinOps.AppCode.BLL.AccountBL" SelectMethod="GetAccountsByClientIDAndDate">
                             <SelectParameters>
-                                <asp:ControlParameter ControlID="ClientDropDown" Type="Int32" Name="clientId" PropertyName="SelectedValue" />
+                                <asp:ControlParameter ControlID="ddlClient" Type="Int32" Name="clientId" PropertyName="SelectedValue" />
                                 <asp:ControlParameter ControlID="PeriodPicker1" Type="Int32" Name="year" PropertyName="SelectedYear" />
                                 <asp:ControlParameter ControlID="PeriodPicker1" Type="Int32" Name="month" PropertyName="SelectedMonth" />
                             </SelectParameters>
@@ -139,20 +138,22 @@
                 </tr>
             </table>
             <div class="criteria-item">
-                <asp:Button runat="server" ID="SaveButton" Text="Create New Entry" CssClass="report-button" OnClick="SaveButton_Click" />
-                <asp:LinkButton runat="server" ID="btnBack2" Text="&larr; Back To Main Page" OnClick="BackButton_Click" CssClass="back-link"></asp:LinkButton>
+                <asp:Button runat="server" ID="btnSave" Text="Create New Entry" CssClass="report-button" OnClick="BtnSave_Click" />
+                <asp:LinkButton runat="server" ID="btnBack2" OnClick="BackButton_Click" CssClass="back-link">&larr; Back to Main Page</asp:LinkButton>
+                <asp:Literal runat="server" ID="litDebug"></asp:Literal>
             </div>
         </div>
     </div>
     <div class="section">
-        <asp:GridView runat="server" ID="MiscChargeGridView" AutoGenerateColumns="false" DataKeyNames="ExpID" AllowSorting="true" CssClass="gridview highlight" GridLines="None" OnRowDeleting="MiscChargeGridView_RowDeleting" OnRowEditing="MiscChargeGridView_RowEditing" OnRowCancelingEdit="MiscChargeGridView_RowCancelingEdit" OnRowUpdating="MiscChargeGridView_RowUpdating">
+        <asp:HiddenField runat="server" ID="hidPeriod" />
+        <asp:GridView runat="server" ID="gvMiscCharge" AutoGenerateColumns="false" DataKeyNames="ExpID" AllowSorting="true" CssClass="gridview highlight" GridLines="None" OnRowDeleting="GvMiscCharge_RowDeleting" OnRowEditing="GvMiscCharge_RowEditing" OnRowCancelingEdit="GvMiscCharge_RowCancelingEdit" OnRowUpdating="GvMiscCharge_RowUpdating">
             <HeaderStyle CssClass="header" />
             <RowStyle CssClass="row" />
             <AlternatingRowStyle CssClass="altrow" />
             <Columns>
                 <asp:CommandField ShowDeleteButton="true" ButtonType="Link" DeleteText="Delete" />
                 <asp:BoundField HeaderText="Name" DataField="DisplayName" ReadOnly="true" SortExpression="DisplayName" />
-                <asp:BoundField HeaderText="Account" DataField="Account" ReadOnly="true" SortExpression="Account" />
+                <asp:BoundField HeaderText="Account" DataField="AccountName" ReadOnly="true" SortExpression="AccountName" />
                 <asp:BoundField HeaderText="ShortCode" DataField="ShortCode" ReadOnly="true" SortExpression="ShortCode" />
                 <asp:BoundField HeaderText="SUB<br />Type" DataField="SUBType" ReadOnly="true" SortExpression="SUBType" HtmlEncode="false" />
                 <asp:TemplateField HeaderText="Period">
@@ -165,7 +166,7 @@
                         </div>
                     </EditItemTemplate>
                 </asp:TemplateField>
-                <asp:BoundField HeaderText="Insert Date" DataField="ActDate" ReadOnly="true" SortExpression="ExpID" ItemStyle-CssClass="insertdate-item" />
+                <asp:BoundField HeaderText="Insert Date" DataField="ActDate" ReadOnly="true" SortExpression="ExpID" ItemStyle-CssClass="insertdate-item" DataFormatString="{0:M/d/yyyy'<br>'h:mm:ss tt}" HtmlEncode="false" />
                 <asp:BoundField HeaderText="Description" DataField="Description" ItemStyle-CssClass="description-item" />
                 <asp:BoundField HeaderText="Quantity" DataField="Quantity" ItemStyle-CssClass="quantity-item" />
                 <asp:BoundField HeaderText="UnitCost" DataField="UnitCost" DataFormatString="{0:C}" HtmlEncode="false" ItemStyle-CssClass="unitcost-item" />
@@ -176,7 +177,7 @@
                 <asp:TemplateField>
                     <ItemStyle HorizontalAlign="Center" />
                     <ItemTemplate>
-                        <asp:LinkButton runat="server" ID="RecalcSubsidyButton" Text="Recalculate" OnCommand="RecalcSubsidyButton_Command" CommandArgument='<%#Eval("ClientID")%>'></asp:LinkButton>
+                        <asp:LinkButton runat="server" ID="btnRecalcSubsidy" OnCommand="BtnRecalcSubsidy_Command" CommandName="recalc" CommandArgument='<%#Eval("ClientID")%>'>Recalculate</asp:LinkButton>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>

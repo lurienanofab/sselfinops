@@ -395,7 +395,7 @@ namespace sselFinOps
         {
             //Contruct the excel object
             string templatePath = ExcelUtility.GetTemplatePath("SUB_Template.xlt");
-            string workPathDir = ExcelUtility.GetWorkPath(CacheManager.Current.CurrentUser.ClientID);
+            string workPathDir = ExcelUtility.GetWorkPath(CurrentUser.ClientID);
             ExcelLite.SetLicense("EL6N-Z669-AZZG-3LS7");
             ExcelFile SpreadSheet = new ExcelFile();
             SpreadSheet.LoadXls(templatePath);
@@ -609,7 +609,7 @@ namespace sselFinOps
 
             SpreadSheet.Worksheets.ActiveWorksheet = SpreadSheet.Worksheets[0];
 
-            string workPathDir = ExcelUtility.GetWorkPath(CacheManager.Current.CurrentUser.ClientID);
+            string workPathDir = ExcelUtility.GetWorkPath(CurrentUser.ClientID);
 
             if (!Directory.Exists(workPathDir))
                 Directory.CreateDirectory(workPathDir);

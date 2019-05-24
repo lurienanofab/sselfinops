@@ -12,9 +12,13 @@ namespace sselFinOps
     /// </summary>
     public class Spreadsheets : IHttpHandler, IReadOnlySessionState
     {
+        public HttpContextBase ContextBase { get; private set; }
+
         public void ProcessRequest(HttpContext context)
         {
-            int clientId = CacheManager.Current.CurrentUser.ClientID;
+            ContextBase = new HttpContextWrapper(context);
+
+            int clientId = ContextBase.CurrentUser().ClientID;
             string name = context.Request.QueryString["name"];
             string type = context.Request.QueryString["type"];
 

@@ -1,6 +1,4 @@
-﻿using LNF.Billing;
-using LNF.Cache;
-using LNF.Models.Data;
+﻿using LNF.Models.Data;
 using LNF.Repository;
 using sselFinOps.AppCode;
 using System;
@@ -81,8 +79,8 @@ namespace sselFinOps
             bool experimental = !string.IsNullOrEmpty(Request.QueryString["Exp"]);
             if (experimental)
             {
-                CacheManager.Current.Exp(Request.QueryString["Exp"]);
-                tableNamePrefix = CacheManager.Current.Exp();
+                Session["Exp"] = Request.QueryString["Exp"];
+                tableNamePrefix = Convert.ToString(Session["Exp"]);
                 btnBack1.Text = "Return to Experimental Cost Config";
                 btnBack2.Text = "Return to Experimental Cost Config";
             }
@@ -923,7 +921,7 @@ namespace sselFinOps
             {
                 HttpPostedFile postedFile = FileUpload1.PostedFile;
                 FileInfo fi = new FileInfo(postedFile.FileName);
-                string fileName = $"{CacheManager.Current.CurrentUser.ClientID}_{DateTime.Now:yyyyMMddHHmmss}_{postedFile.FileName}";
+                string fileName = $"{CurrentUser.ClientID}_{DateTime.Now:yyyyMMddHHmmss}_{postedFile.FileName}";
                 string filePath = Server.MapPath(Path.Combine(ConfigurationManager.AppSettings["SpreadsheetsDirectory"], fileName));
                 string connstr = string.Empty;
                 switch (fi.Extension)
@@ -1104,7 +1102,7 @@ namespace sselFinOps
         {
             if (dt.Rows.Count > 0)
             {
-                tableNamePrefix = CacheManager.Current.Exp();
+                tableNamePrefix = Convert.ToString(Session["Exp"]);
 
                 return DA.Command().Update(dt, cfg =>
                 {

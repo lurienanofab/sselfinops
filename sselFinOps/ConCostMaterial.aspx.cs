@@ -86,9 +86,7 @@ namespace sselFinOps
         private void AddMaterial(ProcessInfoLineParam pilp, TableRow tRow, int resourceId)
         {
             var tCell = new TableCell();
-            var lblPILP = new Label();
-
-            lblPILP.Text = pilp.ParameterName + ")" + pilp.ProcessInfoLineParamID.ToString();
+            var lblPILP = new Label { Text = $"{pilp.ParameterName}) {pilp.ProcessInfoLineParamID}" };
             lblPILP.Attributes["class"] = "lbl-pilp";
             lblPILP.Attributes["resourceID"] = resourceId.ToString();
             lblPILP.Attributes["pilpID"] = pilp.ProcessInfoLineParamID.ToString();
@@ -101,8 +99,7 @@ namespace sselFinOps
         private void AddResourceNameRow(Resource res, Table tbl)
         {
             var rhRow = new TableRow();
-            var lblPILP = new Label();
-            lblPILP.Text = "<b>" + res.ResourceName + "</b>";
+            var lblPILP = new Label { Text = $"<b>{res.ResourceName}</b>" };
             var tCell = new TableCell();
             tCell.Controls.Add(lblPILP);
             tCell.ColumnSpan = 10;
@@ -117,15 +114,13 @@ namespace sselFinOps
             tRow.Cells.Add(GetDropDownCell(orgType));
 
             var tc2 = new TableCell();
-            var txtPerUsage = new TextBox();
-            txtPerUsage.Text = "0";
+            var txtPerUsage = new TextBox { Text = "0" };
             txtPerUsage.Attributes["class"] = "txtUSAGE_" + orgType;
             tc2.Controls.Add(txtPerUsage);
             tRow.Cells.Add(tc2);
 
             var tc3 = new TableCell();
-            var txtPerPeriod = new TextBox();
-            txtPerPeriod.Text = "0";
+            var txtPerPeriod = new TextBox { Text = "0" };
             txtPerPeriod.Attributes["class"] = "txtPERIOD_" + orgType;
             tc3.Attributes["class"] = "right-border-thick";
             tc3.Controls.Add(txtPerPeriod);
@@ -154,8 +149,8 @@ namespace sselFinOps
 
             if (experimental)
             {
-                CacheManager.Current.Exp(Request.QueryString["Exp"]);
-                tableNamePrefix = CacheManager.Current.Exp();
+                Session["Exp"] = Request.QueryString["Exp"];
+                tableNamePrefix = Convert.ToString(Session["Exp"]);
                 btnBack1.Text = "Return to Experimental Cost Config";
                 btnBack2.Text = "Return to Experimental Cost Config";
             }

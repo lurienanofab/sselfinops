@@ -2,6 +2,7 @@
 using LNF.Billing;
 using LNF.Cache;
 using LNF.Data;
+using LNF.Models.Billing;
 using LNF.Models.Data;
 using LNF.Web;
 using StructureMap.Attributes;
@@ -18,9 +19,6 @@ namespace sselFinOps.AppCode
         [SetterProperty]
         public IBillingTypeManager BillingTypeManager { get; set; }
 
-        [SetterProperty]
-        public IDataRepository DataRepository { get; set; }
-
         public override ClientPrivilege AuthTypes
         {
             get { return ClientPrivilege.Administrator; }
@@ -32,17 +30,16 @@ namespace sselFinOps.AppCode
 
             ServiceProvider.Current.BuildUp(this);
 
-            if (!CacheManager.Current.CurrentUser.HasPriv(AuthTypes))
+            if (!CurrentUser.HasPriv(AuthTypes))
             {
-                CacheManager.Current.AbandonSession();
+                ContextBase.Session.Abandon();
                 Response.Redirect(ServiceProvider.Current.Context.LoginUrl + "?Action=Exit");
             }
         }
 
         protected virtual void Back()
         {
-            //CacheManager.Current.Updated(false);
-            CacheManager.Current.RemoveCacheData(); //remove anything left in cache
+            ContextBase.RemoveCacheData(); //remove anything left in cache
             Response.Redirect("~", !IsAsync);
         }
 

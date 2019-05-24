@@ -1,5 +1,6 @@
 ﻿using LNF;
 using LNF.Billing;
+using LNF.Models.Billing;
 using LNF.Repository.Billing;
 using System;
 using System.Data;
@@ -11,7 +12,7 @@ namespace sselFinOps.AppCode.BLL
         public static readonly DateTime July2010 = new DateTime(2010, 7, 1);
         public static readonly DateTime April2011 = new DateTime(2011, 4, 1);
 
-        public static IBillingTypeManager BillingTypeManager => ServiceProvider.Current.Use<IBillingTypeManager>();
+        public static IBillingTypeManager BillingTypeManager => ServiceProvider.Current.Billing.BillingType;
 
         [Obsolete("Use LNF.CommonTools.LineCostUtility.CalculateRoomLineCost instead.")]
         public static void ApplyRoomFormula(DataTable dtIn)

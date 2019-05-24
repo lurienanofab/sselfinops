@@ -1,6 +1,7 @@
 ﻿using LNF.Cache;
 using LNF.CommonTools;
 using LNF.Repository;
+using LNF.Web;
 using sselFinOps.AppCode;
 using System;
 using System.Data;
@@ -28,7 +29,7 @@ namespace sselFinOps
 
             if (Page.IsPostBack)
             {
-                dsReport = (DataSet)CacheManager.Current.CacheData();
+                dsReport = ContextBase.CacheData();
                 if (dsReport == null)
                     Response.Redirect("~");
                 else if (dsReport.DataSetName != "DatHistorical")
@@ -36,7 +37,7 @@ namespace sselFinOps
             }
             else
             {
-                CacheManager.Current.RemoveCacheData(); //remove anything left in cache
+                ContextBase.RemoveCacheData(); //remove anything left in cache
 
                 dsReport = new DataSet("DatHistorical");
 
@@ -55,7 +56,7 @@ namespace sselFinOps
                     reader.Close();
                 }
 
-                CacheManager.Current.CacheData(dsReport);
+                ContextBase.CacheData(dsReport);
 
                 // populate site dropdown - preselect using site linked in from
             }
@@ -76,7 +77,7 @@ namespace sselFinOps
                     .Param("OrgID", int.Parse(ddlOrg.SelectedValue))
                     .FillDataSet(dsReport, "dbo.Account_Select", "Account");
 
-                CacheManager.Current.CacheData(dsReport);
+                ContextBase.CacheData(dsReport);
 
                 LoadAccounts();
             }

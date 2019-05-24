@@ -1,5 +1,6 @@
 ﻿using LNF.Billing;
 using LNF.Data;
+using LNF.Models.Data;
 using LNF.Repository;
 using LNF.Repository.Billing;
 using LNF.Repository.Data;
@@ -41,14 +42,14 @@ namespace sselFinOps
 
         protected void LoadAccounts()
         {
-            Account[] query;
+            IAccount[] query;
 
             if (ShowAllAccounts())
-                query = DA.Current.Query<Account>().OrderBy(x => x.Name).ToArray();
+                query = AccountManager.GetAccounts().ToArray();
             else
-                query = AccountManager.ActiveAccounts().ToArray();
+                query = AccountManager.GetActiveAccounts().ToArray();
 
-            ddlAccount.DataSource = query.Where(x => x.Org.OrgType.ChargeType.ChargeTypeID == 5).Select(CreateAccountSelectItem);
+            ddlAccount.DataSource = query.Where(x => x.ChargeTypeID == 5).Select(CreateAccountSelectItem);
             ddlAccount.DataBind();
         }
 
@@ -66,7 +67,8 @@ namespace sselFinOps
                 case "disable":
                     int id = Convert.ToInt32(e.CommandArgument);
                     OrgRecharge item = DA.Current.Single<OrgRecharge>(id);
-                    OrgRechargeUtility.Disable(item);
+                    var util = new OrgRechargeUtility(DateTime.Now, Provider);
+                    util.Disable(item);
                     LoadOrgRechargeItems();
                     break;
             }
@@ -74,25 +76,25 @@ namespace sselFinOps
 
         protected object CreateRepeaterItem(OrgRecharge x)
         {
-            AccountChartFields fields = new AccountChartFields(x.Account);
+            AccountChartFields fields = new AccountChartFields(x.Account.CreateModel<IAccount>());
             return new
             {
-                OrgRechargeID = x.OrgRechargeID,
-                OrgName = x.Org.OrgName,
+                x.OrgRechargeID,
+                x.Org.OrgName,
                 AccountName = x.Account.Name,
-                ShortCode = fields.ShortCode,
-                Project = fields.Project,
+                fields.ShortCode,
+                fields.Project,
                 EnableDate = x.EnableDate.ToString("M/d/yyyy h:mm:ss tt"),
                 AccountCssClass = x.Account.Active ? "active" : "inactive"
             };
         }
 
-        protected object CreateAccountSelectItem(Account x)
+        protected object CreateAccountSelectItem(IAccount x)
         {
             return new
             {
-                AccountID = x.AccountID,
-                AccountName = x.GetNameWithShortCode()
+                x.AccountID,
+                AccountName = x.NameWithShortCode
             };
         }
 
@@ -103,7 +105,10 @@ namespace sselFinOps
             Org org = DA.Current.Single<Org>(orgId);
             Account acct = DA.Current.Single<Account>(accountId);
             if (org != null && acct != null)
-                OrgRechargeUtility.Enable(org, acct);
+            {
+                var util = new OrgRechargeUtility(DateTime.Now, Provider);
+                util.Enable(org, acct);
+            }
             LoadOrgRechargeItems();
         }
     }

@@ -116,11 +116,11 @@ namespace sselFinOps
             if (inv.StartDate >= RepInvoice.July2009)
             {
                 string alert = string.Empty;
-                filePath = ExcelUtility.GenerateInvoiceExcelReport(inv, CacheManager.Current.CurrentUser.ClientID, string.Empty, true, ref alert);
+                filePath = ExcelUtility.GenerateInvoiceExcelReport(inv, CurrentUser.ClientID, string.Empty, true, ref alert);
                 ShowError(alert);
             }
             else
-                filePath = ExcelUtility.MakeSpreadSheet(inv.Header.AccountID, inv.Header.InvoiceNumber, inv.Header.DeptRef, inv.Header.OrgName, CacheManager.Current.CurrentUser.ClientID, inv.StartDate, inv.EndDate);
+                filePath = ExcelUtility.MakeSpreadSheet(inv.Header.AccountID, inv.Header.InvoiceNumber, inv.Header.DeptRef, inv.Header.OrgName, CurrentUser.ClientID, inv.StartDate, inv.EndDate);
 
             // display excel spreadsheet
             if (!string.IsNullOrEmpty(filePath))
