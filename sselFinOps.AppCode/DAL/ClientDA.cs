@@ -8,7 +8,7 @@ namespace sselFinOps.AppCode.DAL
     {
         public static DataTable GetAllClient(DateTime sDate, DateTime eDate)
         {
-            var dt = DA.Command()
+            var dt = DataCommand.Create()
                 .Param("Action", "AllUniqueName")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -23,7 +23,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataTable GetClientOrgListWithLabUserPrivilege(int numMonths)
         {
-            var dtClientOrg = DA.Command().Param("Action", "ForExpCost").FillDataTable("dbo.ClientOrg_Select");
+            var dtClientOrg = DataCommand.Create().Param("Action", "ForExpCost").FillDataTable("dbo.ClientOrg_Select");
 
             for (int i = 0; i < numMonths; i++)
             {
@@ -45,7 +45,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataTable GetAllClientAccountWithManagerName(DateTime sDate, DateTime eDate)
         {
-            var dt = DA.Command()
+            var dt = DataCommand.Create()
                 .Param("Action", "AllWithManagerName")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -60,7 +60,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataTable GetInternalClients(DateTime sDate, DateTime eDate)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByInternal")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -69,7 +69,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataTable GetStaff(DateTime sDate, DateTime eDate)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByStaff")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -78,7 +78,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataTable GetRemoteUser(DateTime sDate, DateTime eDate)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByRemoteUser")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)

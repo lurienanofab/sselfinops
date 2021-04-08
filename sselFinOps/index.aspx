@@ -1,6 +1,5 @@
 ﻿<%@ Page Title="FinOps Main Page" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="Index.aspx.cs" Inherits="sselFinOps.Index" %>
-
-<%@ Import Namespace="LNF.Models.Data" %>
+<%@ Import Namespace="LNF.Data" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>
@@ -159,7 +158,7 @@
             </tr>
             <tr>
                 <td>
-                    <asp:Button ID="btnLogout" runat="server" Width="209" CssClass="CommandButton" Text="Exit Application" OnClick="btnLogout_Click" />
+                    <asp:Button ID="btnLogout" runat="server" Width="209" CssClass="CommandButton" Text="Exit Application" OnClick="BtnLogout_Click" />
                 </td>
                 <td>&nbsp;</td>
                 <td>&nbsp;</td>

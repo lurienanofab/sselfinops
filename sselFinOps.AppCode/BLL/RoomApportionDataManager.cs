@@ -8,7 +8,7 @@ namespace sselFinOps.AppCode.BLL
     {
         public static DataTable GetNAPRoomApportionDataByPeriod(DateTime startPeriod, DateTime endPeriod, int roomId)
         {
-            var dt = DA.Command()
+            var dt = DataCommand.Create()
                 .Param("Action", "SelectByPeriod")
                 .Param("StartPeriod", startPeriod)
                 .Param("EndPeriod", endPeriod)

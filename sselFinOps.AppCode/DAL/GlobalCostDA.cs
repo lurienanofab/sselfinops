@@ -7,7 +7,7 @@ namespace sselFinOps.AppCode.DAL
     {
         public static GlobalCost GetGlobalCost()
         {
-            using (var reader = DA.Command().ExecuteReader("dbo.GlobalCost_Select"))
+            using (var reader = DataCommand.Create().ExecuteReader("dbo.GlobalCost_Select"))
             {
                 GlobalCost gc = new GlobalCost();
 

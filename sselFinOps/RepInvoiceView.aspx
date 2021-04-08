@@ -63,7 +63,7 @@
                 <asp:Literal runat="server" ID="litInvoiceTotal"></asp:Literal>
             </div>
         </div>
-        <asp:Button runat="server" ID="btnCreateExcelInvoice" Text="Save Excel Invoice" OnClick="btnCreateExcelInvoice_Click" CssClass="export-button"></asp:Button>
+        <asp:Button runat="server" ID="btnCreateExcelInvoice" Text="Save Excel Invoice" OnClick="BtnCreateExcelInvoice_Click" CssClass="export-button"></asp:Button>
     </div>
 </asp:Content>
 

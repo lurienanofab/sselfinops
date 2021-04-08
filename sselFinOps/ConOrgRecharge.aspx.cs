@@ -1,9 +1,5 @@
 ﻿using LNF.Billing;
 using LNF.Data;
-using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Repository.Billing;
-using LNF.Repository.Data;
 using sselFinOps.AppCode;
 using System;
 using System.Linq;
@@ -27,7 +23,7 @@ namespace sselFinOps
 
         protected bool ShowAllAccounts()
         {
-            if (String.IsNullOrEmpty(Request.QueryString["show_all_accounts"]))
+            if (string.IsNullOrEmpty(Request.QueryString["show_all_accounts"]))
                 return false;
             else
                 return Request.QueryString["show_all_accounts"] == "yes";
@@ -35,7 +31,7 @@ namespace sselFinOps
 
         protected void LoadOrganizations()
         {
-            var query = DA.Current.Query<Org>().Where(x => x.Active).OrderBy(x => x.OrgName).ToArray();
+            var query = Provider.Data.Org.GetActiveOrgs().OrderBy(x => x.OrgName).ToArray();
             ddlOrg.DataSource = query;
             ddlOrg.DataBind();
         }
@@ -45,9 +41,9 @@ namespace sselFinOps
             IAccount[] query;
 
             if (ShowAllAccounts())
-                query = AccountManager.GetAccounts().ToArray();
+                query = Provider.Data.Account.GetAccounts().ToArray();
             else
-                query = AccountManager.GetActiveAccounts().ToArray();
+                query = Provider.Data.Account.GetActiveAccounts().ToArray();
 
             ddlAccount.DataSource = query.Where(x => x.ChargeTypeID == 5).Select(CreateAccountSelectItem);
             ddlAccount.DataBind();
@@ -55,7 +51,8 @@ namespace sselFinOps
 
         protected void LoadOrgRechargeItems()
         {
-            OrgRecharge[] query = DA.Current.Query<OrgRecharge>().Where(x => x.DisableDate == null).ToArray();
+            var util = new OrgRechargeUtility(DateTime.Now, Provider);
+            IOrgRecharge[] query = Provider.Billing.OrgRecharge.GetActiveOrgRecharges().ToArray();
             rptOrgRecharge.DataSource = query.Select(CreateRepeaterItem);
             rptOrgRecharge.DataBind();
         }
@@ -66,26 +63,27 @@ namespace sselFinOps
             {
                 case "disable":
                     int id = Convert.ToInt32(e.CommandArgument);
-                    OrgRecharge item = DA.Current.Single<OrgRecharge>(id);
                     var util = new OrgRechargeUtility(DateTime.Now, Provider);
-                    util.Disable(item);
+                    util.Disable(id);
                     LoadOrgRechargeItems();
                     break;
             }
         }
 
-        protected object CreateRepeaterItem(OrgRecharge x)
+        protected object CreateRepeaterItem(IOrgRecharge x)
         {
-            AccountChartFields fields = new AccountChartFields(x.Account.CreateModel<IAccount>());
+            var acct = Provider.Data.Account.GetAccount(x.AccountID);
+            AccountChartFields fields = new AccountChartFields(acct);
+
             return new
             {
                 x.OrgRechargeID,
-                x.Org.OrgName,
-                AccountName = x.Account.Name,
+                x.OrgName,
+                x.AccountName,
                 fields.ShortCode,
                 fields.Project,
                 EnableDate = x.EnableDate.ToString("M/d/yyyy h:mm:ss tt"),
-                AccountCssClass = x.Account.Active ? "active" : "inactive"
+                AccountCssClass = x.AccountActive ? "active" : "inactive"
             };
         }
 
@@ -102,8 +100,8 @@ namespace sselFinOps
         {
             int orgId = Convert.ToInt32(ddlOrg.SelectedValue);
             int accountId = Convert.ToInt32(ddlAccount.SelectedValue);
-            Org org = DA.Current.Single<Org>(orgId);
-            Account acct = DA.Current.Single<Account>(accountId);
+            IOrg org = Provider.Data.Org.GetOrg(orgId);
+            IAccount acct = Provider.Data.Account.GetAccount(accountId);
             if (org != null && acct != null)
             {
                 var util = new OrgRechargeUtility(DateTime.Now, Provider);

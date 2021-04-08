@@ -1,4 +1,4 @@
-﻿using LNF.Cache;
+﻿using LNF;
 using LNF.Web;
 using sselFinOps.AppCode;
 using System.IO;
@@ -12,13 +12,17 @@ namespace sselFinOps
     /// </summary>
     public class Spreadsheets : IHttpHandler, IReadOnlySessionState
     {
+        [Inject] public IProvider Provider { get; set; }
+
         public HttpContextBase ContextBase { get; private set; }
 
         public void ProcessRequest(HttpContext context)
         {
             ContextBase = new HttpContextWrapper(context);
 
-            int clientId = ContextBase.CurrentUser().ClientID;
+            var currentUser = ContextBase.CurrentUser(Provider);
+
+            int clientId = currentUser.ClientID;
             string name = context.Request.QueryString["name"];
             string type = context.Request.QueryString["type"];
 

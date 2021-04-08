@@ -44,38 +44,41 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="GemBox.ExcelLite">
-      <HintPath>..\..\SharedLib\GemBox.ExcelLite.dll</HintPath>
+      <HintPath>..\..\..\..\SharedLib\GemBox.ExcelLite.dll</HintPath>
     </Reference>
-    <Reference Include="Ical.Net, Version=4.1.8.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ical.Net.4.1.9\lib\net46\Ical.Net.dll</HintPath>
+    <Reference Include="Ical.Net, Version=4.1.8.0, Culture=neutral, PublicKeyToken=65c0446cd019ea53, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ical.Net.4.1.11\lib\net46\Ical.Net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Owin, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.4.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
+    <Reference Include="Microsoft.Owin, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.1.1\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.1.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.1.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.12.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NodaTime, Version=2.4.4.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
-      <HintPath>..\packages\NodaTime.2.4.4\lib\net45\NodaTime.dll</HintPath>
+    <Reference Include="NodaTime, Version=3.0.5.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NodaTime.3.0.5\lib\netstandard2.0\NodaTime.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
-    <Reference Include="StructureMap, Version=4.7.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\StructureMap.4.7.0\lib\net45\StructureMap.dll</HintPath>
+    <Reference Include="SimpleInjector, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleInjector.5.3.0\lib\net461\SimpleInjector.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Net" />
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Reflection.TypeExtensions, Version=4.1.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Reflection.TypeExtensions.4.5.1\lib\net461\System.Reflection.TypeExtensions.dll</HintPath>
+    <Reference Include="System.Reflection.TypeExtensions, Version=4.1.5.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reflection.TypeExtensions.4.7.0\lib\net461\System.Reflection.TypeExtensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=5.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.5.0.0\lib\net45\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.InteropServices.RuntimeInformation.4.3.0\lib\net45\System.Runtime.InteropServices.RuntimeInformation.dll</HintPath>
@@ -278,6 +281,7 @@
     <Compile Include="MscExp.aspx.designer.cs">
       <DependentUpon>MscExp.aspx</DependentUpon>
     </Compile>
+    <Compile Include="PageInitializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepInvoice.aspx.cs">
       <DependentUpon>RepInvoice.aspx</DependentUpon>
@@ -319,10 +323,6 @@
     <ProjectReference Include="..\..\LNF\LNF.Impl\LNF.Impl.csproj">
       <Project>{7a6cd165-0c48-4680-9a49-281688eb1cd8}</Project>
       <Name>LNF.Impl</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\lnf\LNF.Models\LNF.Models.csproj">
-      <Project>{98c7f73d-ef9d-4a87-8b79-a1208085cfbd}</Project>
-      <Name>LNF.Models</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\lnf\LNF.WebApi\LNF.WebApi.csproj">
       <Project>{85be7662-47c8-4e82-8090-3f2bd61cc0f7}</Project>

@@ -8,7 +8,7 @@ namespace sselFinOps.AppCode.DAL
     {
         public static DataTable GetUserListLessThanXMin(DateTime startPeriod, DateTime endPeriod, float x, string roomType)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", roomType == "CleanRoom", "GetUserListLessThanXMinutesCleanRoom", "GetUserListLessThanXMinutesChemRoom")
                 .Param("StartPeriod", startPeriod)
                 .Param("EndPeriod", endPeriod)

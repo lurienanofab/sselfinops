@@ -166,7 +166,7 @@ namespace sselFinOps.AppCode
 
         public static string MakeSpreadSheet(int accountId, string invoiceNumber, string deptRef, string orgName, int currentUserClientId, DateTime startPeriod, DateTime endPeriod)
         {
-            var dtAddress = DA.Command()
+            var dtAddress = DataCommand.Create()
                 .Param("Action", "ByAccount")
                 .Param("AccountID", accountId)
                 .FillDataTable("dbo.Address_Select");
@@ -174,7 +174,7 @@ namespace sselFinOps.AppCode
             // get client data
             // using All is hackish. It was ByOrg, but this caused a problem with remote users
             // the other option is to select for each client, but that is probably even less efficient
-            var dtClient = DA.Command()
+            var dtClient = DataCommand.Create()
                 .Param("Action", "All")
                 .Param("sDate", startPeriod)
                 .Param("eDate", endPeriod)

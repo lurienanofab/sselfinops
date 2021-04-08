@@ -8,7 +8,7 @@ namespace sselFinOps.AppCode.DAL
     {
         public static DataSet GetDataTablesForSUBReport(DateTime startPeriod, DateTime endPeriod)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ForSUBReport")
                 .Param("StartPeriod", startPeriod)
                 .Param("EndPeriod", endPeriod)
@@ -17,7 +17,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataSet GetDataTablesForSUBReportWithTwoCreditsAccount(DateTime startPeriod, DateTime endPeriod)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ForSUBReportWithTwoCreditAccounts")
                 .Param("StartPeriod", startPeriod)
                 .Param("EndPeriod", endPeriod)

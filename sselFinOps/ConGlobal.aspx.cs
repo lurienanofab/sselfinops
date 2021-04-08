@@ -1,6 +1,5 @@
 ﻿using LNF.CommonTools;
-using LNF.Models.Data;
-using LNF.Repository;
+using LNF.Data;
 using sselFinOps.AppCode;
 using System;
 using System.Data;
@@ -13,11 +12,11 @@ namespace sselFinOps
         {
             if (!Page.IsPostBack)
             {
-                var dtAccount = DA.Command()
+                var dtAccount = DataCommand()
                     .Param("Action", "ActiveNow")
                     .FillDataTable("dbo.Account_Select");
 
-                var dtAdmin = DA.Command()
+                var dtAdmin = DataCommand()
                     .Param("Action", "")
                     .Param("Privs", (int)ClientPrivilege.Administrator)
                     .FillDataTable("dbo.Client_Select");
@@ -103,7 +102,7 @@ namespace sselFinOps
 
             if (modified)
             {
-                DA.Command()
+                DataCommand()
                     .Param("LabAccountID", Convert.ToInt32(ddlGenLabAcct.SelectedValue))
                     .Param("LabCreditAccountID", Convert.ToInt32(ddlGenLabCredit.SelectedValue))
                     .Param("SubsidyCreditAccountID", Convert.ToInt32(ddlSubsidyCreditAcct.SelectedValue))
@@ -118,7 +117,7 @@ namespace sselFinOps
 
         private DataTable GetCurrent()
         {
-            return DA.Command().FillDataTable("dbo.GlobalCost_Select");
+            return DataCommand().FillDataTable("dbo.GlobalCost_Select");
         }
 
         private void ModifiedCheck<T>(DataRow dr, string column, T value, ref bool modified)

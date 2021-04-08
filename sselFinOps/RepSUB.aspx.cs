@@ -1,8 +1,7 @@
 ﻿using GemBox.ExcelLite;
-using LNF.Cache;
-using LNF.Models.Billing;
-using LNF.Models.Billing.Reports.ServiceUnitBilling;
-using LNF.Models.Data;
+using LNF.Billing;
+using LNF.Billing.Reports.ServiceUnitBilling;
+using LNF.Data;
 using sselFinOps.AppCode;
 using sselFinOps.AppCode.SUB;
 using System;
@@ -116,7 +115,7 @@ namespace sselFinOps
             else
             {
                 BillingUnit summaryUnit = new BillingUnit();
-                RoomReport mgr = new RoomReport(StartPeriod, EndPeriod, BillingTypeManager);
+                RoomReport mgr = new RoomReport(StartPeriod, EndPeriod);
                 DataTable dtRoom = mgr.GenerateDataTable(summaryUnit);
                 filePath = mgr.GenerateExcelFile(dtRoom);
             }

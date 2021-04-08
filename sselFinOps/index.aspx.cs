@@ -1,5 +1,4 @@
-﻿using LNF.Cache;
-using LNF.Models.Data;
+﻿using LNF.Data;
 using LNF.Web;
 using LNF.Web.Content;
 using System;
@@ -50,7 +49,7 @@ namespace sselFinOps
             }
         }
 
-        protected void btnLogout_Click(object sender, EventArgs e)
+        protected void BtnLogout_Click(object sender, EventArgs e)
         {
             ContextBase.RemoveCacheData(); //remove anything left in cache
             Session.Abandon();

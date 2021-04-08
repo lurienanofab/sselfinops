@@ -1,9 +1,11 @@
 ﻿using LNF;
-using LNF.Cache;
-using LNF.Impl.Context;
-using LNF.Impl.DependencyInjection.Web;
+using LNF.Impl;
+using LNF.Web;
 using System;
+using System.Linq;
+using System.Reflection;
 using System.Security.Principal;
+using System.Web.Compilation;
 using System.Web.Security;
 
 namespace sselFinOps
@@ -12,9 +14,15 @@ namespace sselFinOps
     {
         protected void Application_Start(object sender, EventArgs e)
         {
-            var ctx = new WebContext(new WebContextFactory());
-            var ioc = new IOC(ctx);
-            ServiceProvider.Current = ioc.Resolver.GetInstance<ServiceProvider>();
+            Assembly[] assemblies = BuildManager.GetReferencedAssemblies().Cast<Assembly>().ToArray();
+
+            // setup up dependency injection container
+            var wcc = new WebContainerConfiguration(WebApp.Current.Container);
+            wcc.EnablePropertyInjection();
+            wcc.RegisterAllTypes();
+
+            // setup web dependency injection
+            WebApp.Current.Bootstrap(assemblies);
 
             if (ServiceProvider.Current.IsProduction())
                 Application["AppServer"] = "http://" + Environment.MachineName + ".eecs.umich.edu/";
@@ -33,9 +41,9 @@ namespace sselFinOps
         protected void Session_Start(object sender, EventArgs e)
         {
             if (ServiceProvider.Current.IsProduction())
-                Session["Logout"] = Convert.ToString(Application["AppServer"]) + ServiceProvider.Current.Context.LoginUrl;
+                Session["Logout"] = Convert.ToString(Application["AppServer"]) + ServiceProvider.Current.LoginUrl();
             else
-                Session["Logout"] = ServiceProvider.Current.Context.LoginUrl;
+                Session["Logout"] = ServiceProvider.Current.LoginUrl();
         }
     }
 }

@@ -1,5 +1,5 @@
-﻿using LNF.Models.Billing;
-using LNF.Models.Billing.Reports.ServiceUnitBilling;
+﻿using LNF.Billing;
+using LNF.Billing.Reports.ServiceUnitBilling;
 using sselFinOps.AppCode;
 using System;
 using System.Collections.Generic;
@@ -98,7 +98,7 @@ namespace sselFinOps.Data
                     throw new ArgumentException($"Invalid charge: {charge}", "charge");
             }
 
-            Func<ServiceUnitBillingReportItem, int> invoiceDateOrder = item =>
+            int invoiceDateOrder(ServiceUnitBillingReportItem item)
             {
                 if (string.IsNullOrEmpty(item.InvoiceDate))
                     return 0;
@@ -108,7 +108,7 @@ namespace sselFinOps.Data
                     var ts = (int)(d.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
                     return ts;
                 }
-            };
+            }
 
             var items = allItems
                 .Where(x => !string.IsNullOrEmpty(x.CardType))

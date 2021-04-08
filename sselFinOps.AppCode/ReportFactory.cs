@@ -1,7 +1,7 @@
 ﻿using LNF;
-using LNF.Models.Billing;
-using LNF.Models.Billing.Reports;
-using LNF.Models.Billing.Reports.ServiceUnitBilling;
+using LNF.Billing;
+using LNF.Billing.Reports;
+using LNF.Billing.Reports.ServiceUnitBilling;
 using System;
 using System.Collections.Generic;
 
@@ -9,7 +9,7 @@ namespace sselFinOps.AppCode
 {
     public static class ReportFactory
     {
-        private static IReportManager ReportClient => ServiceProvider.Current.Billing.Report;
+        private static IReportRepository ReportClient => ServiceProvider.Current.Billing.Report;
 
         public static RoomJU GetReportRoomJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
         {

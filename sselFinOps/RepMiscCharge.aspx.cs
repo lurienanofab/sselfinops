@@ -1,12 +1,10 @@
 ﻿using LNF;
-using LNF.Cache;
+using LNF.Billing;
+using LNF.Billing.Process;
 using LNF.CommonTools;
 using LNF.Data;
-using LNF.Models.Billing;
-using LNF.Models.Billing.Process;
 using sselFinOps.AppCode;
 using sselFinOps.AppCode.BLL;
-using sselFinOps.AppCode.DAL;
 using System;
 using System.Data;
 using System.Linq;
@@ -135,8 +133,8 @@ namespace sselFinOps
 
             if (userSelectedValue != -1)
             {
-                var client = CacheManager.Current.GetClient(userSelectedValue);
-                var accts = AccountManager.GetActiveAccounts(client.ClientID, PeriodPicker1.SelectedPeriod, PeriodPicker1.SelectedPeriod.AddMonths(1)).ToList();
+                var client = Provider.Data.Client.GetClient(userSelectedValue);
+                var accts = Provider.Data.Client.GetActiveAccounts(client.ClientID, PeriodPicker1.SelectedPeriod, PeriodPicker1.SelectedPeriod.AddMonths(1)).ToList();
                 var util = new ClientPreferenceUtility(Provider);
                 var orderedAccounts = util.OrderAccountsByUserPreference(client, accts);
                 if (orderedAccounts != null)
@@ -276,7 +274,7 @@ namespace sselFinOps
 
         protected string GetRecalcSubsidyUrl(object item)
         {
-            var i = (MiscBillingChargeItem)item;
+            var i = (IMiscBillingCharge)item;
 
             if (DateTime.TryParse(txtActDate.Text, out DateTime actDate))
                 return GetRecalcSubsidyUrl(actDate, i.ClientID);
@@ -294,7 +292,7 @@ namespace sselFinOps
             //[2015-11-12 jg] only subsidy step4 is needed now
             try
             {
-                ServiceProvider.Current.Billing.Process.BillingProcessStep4(new BillingProcessStep4Command
+                ServiceProvider.Current.Billing.Process.Step4(new Step4Command
                 {
                     Command = "subsidy",
                     Period = period,

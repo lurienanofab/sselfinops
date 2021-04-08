@@ -1,5 +1,5 @@
-﻿using LNF.Repository;
-using LNF.Repository.Billing;
+﻿using LNF.Billing;
+using LNF.Repository;
 using System;
 using System.Data;
 
@@ -9,7 +9,7 @@ namespace sselFinOps.AppCode.BLL
     {
         public static DataTable GetBillingTypes()
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "All")
                 .FillDataTable("dbo.BillingType_Select");
         }
@@ -20,56 +20,56 @@ namespace sselFinOps.AppCode.BLL
 
             if (room == LabRoom.CleanRoom)
             {
-                if (billingTypeId == BillingType.Int_Ga)
+                if (billingTypeId == BillingTypes.Int_Ga)
                     return (totalCalcCost / 1315) * 875;
 
-                else if (billingTypeId == BillingType.Int_Si)
+                else if (billingTypeId == BillingTypes.Int_Si)
                     return totalCalcCost;
 
-                else if (billingTypeId == BillingType.Int_Hour)
+                else if (billingTypeId == BillingTypes.Int_Hour)
                     return 2.5 * entries + 15 * hours;
 
-                else if (billingTypeId == BillingType.Int_Tools)
+                else if (billingTypeId == BillingTypes.Int_Tools)
                     return 2.5 * entries;
 
-                else if (billingTypeId == BillingType.ExtAc_Ga)
+                else if (billingTypeId == BillingTypes.ExtAc_Ga)
                     return (totalCalcCost / 1315) * 875;
 
-                else if (billingTypeId == BillingType.ExtAc_Si)
+                else if (billingTypeId == BillingTypes.ExtAc_Si)
                     return totalCalcCost;
 
-                else if (billingTypeId == BillingType.ExtAc_Tools)
+                else if (billingTypeId == BillingTypes.ExtAc_Tools)
                     return 2.5 * entries;
 
-                else if (billingTypeId == BillingType.ExtAc_Hour)
+                else if (billingTypeId == BillingTypes.ExtAc_Hour)
                     return 2.5 * entries + 15 * hours;
 
-                else if (billingTypeId == BillingType.NonAc)
+                else if (billingTypeId == BillingTypes.NonAc)
                     return hours * 77;
 
-                else if (billingTypeId == BillingType.NonAc_Tools)
+                else if (billingTypeId == BillingTypes.NonAc_Tools)
                     return 2.5 * hours;
 
-                else if (billingTypeId == BillingType.NonAc_Hour)
+                else if (billingTypeId == BillingTypes.NonAc_Hour)
                     return 2.5 * entries + 45 * hours;
 
-                else if (billingTypeId == BillingType.Other)
+                else if (billingTypeId == BillingTypes.Other)
                     return 0;
             }
             else if (room == LabRoom.ChemRoom)
             {
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                     return 0;
-                else if (billingTypeId >= BillingType.NonAc)
+                else if (billingTypeId >= BillingTypes.NonAc)
                     return 190;
                 else
                     return 95;
             }
             else if (room == LabRoom.TestingLab)
             {
-                if (billingTypeId == BillingType.Other)
+                if (billingTypeId == BillingTypes.Other)
                     return 0;
-                else if (billingTypeId >= BillingType.NonAc)
+                else if (billingTypeId >= BillingTypes.NonAc)
                     return 50;
                 else
                     return 25;
@@ -84,7 +84,7 @@ namespace sselFinOps.AppCode.BLL
         {
             try
             {
-                return DA.Command()
+                return DataCommand.Create()
                     .Param("Action", "GetCurrentTypeName")
                     .Param("ClientOrgID", clientOrgId)
                     .ExecuteScalar<string>("dbo.ClientOrgBillingTypeTS_Select").Value;

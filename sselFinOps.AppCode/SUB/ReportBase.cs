@@ -1,5 +1,5 @@
 ﻿using GemBox.ExcelLite;
-using LNF.Models.Billing.Reports.ServiceUnitBilling;
+using LNF.Billing.Reports.ServiceUnitBilling;
 using System;
 using System.Data;
 using System.IO;
@@ -10,20 +10,18 @@ namespace sselFinOps.AppCode.SUB
 {
     public abstract class ReportBase
     {
-        private DateTime _StartPeriod;
-        private DateTime _EndPeriod;
         protected BillingUnit[] summaryUnits;
 
         public string CompanyName { get { return "LNF"; } }
         public string FinancialManagerUserName { get { return "doscar"; } }
         public DateTime July2010 { get { return new DateTime(2010, 7, 1); } }
-        public DateTime StartPeriod { get { return _StartPeriod; } }
-        public DateTime EndPeriod { get { return _EndPeriod; } }
+        public DateTime StartPeriod { get; }
+        public DateTime EndPeriod { get; }
 
         public ReportBase(DateTime startPeriod, DateTime endPeriod)
         {
-            _StartPeriod = startPeriod;
-            _EndPeriod = endPeriod;
+            StartPeriod = startPeriod;
+            EndPeriod = endPeriod;
         }
 
         //The table built represents the SUB excel file, so it has all the columns the SUB excel file has
@@ -156,22 +154,6 @@ namespace sselFinOps.AppCode.SUB
             return workFilePath;
         }
 
-        public int zGetSUBNumber(DateTime period, string SUBType)
-        {
-            int yearoff = period.Year - July2010.Year;
-            int monthoff = period.Month - July2010.Month;
-
-            int increment = (yearoff * 12 + monthoff) * 3;
-
-            //263 is the starting number for room sub in July 2010
-            if (SUBType == "Tool")
-                return 263 + increment + 1;
-            else if (SUBType == "Store")
-                return 263 + increment + 2;
-            else
-                return 263 + increment;
-        }
-
         protected string GetLineDesc(DataRow dr, DataTable dtClient, DataTable dtBillingType = null)
         {
             int clientId = dr.Field<int>("ClientID");
@@ -220,22 +202,22 @@ namespace sselFinOps.AppCode.SUB
 
     public struct AccountNumber
     {
+        public string Account { get; }
+        public string FundCode { get; }
+        public string DeptID { get; }
+        public string ProgramCode { get; }
+        public string Class { get; }
+        public string ProjectGrant { get; }
+
         private AccountNumber(string account, string fundCode, string deptId, string programCode, string className, string projectGrant)
         {
-            _Account = account;
-            _FundCode = fundCode;
-            _DeptID = deptId;
-            _ProgramCode = programCode;
-            _Class = className;
-            _ProjectGrant = projectGrant;
+            Account = account;
+            FundCode = fundCode;
+            DeptID = deptId;
+            ProgramCode = programCode;
+            Class = className;
+            ProjectGrant = projectGrant;
         }
-
-        private string _Account;
-        private string _FundCode;
-        private string _DeptID;
-        private string _ProgramCode;
-        private string _Class;
-        private string _ProjectGrant;
 
         public static AccountNumber Parse(string number)
         {
@@ -251,12 +233,5 @@ namespace sselFinOps.AppCode.SUB
                 projectGrant: number.Substring(27, 7)
             );
         }
-
-        public string Account { get { return _Account; } }
-        public string FundCode { get { return _FundCode; } }
-        public string DeptID { get { return _DeptID; } }
-        public string ProgramCode { get { return _ProgramCode; } }
-        public string Class { get { return _Class; } }
-        public string ProjectGrant { get { return _ProjectGrant; } }
     }
 }

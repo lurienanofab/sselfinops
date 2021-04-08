@@ -1,7 +1,5 @@
 ﻿using LNF;
 using LNF.Billing;
-using LNF.Models.Billing;
-using LNF.Repository.Billing;
 using System;
 using System.Data;
 
@@ -12,7 +10,7 @@ namespace sselFinOps.AppCode.BLL
         public static readonly DateTime July2010 = new DateTime(2010, 7, 1);
         public static readonly DateTime April2011 = new DateTime(2011, 4, 1);
 
-        public static IBillingTypeManager BillingTypeManager => ServiceProvider.Current.Billing.BillingType;
+        public static IBillingTypeRepository BillingTypeManager => ServiceProvider.Current.Billing.BillingType;
 
         [Obsolete("Use LNF.CommonTools.LineCostUtility.CalculateRoomLineCost instead.")]
         public static void ApplyRoomFormula(DataTable dtIn)
@@ -26,7 +24,7 @@ namespace sselFinOps.AppCode.BLL
                 room = (LabRoom)dr.Field<int>("RoomID");
 
                 //1. Find out all Monthly type users and apply to Clean room
-                if (BillingTypeManager.IsMonthlyUserBillingType(billingTypeId))
+                if (BillingTypes.IsMonthlyUserBillingType(billingTypeId))
                 {
                     if (room == LabRoom.CleanRoom)
                         dr["LineCost"] = dr["MonthlyRoomCharge"];
@@ -34,7 +32,7 @@ namespace sselFinOps.AppCode.BLL
                         dr["LineCost"] = dr.Field<decimal>("RoomCharge") + dr.Field<decimal>("EntryCharge");
                 }
                 //2. The growers are charged with room fee only when they reserve and activate a tool
-                else if (BillingTypeManager.IsGrowerUserBillingType(billingTypeId))
+                else if (BillingTypes.IsGrowerUserBillingType(billingTypeId))
                 {
                     if (room == LabRoom.Organics)
                     {
@@ -44,7 +42,7 @@ namespace sselFinOps.AppCode.BLL
                     else
                         dr["LineCost"] = (dr.Field<decimal>("AccountDays") * dr.Field<decimal>("RoomRate")) + dr.Field<decimal>("EntryCharge");
                 }
-                else if (billingTypeId == BillingType.Other)
+                else if (billingTypeId == BillingTypes.Other)
                 {
                     dr["LineCost"] = 0;
                 }
@@ -69,7 +67,7 @@ namespace sselFinOps.AppCode.BLL
                 room = (LabRoom)dr.Field<int>("RoomID");
                 isStarted = dr.Field<bool>("IsStarted");
 
-                if (billingTypeId == BillingType.Int_Ga || billingTypeId == BillingType.Int_Si || billingTypeId == BillingType.ExtAc_Ga || billingTypeId == BillingType.ExtAc_Si)
+                if (billingTypeId == BillingTypes.Int_Ga || billingTypeId == BillingTypes.Int_Si || billingTypeId == BillingTypes.ExtAc_Ga || billingTypeId == BillingTypes.ExtAc_Si)
                 {
                     //Monthly User, charge maks maker for everyone
                     if (room == LabRoom.CleanRoom)
@@ -120,7 +118,7 @@ namespace sselFinOps.AppCode.BLL
                         //2010-12-06 Sandrine doesn't want Remote to be shown
                         //2015-05-13 She must have changed her mind at some later date
                         bool showRemote = true;
-                        if (billingTypeId == BillingType.Remote && !showRemote)
+                        if (billingTypeId == BillingTypes.Remote && !showRemote)
                             dr["LineCost"] = 0;
                     }
                     else

@@ -1,5 +1,4 @@
-﻿using LNF.Models.Data;
-using LNF.Repository;
+﻿using LNF.Data;
 using sselFinOps.AppCode;
 using System;
 using System.Collections.Generic;
@@ -109,18 +108,18 @@ namespace sselFinOps
                 litCostHdr.Text = $"{ItemType} Costs";
 
             // gets list of appropriate items
-            DA.Command()
+            DataCommand()
                 .Param("ItemType", ItemType)
                 .Param("IsActive", 1)
                 .FillDataSet(dsCost, "dbo.Item_Select", ItemType);
 
             // charge type is needed
-            DA.Command()
+            DataCommand()
                 .Param("Action", "All")
                 .FillDataSet(dsCost, "dbo.ChargeType_Select", "ChargeType");
 
             // get multipliers
-            DA.Command()
+            DataCommand()
                 .Param("TableNameOrDescript", $"{ItemType}[a-z]%Cost")
                 .Param("ChargeDate", DateTime.Now)
                 .FillDataSet(dsCost, $"dbo.{tableNamePrefix}Cost_Select", "AuxCost");
@@ -130,7 +129,7 @@ namespace sselFinOps
             dsCost.Tables["AuxCost"].PrimaryKey[0].AutoIncrementSeed = -1;
             dsCost.Tables["AuxCost"].PrimaryKey[0].AutoIncrementStep = -1;
 
-            DA.Command()
+            DataCommand()
                 .Param("TableNameOrDescript", $"{ItemType}Cost")
                 .Param("ChargeDate", DateTime.Now)
                 .FillDataSet(dsCost, $"dbo.{tableNamePrefix}Cost_Select", "Cost");
@@ -337,7 +336,7 @@ namespace sselFinOps
                 dtItemAuxCost.Columns.Add(string.Format("MulVal{0}", drChargeType.Field<int>("ChargeTypeID")), typeof(string));
             }
 
-            DataTable dtAuxCost = DA.Command().Param("CostType", ItemType).FillDataTable("dbo.AuxCost_Select");
+            DataTable dtAuxCost = DataCommand().Param("CostType", ItemType).FillDataTable("dbo.AuxCost_Select");
 
             // force rows into the AuxCost table - one per each type of AuxCost item
             // cannot pull from DB since rows may not yet exist
@@ -1104,7 +1103,7 @@ namespace sselFinOps
             {
                 tableNamePrefix = Convert.ToString(Session["Exp"]);
 
-                return DA.Command().Update(dt, cfg =>
+                return DataCommand().Update(dt, cfg =>
                 {
                     cfg.Insert.AddParameter("ChargeTypeID", SqlDbType.Int);
                     cfg.Insert.AddParameter("TableNameOrDescript", SqlDbType.NVarChar, 50);

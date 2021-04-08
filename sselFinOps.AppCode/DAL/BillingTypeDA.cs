@@ -7,7 +7,7 @@ namespace sselFinOps.AppCode.DAL
     {
         public static DataTable GetAllBillingTypes()
         {
-            var dt = DA.Command().Param("Action", "All").FillDataTable("dbo.BillingType_Select");
+            var dt = DataCommand.Create().Param("Action", "All").FillDataTable("dbo.BillingType_Select");
             dt.PrimaryKey = new[] { dt.Columns["BillingTypeID"] };
             return dt;
         }

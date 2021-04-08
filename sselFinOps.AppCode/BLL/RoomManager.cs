@@ -19,7 +19,7 @@ namespace sselFinOps.AppCode.BLL
     {
         public static DataTable GetAllNAPRoomsWithCosts(DateTime period)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "NAPRoomsWithCost")
                 .Param("Period", period)
                 .FillDataTable("dbo.Room_Select");

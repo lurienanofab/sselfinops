@@ -1,4 +1,4 @@
-﻿using LNF.Models.Data;
+﻿using LNF.Data;
 using System;
 
 namespace sselFinOps.AppCode
@@ -6,13 +6,9 @@ namespace sselFinOps.AppCode
     [Obsolete]
     public class AuthInfo
     {
-        private string _Location;
-        private bool _ShowButton;
-        private ClientPrivilege _AuthTypes;
-
-        public string Location { get { return _Location; } }
-        public bool ShowButton { get { return _ShowButton; } }
-        public ClientPrivilege AuthTypes { get { return _AuthTypes; } }
+        public string Location { get; private set; }
+        public bool ShowButton { get; private set; }
+        public ClientPrivilege AuthTypes { get; private set; }
 
         private AuthInfo() { }
 
@@ -20,9 +16,9 @@ namespace sselFinOps.AppCode
         {
             return new AuthInfo()
             {
-                _Location = location,
-                _AuthTypes = authTypes,
-                _ShowButton = showButton
+                Location = location,
+                AuthTypes = authTypes,
+                ShowButton = showButton
             };
         }
     }

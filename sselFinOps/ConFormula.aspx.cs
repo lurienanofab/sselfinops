@@ -1,7 +1,4 @@
-﻿using LNF.Billing;
-using LNF.Cache;
-using LNF.CommonTools;
-using LNF.Repository;
+﻿using LNF.CommonTools;
 using LNF.Web;
 using sselFinOps.AppCode;
 using System;
@@ -26,7 +23,7 @@ namespace sselFinOps
 
             if (Page.IsPostBack)
             {
-                dsFormula = ContextBase.CacheData();
+                dsFormula = ContextBase.GetCacheData();
                 if (dsFormula == null)
                     Response.Redirect("~");
                 else if (dsFormula.DataSetName != "ConFormula")
@@ -49,9 +46,9 @@ namespace sselFinOps
 
                 litHeader.Text = string.Format("Configure {0} costing fomulas", tableNamePrefix);
                 dsFormula = new DataSet("ConFormula");
-                DA.Command().Param("sDate", DateTime.Now).MapSchema().FillDataSet(dsFormula, $"dbo.{tableNamePrefix}CostFormula_Select", "Formula");
+                DataCommand().Param("sDate", DateTime.Now).MapSchema().FillDataSet(dsFormula, $"dbo.{tableNamePrefix}CostFormula_Select", "Formula");
 
-                ContextBase.CacheData(dsFormula);
+                ContextBase.SetCacheData(dsFormula);
             }
         }
 
@@ -172,7 +169,7 @@ namespace sselFinOps
             ndr["EffDate"] = DateTime.Now;
             dsFormula.Tables["Formula"].Rows.Add(ndr);
 
-            ContextBase.CacheData(dsFormula);
+            ContextBase.SetCacheData(dsFormula);
 
             btnRevert.Enabled = true;
         }
@@ -185,7 +182,7 @@ namespace sselFinOps
             Session["ItemType"] = Request.QueryString["ItemType"];
             tableNamePrefix = Convert.ToString(Session["Exp"]);
 
-            DA.Command().Update(dsFormula.Tables["Formula"], cfg =>
+            DataCommand().Update(dsFormula.Tables["Formula"], cfg =>
             {
                 cfg.Insert.AddParameter("FormulaType", SqlDbType.NVarChar, 25);
                 cfg.Insert.AddParameter("Formula", SqlDbType.NVarChar, 4000);

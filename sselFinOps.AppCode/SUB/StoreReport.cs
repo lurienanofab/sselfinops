@@ -1,6 +1,6 @@
 ﻿using GemBox.ExcelLite;
+using LNF.Billing.Reports.ServiceUnitBilling;
 using LNF.CommonTools;
-using LNF.Models.Billing.Reports.ServiceUnitBilling;
 using sselFinOps.AppCode.DAL;
 using System;
 using System.Data;

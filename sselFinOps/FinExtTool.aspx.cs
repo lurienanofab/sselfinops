@@ -1,5 +1,4 @@
-﻿using LNF.Models.Data;
-using LNF.Repository;
+﻿using LNF.Data;
 using sselFinOps.AppCode;
 using System;
 
@@ -33,7 +32,7 @@ namespace sselFinOps
             DateTime ed = sd.AddMonths(1);
 
             // get client data
-            var dt = DA.Command()
+            var dt = DataCommand()
                 .Param("Action", "ExtUserToolUsage")
                 .Param("sDate", sd)
                 .Param("eDate", ed)

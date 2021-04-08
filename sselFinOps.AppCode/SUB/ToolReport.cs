@@ -1,6 +1,6 @@
-﻿using LNF.CommonTools;
-using LNF.Models.Billing.Reports.ServiceUnitBilling;
-using LNF.Repository.Billing;
+﻿using LNF.Billing;
+using LNF.Billing.Reports.ServiceUnitBilling;
+using LNF.CommonTools;
 using sselFinOps.AppCode.DAL;
 using System;
 using System.Data;
@@ -64,7 +64,7 @@ namespace sselFinOps.AppCode.SUB
             {
                 var excludedAccounts = new[] { gc.LabAccountID, 143, 179, 188 };
 
-                if (!excludedAccounts.Contains(sdr.Field<int>("AccountID")) && sdr.Field<int>("BillingType") != BillingType.Other)
+                if (!excludedAccounts.Contains(sdr.Field<int>("AccountID")) && sdr.Field<int>("BillingType") != BillingTypes.Other)
                 {
                     DataRow ndr = dt.NewRow();
 

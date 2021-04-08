@@ -1,5 +1,4 @@
 ﻿using LNF.CommonTools;
-using LNF.Repository;
 using sselFinOps.AppCode;
 using System;
 using System.Data;
@@ -39,7 +38,7 @@ namespace sselFinOps
             DataTable dtOrg = null;
             DataTable dtClientOrg = null;
 
-            dtClientOrg = DA.Command().Param("Action", "ForExpCost").FillDataTable("dbo.ClientOrg_Select");
+            dtClientOrg = DataCommand().Param("Action", "ForExpCost").FillDataTable("dbo.ClientOrg_Select");
 
             for (int i = 0; i < numMonths; i++)
             {
@@ -56,7 +55,7 @@ namespace sselFinOps
                 }
             }
 
-            dtOrg = DA.Command().MapSchema()
+            dtOrg = DataCommand().MapSchema()
                 .Param("Action", "AllActive")
                 .Param("sDate", sd)
                 .Param("eDate", ed)

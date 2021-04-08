@@ -1,9 +1,6 @@
 ﻿using LNF.Billing;
+using LNF.Billing.Reports.ServiceUnitBilling;
 using LNF.CommonTools;
-using LNF.Models.Billing;
-using LNF.Models.Billing.Reports.ServiceUnitBilling;
-using LNF.Repository;
-using LNF.Repository.Billing;
 using sselFinOps.AppCode.DAL;
 using System;
 using System.Configuration;
@@ -14,12 +11,7 @@ namespace sselFinOps.AppCode.SUB
 {
     public class RoomReport : ReportBase
     {
-        protected IBillingTypeManager BillingTypeManager { get; }
-
-        public RoomReport(DateTime startPeriod, DateTime endPeriod, IBillingTypeManager billingTypeManager) : base(startPeriod, endPeriod)
-        {
-            BillingTypeManager = billingTypeManager;
-        }
+        public RoomReport(DateTime startPeriod, DateTime endPeriod) : base(startPeriod, endPeriod) { }
 
         protected override void FillDataTable(DataTable dt)
         {
@@ -136,7 +128,7 @@ namespace sselFinOps.AppCode.SUB
 
                 if (dr.Field<BLL.LabRoom>("RoomID") == BLL.LabRoom.CleanRoom) //6 is clean room
                 {
-                    if (BillingTypeManager.IsMonthlyUserBillingType(billingTypeId))
+                    if (BillingTypes.IsMonthlyUserBillingType(billingTypeId))
                     {
                         if (dr["TotalAllAccountCost"] == DBNull.Value)
                         {
@@ -175,7 +167,7 @@ namespace sselFinOps.AppCode.SUB
                 {
                     var excludedAccounts = new[] { gc.LabAccountID, 143, 179, 188 };
 
-                    if (!excludedAccounts.Contains(sdr.Field<int>("AccountID")) && sdr.Field<int>("BillingType") != BillingType.Other)
+                    if (!excludedAccounts.Contains(sdr.Field<int>("AccountID")) && sdr.Field<int>("BillingType") != BillingTypes.Other)
                     {
                         //2006-12-21 get rid of people who stayed in the lab less than 30 minutes in a month
                         string expression = string.Format("ClientID = {0}", sdr["ClientID"]);

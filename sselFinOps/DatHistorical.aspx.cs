@@ -1,6 +1,4 @@
-﻿using LNF.Cache;
-using LNF.CommonTools;
-using LNF.Repository;
+﻿using LNF.CommonTools;
 using LNF.Web;
 using sselFinOps.AppCode;
 using System;
@@ -29,7 +27,7 @@ namespace sselFinOps
 
             if (Page.IsPostBack)
             {
-                dsReport = ContextBase.CacheData();
+                dsReport = ContextBase.GetCacheData();
                 if (dsReport == null)
                     Response.Redirect("~");
                 else if (dsReport.DataSetName != "DatHistorical")
@@ -41,11 +39,11 @@ namespace sselFinOps
 
                 dsReport = new DataSet("DatHistorical");
 
-                DA.Command().Param("Action", "All").Param("sDate", DateTime.Parse("1/1/2000")).FillDataSet(dsReport, "dbo.Client_Select", "Client");
+                DataCommand().Param("Action", "All").Param("sDate", DateTime.Parse("1/1/2000")).FillDataSet(dsReport, "dbo.Client_Select", "Client");
 
                 dsReport.Tables["Client"].PrimaryKey = new[] { dsReport.Tables["Client"].Columns["ClientID"] };
 
-                using (var reader = DA.Command().Param("Action", "All").ExecuteReader("dbo.Org_Select"))
+                using (var reader = DataCommand().Param("Action", "All").ExecuteReader("dbo.Org_Select"))
                 {
                     ddlOrg.DataSource = reader;
                     ddlOrg.DataValueField = "OrgID";
@@ -56,7 +54,7 @@ namespace sselFinOps
                     reader.Close();
                 }
 
-                ContextBase.CacheData(dsReport);
+                ContextBase.SetCacheData(dsReport);
 
                 // populate site dropdown - preselect using site linked in from
             }
@@ -72,12 +70,12 @@ namespace sselFinOps
                     dsReport.Tables.Remove(dsReport.Tables["Account"]);
 
                 // get account and clientAccount info
-                DA.Command()
+                DataCommand()
                     .Param("Action", "AllByOrg")
                     .Param("OrgID", int.Parse(ddlOrg.SelectedValue))
                     .FillDataSet(dsReport, "dbo.Account_Select", "Account");
 
-                ContextBase.CacheData(dsReport);
+                ContextBase.SetCacheData(dsReport);
 
                 LoadAccounts();
             }

@@ -15,7 +15,7 @@ namespace sselFinOps.AppCode
 
         public DataView DaysWithData()
         {
-            var dt = DA.Command()
+            var dt = DataCommand.Create()
                 .Param("Period", Period)
                 .FillDataTable("Billing.dbo.Report_DaysWithData");
 
@@ -26,7 +26,7 @@ namespace sselFinOps.AppCode
 
         public DataView SubsidyComparison()
         {
-            var dt = DA.Command()
+            var dt = DataCommand.Create()
                 .Param("Period", Period)
                 .FillDataTable("Billing.dbo.Report_SubsidyComparison");
 

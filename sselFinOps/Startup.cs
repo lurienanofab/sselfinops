@@ -1,19 +1,16 @@
-﻿using LNF;
-using LNF.Impl.DependencyInjection.Web;
-using LNF.Web;
+﻿using LNF.Web;
 using Microsoft.Owin;
 using Owin;
-using System.Web.Routing;
 
 [assembly: OwinStartup(typeof(sselFinOps.Startup))]
 
 namespace sselFinOps
 {
-    public class Startup : OwinStartup
+    public class Startup
     {
-        public override void ConfigureRoutes(RouteCollection routes)
+        public void Configuration(IAppBuilder app)
         {
-            // nothing to do here...
+            app.UseDataAccess();
         }
     }
 }

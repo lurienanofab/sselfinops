@@ -37,7 +37,7 @@
         <table class="report-table" border="1">
             <tr>
                 <td colspan="2">
-                    <asp:Button runat="server" ID="btnSave1" CssClass="report-button" Text="Save Changes" OnClick="btnSave_Click"></asp:Button>
+                    <asp:Button runat="server" ID="btnSave1" CssClass="report-button" Text="Save Changes" OnClick="BtnSave_Click"></asp:Button>
                     <asp:LinkButton runat="server" ID="btnBack1" CssClass="back-link" Text="&larr; Back To Main Page" OnClick="BackButton_Click"></asp:LinkButton>
                     <asp:Literal runat="server" ID="litSaveMessage1"></asp:Literal>
                 </td>
@@ -67,7 +67,7 @@
             </tr>
             <tr>
                 <td colspan="2">
-                    <asp:Button runat="server" ID="btnSave2" CssClass="report-button" Text="Save Changes" OnClick="btnSave_Click"></asp:Button>
+                    <asp:Button runat="server" ID="btnSave2" CssClass="report-button" Text="Save Changes" OnClick="BtnSave_Click"></asp:Button>
                     <asp:LinkButton runat="server" ID="btnBack2" CssClass="back-link" Text="&laquo; Back To Main Page" OnClick="BackButton_Click"></asp:LinkButton>
                     <asp:Literal runat="server" ID="litSaveMessage2"></asp:Literal>
                 </td>

@@ -7,7 +7,7 @@ namespace sselFinOps.AppCode.DAL
     {
         public static DataTable GetAddressByAccountID(int accountId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "ByAccount")
                 .Param("AccountID", accountId)
                 .FillDataTable("dbo.Address_Select");

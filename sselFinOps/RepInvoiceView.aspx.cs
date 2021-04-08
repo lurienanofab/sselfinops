@@ -1,5 +1,4 @@
 ﻿using LNF.Billing;
-using LNF.Cache;
 using sselFinOps.AppCode;
 using System;
 using System.IO;
@@ -51,7 +50,7 @@ namespace sselFinOps
 
                 // made it this far so we passed all the validation tests
 
-                var mgr = new ExternalInvoiceManager(accountId, startPeriod, endPeriod, ShowRemote(), BillingTypeManager);
+                var mgr = Provider.Billing.ExternalInvoice.GetManager(accountId, startPeriod, endPeriod, ShowRemote());
                 var inv = mgr.GetInvoices(accountId).First();
 
                 switch (reportType)
@@ -145,10 +144,10 @@ namespace sselFinOps
             rptInvoice.DataBind();
         }
 
-        protected void btnCreateExcelInvoice_Click(object sender, EventArgs e)
+        protected void BtnCreateExcelInvoice_Click(object sender, EventArgs e)
         {
             int accountId = GetAccountID();
-            var mgr = new ExternalInvoiceManager(accountId, GetStartPeriod(), GetEndPeriod(), ShowRemote(), BillingTypeManager);
+            var mgr = Provider.Billing.ExternalInvoice.GetManager(accountId, GetStartPeriod(), GetEndPeriod(), ShowRemote());
             var inv = mgr.GetInvoices(accountId).First();
             CreateExcelInvoice(inv);
         }

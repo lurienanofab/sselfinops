@@ -1,6 +1,5 @@
 ﻿using LNF.Billing;
-using LNF.Cache;
-using LNF.Models.Data;
+using LNF.Data;
 using sselFinOps.AppCode;
 using System;
 using System.Collections.Generic;
@@ -16,7 +15,6 @@ namespace sselFinOps
         public static readonly DateTime July2009 = new DateTime(2009, 7, 1);
 
         private int alertCount = 0;
-        private ExternalInvoiceManager _mgr;
 
         public override ClientPrivilege AuthTypes
         {
@@ -81,15 +79,17 @@ namespace sselFinOps
             MakeOrgGrid(true);
         }
 
+        private IExternalInvoiceManager GetExternalInvoiceManager() => Provider.Billing.ExternalInvoice.GetManager(StartPeriod, EndPeriod, ShowRemote);
+
         private void MakeOrgGrid(bool refresh)
         {
             panWarning.Visible = false;
             panSummary.Visible = true;
             panDetail.Visible = true;
 
-            _mgr = new ExternalInvoiceManager(StartPeriod, EndPeriod, ShowRemote, BillingTypeManager);
+            var mgr = GetExternalInvoiceManager();
 
-            var invoices = _mgr.GetInvoices();
+            var invoices = mgr.GetInvoices();
 
             if (invoices.Count() == 0)
             {
@@ -99,7 +99,7 @@ namespace sselFinOps
             }
             else
             {
-                rptUsageSummary.DataSource = _mgr.GetSummary();
+                rptUsageSummary.DataSource = mgr.GetSummary();
                 rptUsageSummary.DataBind();
 
                 rptInvoice.DataSource = invoices;
@@ -107,12 +107,6 @@ namespace sselFinOps
 
                 btnDownloadAll.Visible = CanDownloadAll();
             }
-        }
-
-        public IEnumerable<ExternalInvoiceSummaryItem> GetSummary()
-        {
-            _mgr = new ExternalInvoiceManager(StartPeriod, EndPeriod, ShowRemote, BillingTypeManager);
-            return _mgr.GetSummary();
         }
 
         protected string FormatDecimal(decimal value)
@@ -200,7 +194,8 @@ namespace sselFinOps
 
         private void CreateExcelInvoice(int accountId)
         {
-            var inv = _mgr.GetInvoices(accountId).First();
+            var mgr = GetExternalInvoiceManager();
+            var inv = mgr.GetInvoices(accountId).First();
 
             string filePath;
             if (StartPeriod >= July2009)
@@ -243,7 +238,8 @@ namespace sselFinOps
 
             if (items.Count() > 0)
             {
-                var invoices = _mgr.GetInvoices();
+                var mgr = GetExternalInvoiceManager();
+                var invoices = mgr.GetInvoices();
 
                 foreach (ExternalInvoice i in items)
                 {

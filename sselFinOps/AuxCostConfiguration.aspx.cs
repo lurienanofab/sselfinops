@@ -1,6 +1,4 @@
-﻿using LNF.Cache;
-using LNF.Repository;
-using LNF.Web;
+﻿using LNF.Web;
 using sselFinOps.AppCode;
 using System;
 using System.Data;
@@ -17,7 +15,7 @@ namespace sselFinOps
         {
             if (Page.IsPostBack)
             {
-                dsAuxCost = ContextBase.CacheData();
+                dsAuxCost = ContextBase.GetCacheData();
                 if (dsAuxCost == null)
                     Response.Redirect("~");
                 else if (dsAuxCost.DataSetName != "ConAuxCost")
@@ -28,9 +26,9 @@ namespace sselFinOps
                 ContextBase.RemoveCacheData(); //remove anything left in cache
 
                 dsAuxCost = new DataSet("ConAuxCost");
-                DA.Command().Param("CostType", "All").MapSchema().FillDataSet(dsAuxCost, "dbo.AuxCost_Select", "AuxCost");
+                DataCommand().Param("CostType", "All").MapSchema().FillDataSet(dsAuxCost, "dbo.AuxCost_Select", "AuxCost");
 
-                ContextBase.CacheData(dsAuxCost);
+                ContextBase.SetCacheData(dsAuxCost);
 
                 BindGrids();
             }
@@ -83,7 +81,7 @@ namespace sselFinOps
             dr["Description"] = ((TextBox)dgi.FindControl("txt" + type + "Description")).Text.Trim();
             dsAuxCost.Tables["AuxCost"].Rows.Add(dr);
 
-            ContextBase.CacheData(dsAuxCost);
+            ContextBase.SetCacheData(dsAuxCost);
 
             BindGrids();
         }
@@ -146,7 +144,7 @@ namespace sselFinOps
 
         protected void BtnSave_Click(object sender, EventArgs e)
         {
-            DA.Command().Update(dsAuxCost.Tables["AuxCost"], cfg =>
+            DataCommand().Update(dsAuxCost.Tables["AuxCost"], cfg =>
             {
                 cfg.Insert.AddParameter("AuxCostParam", SqlDbType.NVarChar, 25);
                 cfg.Insert.AddParameter("AllowPerUse", SqlDbType.Bit);

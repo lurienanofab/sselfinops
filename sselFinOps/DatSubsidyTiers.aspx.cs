@@ -1,5 +1,4 @@
-﻿using LNF.Repository;
-using sselFinOps.AppCode;
+﻿using sselFinOps.AppCode;
 using System;
 using System.Data;
 
@@ -59,7 +58,7 @@ namespace sselFinOps
         private DataTable SubsidyTiersData(int groupId)
         {
             if (dsTieredSubsidyBilling == null)
-                dsTieredSubsidyBilling = DA.Command().Param("Action", "PopulateTieredSubsidyBilling").Param("Period", pp1.SelectedPeriod).FillDataSet("dbo.TieredSubsidyBilling_Select");
+                dsTieredSubsidyBilling = DataCommand().Param("Action", "PopulateTieredSubsidyBilling").Param("Period", pp1.SelectedPeriod).FillDataSet("dbo.TieredSubsidyBilling_Select");
 
             var dt = FormatTierData(dsTieredSubsidyBilling.Tables[2], groupId);
 

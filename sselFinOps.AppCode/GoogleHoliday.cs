@@ -1,6 +1,8 @@
 ﻿using Ical.Net.CalendarComponents;
+using LNF;
+using LNF.DataAccess;
+using LNF.Impl.Repository.Data;
 using LNF.Repository;
-using LNF.Repository.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +11,9 @@ namespace sselFinOps.AppCode
 {
     public class GoogleHoliday
     {
-        private CalendarEvent _entry; 
+        private CalendarEvent _entry;
+
+        protected ISession Session => ServiceProvider.Current.DataAccess.Session;
 
         public GoogleHoliday(CalendarEvent entry)
         {
@@ -64,7 +68,7 @@ namespace sselFinOps.AppCode
         {
             get
             {
-                return DA.Current.Query<Holiday>().Count(x => x.HolidayDate >= StartDate && x.HolidayDate < EndDate) == 0;
+                return Session.Query<Holiday>().Count(x => x.HolidayDate >= StartDate && x.HolidayDate < EndDate) == 0;
             }
         }
 
@@ -77,7 +81,7 @@ namespace sselFinOps.AppCode
             while (d < EndDate)
             {
                 var item = new Holiday() { Description = Name, HolidayDate = d };
-                DA.Current.Insert(item);
+                Session.Insert(item);
                 result.Add(item);
             }
 

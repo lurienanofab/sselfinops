@@ -1,24 +1,14 @@
-﻿using LNF;
-using LNF.Billing;
-using LNF.Cache;
-using LNF.Data;
-using LNF.Models.Billing;
-using LNF.Models.Data;
+﻿using LNF.Data;
+using LNF.Repository;
 using LNF.Web;
-using StructureMap.Attributes;
 using System;
+using System.Data;
 using System.Web.UI.WebControls;
 
 namespace sselFinOps.AppCode
 {
     public abstract class ReportPage : LNF.Web.Content.LNFPage
     {
-        [SetterProperty]
-        public IAccountManager AccountManager { get; set; }
-
-        [SetterProperty]
-        public IBillingTypeManager BillingTypeManager { get; set; }
-
         public override ClientPrivilege AuthTypes
         {
             get { return ClientPrivilege.Administrator; }
@@ -28,12 +18,10 @@ namespace sselFinOps.AppCode
         {
             base.OnInit(e);
 
-            ServiceProvider.Current.BuildUp(this);
-
             if (!CurrentUser.HasPriv(AuthTypes))
             {
                 ContextBase.Session.Abandon();
-                Response.Redirect(ServiceProvider.Current.Context.LoginUrl + "?Action=Exit");
+                Response.Redirect(Provider.LoginUrl() + "?Action=Exit");
             }
         }
 

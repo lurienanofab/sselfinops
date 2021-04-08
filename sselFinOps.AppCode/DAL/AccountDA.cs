@@ -8,7 +8,7 @@ namespace sselFinOps.AppCode.DAL
     {
         public static DataTable GetAllInternalAccount(DateTime sDate, DateTime eDate)
         {
-            var dt = DA.Command()
+            var dt = DataCommand.Create()
                 .Param("Action", "AllInternalAccounts")
                 .Param("sDate", sDate)
                 .Param("eDate", eDate)
@@ -25,7 +25,7 @@ namespace sselFinOps.AppCode.DAL
         {
             DateTime sDate = new DateTime(year, month, 1);
 
-            var dt = DA.Command()
+            var dt = DataCommand.Create()
                 .Param("Action", "AllActive")
                 .Param("sDate", sDate)
                 .Param("eDate", sDate.AddMonths(1))
@@ -38,7 +38,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static int GetChargeType(int accountId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetChargeType")
                 .Param("AccountID", accountId)
                 .ExecuteScalar<int>("dbo.Account_Select").Value;
@@ -46,7 +46,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataTable GetAccountsByClientID(int clientId)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetAccountsByClientID")
                 .Param("ClientID", clientId)
                 .FillDataTable("dbo.Account_Select");
@@ -54,7 +54,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataTable GetAccountsByClientIDAndDate(int clientId, DateTime sDate, DateTime eDate)
         {
-            return DA.Command()
+            return DataCommand.Create()
                 .Param("Action", "GetAccountsByClientIDAndDate")
                 .Param("ClientID", clientId)
                 .Param("sDate", sDate)
@@ -64,7 +64,7 @@ namespace sselFinOps.AppCode.DAL
 
         public static DataTable GetNonBillingAccount()
         {
-            return DA.Command().Param("Action", "GetAllNonBillingAccounts").FillDataTable("dbo.Account_Select");
+            return DataCommand.Create().Param("Action", "GetAllNonBillingAccounts").FillDataTable("dbo.Account_Select");
         }
     }
 }

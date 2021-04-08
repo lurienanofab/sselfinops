@@ -1,6 +1,5 @@
-﻿using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Repository.Data;
+﻿using LNF.Data;
+using LNF.Impl.Repository.Data;
 using sselFinOps.AppCode;
 using System;
 using System.Data;
@@ -20,12 +19,12 @@ namespace sselFinOps
             if (!Page.IsPostBack)
             {
                 LoadBillingChecks();
-                ddlClient.DataSource = DA.Current.Query<Client>().Where(x => x.Active).OrderBy(x => x.DisplayName).ToArray();
+                ddlClient.DataSource = DataSession.Query<Client>().Where(x => x.Active).OrderBy(x => x.DisplayName).ToArray();
                 ddlClient.DataBind();
             }
         }
 
-        protected void btnReport_Click(object sender, EventArgs e)
+        protected void BtnReport_Click(object sender, EventArgs e)
         {
             LoadBillingChecks();
         }

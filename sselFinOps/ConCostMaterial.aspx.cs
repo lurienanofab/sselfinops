@@ -1,8 +1,5 @@
-﻿using LNF.Billing;
-using LNF.Cache;
-using LNF.Models.Data;
-using LNF.Repository;
-using LNF.Repository.Scheduler;
+﻿using LNF.Data;
+using LNF.Impl.Repository.Scheduler;
 using sselFinOps.AppCode;
 using System;
 using System.Configuration;
@@ -56,7 +53,7 @@ namespace sselFinOps
         private void GenerateMaterialGrid()
         {
             //Dim allPIPs As IEnumerable(Of ProcessInfoLineParam) = DA.Search(Of ProcessInfoLineParam)(Function(x) x.IsPremiumMaterial = True).OrderBy(Function(x) x.Resource.ResourceID)
-            var allPIPs = DA.Current.Query<ProcessInfoLineParam>().OrderBy(x => x.Resource.ResourceID).ToArray();
+            var allPIPs = DataSession.Query<ProcessInfoLineParam>().OrderBy(x => x.Resource.ResourceID).ToArray();
             int currentResourceId = -1;
 
             foreach (var item in allPIPs)
@@ -173,7 +170,7 @@ namespace sselFinOps
             litHeader.Text = titlesURL;
         }
 
-        protected void btnSave_Click(object sender, EventArgs e)
+        protected void BtnSave_Click(object sender, EventArgs e)
         {
             //Save()
         }

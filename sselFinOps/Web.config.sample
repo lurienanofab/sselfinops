@@ -4,65 +4,66 @@
   http://go.microsoft.com/fwlink/?LinkId=169433
 -->
 <configuration>
-    <configSections>
-        <sectionGroup name="lnf">
-            <section name="provider" type="LNF.ServiceProviderSection, LNF" />
-        </sectionGroup>
-    </configSections>
+  <configSections>
+    <sectionGroup name="lnf">
+      <section name="provider" type="LNF.ServiceProviderSection, LNF" />
+    </sectionGroup>
+  </configSections>
 
-    <lnf>
-        <provider production="false">
-            <context loginUrl="/login" />
-            <dataAccess showSql="true" />
-            <email host="xxxxx" log="true" />
-            <control host="xxxxx" />
-            <log name="sselFinOps" enabled="true" />
-        </provider>
-    </lnf>
+  <lnf>
+    <provider production="false">
+      <context loginUrl="/login" />
+      <dataAccess showSql="true" />
+      <email host="xxxxx" log="true" />
+      <control host="xxxxx" />
+      <log name="sselFinOps" enabled="true" />
+    </provider>
+  </lnf>
 
-    <appSettings>
-        <add key="7zLibPath" value="xxxxx" />
-        <add key="SpreadsheetsDirectory" value="xxxxx" />
-        <add key="ApiBaseUrl" value="xxxxx" />
-        <add key="BasicAuthUsername" value="xxxxx" />
-        <add key="BasicAuthPassword" value="xxxxx" />
-        <add key="StaticHost" value="xxxxx" />
-        <add key="MongoConnectionString" value="xxxxx" />
-    </appSettings>
+  <appSettings>
+    <add key="SecurePath" value="xxxxx"/>
+    <add key="7zLibPath" value="xxxxx" />
+    <add key="SpreadsheetsDirectory" value="xxxxx" />
+    <add key="ApiBaseUrl" value="xxxxx" />
+    <add key="BasicAuthUsername" value="xxxxx" />
+    <add key="BasicAuthPassword" value="xxxxx" />
+    <add key="StaticHost" value="xxxxx" />
+    <add key="MongoConnectionString" value="xxxxx" />
+  </appSettings>
 
-    <connectionStrings>
-        <add name="cnSselData" connectionString="xxxxx" providerName="System.Data.SqlClient" />
-    </connectionStrings>
+  <connectionStrings>
+    <add name="cnSselData" connectionString="xxxxx" providerName="System.Data.SqlClient" />
+  </connectionStrings>
 
-    <system.web>
-        <compilation debug="true" targetFramework="4.6.1" />
-        <httpRuntime targetFramework="4.6.1" />
+  <system.web>
+    <compilation debug="true" targetFramework="4.6.1" />
+    <httpRuntime targetFramework="4.6.1" />
 
-        <pages>
-            <controls>
-                <add namespace="LNF.Web.Controls" assembly="LNF.Web" tagPrefix="lnf" />
-                <add namespace="LNF.Web.Controls.Tools" assembly="LNF.Web" tagPrefix="lnf" />
-            </controls>
-        </pages>
+    <pages>
+      <controls>
+        <add namespace="LNF.Web.Controls" assembly="LNF.Web" tagPrefix="lnf" />
+        <add namespace="LNF.Web.Controls.Tools" assembly="LNF.Web" tagPrefix="lnf" />
+      </controls>
+    </pages>
 
-        <authentication mode="Forms">
-            <forms name="sselAuth.cookie" path="/" loginUrl="/login" timeout="480" protection="All" slidingExpiration="true" cookieless="UseCookies" domain="umich.edu" />
-        </authentication>
+    <authentication mode="Forms">
+      <forms name="sselAuth.cookie" path="/" loginUrl="/login" timeout="480" protection="All" slidingExpiration="true" cookieless="UseCookies" domain="umich.edu" />
+    </authentication>
 
-        <authorization>
-            <deny users="?" />
-        </authorization>
+    <authorization>
+      <deny users="?" />
+    </authorization>
 
-        <machineKey compatibilityMode="Framework20SP2" validationKey="xxxxx" decryptionKey="xxxxx" validation="SHA1" decryption="3DES" />
+    <machineKey compatibilityMode="Framework20SP2" validationKey="xxxxx" decryptionKey="xxxxx" validation="SHA1" decryption="3DES" />
 
-        <customErrors mode="Off" />
-    </system.web>
+    <customErrors mode="Off" />
+  </system.web>
 
-    <system.webServer>
-        <handlers>
-            <remove name="ExtensionlessUrlHandler-ISAPI-4.0_32bit" />
-            <remove name="ExtensionlessUrlHandler-ISAPI-4.0_64bit" />
-            <remove name="ExtensionlessUrlHandler-Integrated-4.0" />
-        </handlers>
-    </system.webServer>
+  <system.webServer>
+    <handlers>
+      <remove name="ExtensionlessUrlHandler-ISAPI-4.0_32bit" />
+      <remove name="ExtensionlessUrlHandler-ISAPI-4.0_64bit" />
+      <remove name="ExtensionlessUrlHandler-Integrated-4.0" />
+    </handlers>
+  </system.webServer>
 </configuration>
