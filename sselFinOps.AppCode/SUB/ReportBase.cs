@@ -1,5 +1,5 @@
-﻿using GemBox.ExcelLite;
-using LNF.Billing.Reports.ServiceUnitBilling;
+﻿using LNF.Billing.Reports.ServiceUnitBilling;
+using LNF.CommonTools;
 using System;
 using System.Data;
 using System.IO;
@@ -12,9 +12,7 @@ namespace sselFinOps.AppCode.SUB
     {
         protected BillingUnit[] summaryUnits;
 
-        public string CompanyName { get { return "LNF"; } }
-        public string FinancialManagerUserName { get { return "doscar"; } }
-        public DateTime July2010 { get { return new DateTime(2010, 7, 1); } }
+        public DateTime July2010 => new DateTime(2010, 7, 1);
         public DateTime StartPeriod { get; }
         public DateTime EndPeriod { get; }
 
@@ -72,7 +70,8 @@ namespace sselFinOps.AppCode.SUB
             BillingUnit summaryUnit = summaryUnits.First();
 
             //Contruct the excel object
-            string templatePath = HttpContext.Current.Server.MapPath("~\\SpreadSheets\\Templates\\SUB_Template.xlt");
+            string fileName = Utility.GetRequiredAppSetting("SUB_Template");
+            string templatePath = HttpContext.Current.Server.MapPath($"~\\SpreadSheets\\Templates\\{fileName}");
             string workPathDir = HttpContext.Current.Server.MapPath("SpreadSheets\\Work");
 
             DirectoryInfo di = new DirectoryInfo(workPathDir);
@@ -86,72 +85,69 @@ namespace sselFinOps.AppCode.SUB
                 return "Error - " + ex.Message;
             }
 
-            ExcelLite.SetLicense("EL6N-Z669-AZZG-3LS7");
-            ExcelFile spreadSheet = new ExcelFile();
-            spreadSheet.LoadXls(templatePath);
-            ExcelWorksheet ws = spreadSheet.Worksheets["Sheet1"];
-
-            //We start at first row, because for ExcelLite control, the header row is not included
-            int iRow = 1;
-            DataView dv = dt.DefaultView;
-            dv.Sort = "CreditAccount ASC, ItemDescription ASC, ProjectGrant ASC";
-            foreach (DataRowView drv in dv)
+            using (var mgr = ExcelUtility.NewExcelManager())
             {
-                ws.Cells[iRow, 0].Value = drv["CardType"];
-                ws.Cells[iRow, 1].Value = drv["ShortCode"];
-                ws.Cells[iRow, 2].Value = drv["Account"];
-                ws.Cells[iRow, 3].Value = drv["FundCode"];
-                ws.Cells[iRow, 4].Value = drv["DeptID"];
-                ws.Cells[iRow, 5].Value = drv["ProgramCode"];
-                ws.Cells[iRow, 6].Value = drv["Class"];
-                ws.Cells[iRow, 7].Value = drv["ProjectGrant"];
-                ws.Cells[iRow, 8].Value = drv["VendorID"];
-                ws.Cells[iRow, 9].Value = drv["InvoiceDate"];
-                ws.Cells[iRow, 10].Value = drv["InvoiceID"];
-                string uniqName = drv["Uniqname"].ToString();
-                if (uniqName.Length > 8)
-                    uniqName = uniqName.Substring(0, 8);
-                ws.Cells[iRow, 11].Value = uniqName;  //2009-01-20 Only 8 character is allowed
-                ws.Cells[iRow, 15].Value = drv["DepartmentalReferenceNumber"];
+                mgr.OpenWorkbook(templatePath);
+                mgr.SetActiveWorksheet("Sheet1");
 
-                ws.Cells[iRow, 17].Value = drv["ItemDescription"];
-                ws.Cells[iRow, 23].Value = drv["QuantityVouchered"];
-                ws.Cells[iRow, 25].Value = Convert.ToDouble(drv["UnitOfMeasure"]);
-                ws.Cells[iRow, 26].Value = Convert.ToDouble(drv["MerchandiseAmount"]);
+                //We start at first row, because for ExcelLite control, the header row is not included
+                int iRow = 1;
+                DataView dv = dt.DefaultView;
+                dv.Sort = "CreditAccount ASC, ItemDescription ASC, ProjectGrant ASC";
+                foreach (DataRowView drv in dv)
+                {
+                    mgr.SetCellTextValue(iRow, 0, drv["CardType"]);
+                    mgr.SetCellTextValue(iRow, 1, drv["ShortCode"]);
+                    mgr.SetCellTextValue(iRow, 2, drv["Account"]);
+                    mgr.SetCellTextValue(iRow, 3, drv["FundCode"]);
+                    mgr.SetCellTextValue(iRow, 4, drv["DeptID"]);
+                    mgr.SetCellTextValue(iRow, 5, drv["ProgramCode"]);
+                    mgr.SetCellTextValue(iRow, 6, drv["Class"]);
+                    mgr.SetCellTextValue(iRow, 7, drv["ProjectGrant"]);
+                    mgr.SetCellTextValue(iRow, 8, drv["VendorID"]);
+                    mgr.SetCellTextValue(iRow, 9, drv["InvoiceDate"]);
+                    mgr.SetCellTextValue(iRow, 10, drv["InvoiceID"]);
+                    string uniqName = drv["Uniqname"].ToString();
+                    if (uniqName.Length > 8)
+                        uniqName = uniqName.Substring(0, 8);
+                    mgr.SetCellTextValue(iRow, 11, uniqName);  //2009-01-20 Only 8 character is allowed
+                    mgr.SetCellTextValue(iRow, 15, drv["DepartmentalReferenceNumber"]);
 
-                iRow += 1;
+                    mgr.SetCellTextValue(iRow, 17, drv["ItemDescription"]);
+                    mgr.SetCellNumberValue(iRow, 23, drv["QuantityVouchered"]);
+                    mgr.SetCellNumberValue(iRow, 25, Convert.ToDouble(drv["UnitOfMeasure"]));
+                    mgr.SetCellNumberValue(iRow, 26, Convert.ToDouble(drv["MerchandiseAmount"]));
+
+                    iRow += 1;
+                }
+
+                //Add the last row - which is the summary unit
+                mgr.SetCellTextValue(iRow, 0, summaryUnit.CardType);
+                mgr.SetCellTextValue(iRow, 1, summaryUnit.ShortCode);
+                mgr.SetCellTextValue(iRow, 2, summaryUnit.Account);
+                mgr.SetCellTextValue(iRow, 3, summaryUnit.FundCode);
+                mgr.SetCellTextValue(iRow, 4, summaryUnit.DeptID);
+                mgr.SetCellTextValue(iRow, 5, summaryUnit.ProgramCode);
+                mgr.SetCellTextValue(iRow, 6, summaryUnit.ClassName);
+                mgr.SetCellTextValue(iRow, 7, summaryUnit.ProjectGrant);
+                mgr.SetCellTextValue(iRow, 9, summaryUnit.InvoiceDate);
+                mgr.SetCellTextValue(iRow, 11, summaryUnit.Uniqname);
+
+                mgr.SetCellTextValue(iRow, 17, summaryUnit.ItemDescription);
+                mgr.SetCellNumberValue(iRow, 23, "1.0000");
+                mgr.SetCellNumberValue(iRow, 25, summaryUnit.MerchandiseAmount.ToString() + "000");
+                mgr.SetCellFormula(iRow, 26, string.Format("=-SUM(AB2:AB{0})", iRow));
+
+                string workFilePath = workPathDir + "\\" + JEType;
+                if (EndPeriod == StartPeriod.AddMonths(1))
+                    workFilePath += "_" + StartPeriod.ToString("yyyy-MM") + Path.GetExtension(fileName);
+                else
+                    workFilePath += "_" + StartPeriod.ToString("yyyy-MM") + "_" + EndPeriod.ToString("yyyy-MM") + Path.GetExtension(fileName);
+
+                mgr.SaveAs(workFilePath);
+
+                return workFilePath;
             }
-
-            //Add the last row - which is the summary unit
-            ws.Cells[iRow, 0].Value = summaryUnit.CardType;
-            ws.Cells[iRow, 1].Value = summaryUnit.ShortCode;
-            ws.Cells[iRow, 2].Value = summaryUnit.Account;
-            ws.Cells[iRow, 3].Value = summaryUnit.FundCode;
-            ws.Cells[iRow, 4].Value = summaryUnit.DeptID;
-            ws.Cells[iRow, 5].Value = summaryUnit.ProgramCode;
-            ws.Cells[iRow, 6].Value = summaryUnit.ClassName;
-            ws.Cells[iRow, 7].Value = summaryUnit.ProjectGrant;
-            ws.Cells[iRow, 9].Value = summaryUnit.InvoiceDate;
-            ws.Cells[iRow, 11].Value = summaryUnit.Uniqname;
-
-            ws.Cells[iRow, 17].Value = summaryUnit.ItemDescription;
-            ws.Cells[iRow, 23].Value = "1.0000";
-            ws.Cells[iRow, 25].Value = summaryUnit.MerchandiseAmount.ToString() + "000";
-            ws.Cells[iRow, 26].Formula = string.Format("=-SUM(AB2:AB{0})", iRow);
-
-            spreadSheet.Worksheets.ActiveWorksheet = spreadSheet.Worksheets[0];
-
-            string workFilePath = workPathDir + "\\" + JEType;
-            if (EndPeriod == StartPeriod.AddMonths(1))
-                workFilePath += "_" + StartPeriod.ToString("yyyy-MM") + ".xls";
-            else
-                workFilePath += "_" + StartPeriod.ToString("yyyy-MM") + "_" + EndPeriod.ToString("yyyy-MM") + ".xls";
-
-            spreadSheet.SaveXls(workFilePath);
-            spreadSheet = null;
-            GC.Collect();
-
-            return workFilePath;
         }
 
         protected string GetLineDesc(DataRow dr, DataTable dtClient, DataTable dtBillingType = null)
@@ -161,14 +157,13 @@ namespace sselFinOps.AppCode.SUB
             string lname = drClient["LName"].ToString();
             string fname = drClient["FName"].ToString();
             int bt = dr.Field<int>("BillingType");
-            DataRow drbt = null;
             string billingType = string.Empty;
             if (dtBillingType != null)
             {
-                drbt = dtBillingType.Rows.Find(bt);
+                DataRow drbt = dtBillingType.Rows.Find(bt);
                 billingType = "-" + (drbt == null ? string.Format("unknown_{0}", bt) : drbt["BillingTypeName"].ToString());
             }
-            string lineDesc = FinancialManagerUserName + "-" + lname + "," + fname + billingType;
+            string lineDesc = ReportSettings.FinancialManagerUserName + "-" + lname + "," + fname + billingType;
             return (lineDesc.Length > 30) ? lineDesc.Substring(0, 30) : lineDesc;
         }
 

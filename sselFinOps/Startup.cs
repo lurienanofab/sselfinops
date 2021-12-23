@@ -10,7 +10,7 @@ namespace sselFinOps
     {
         public void Configuration(IAppBuilder app)
         {
-            app.UseDataAccess();
+            app.UseDataAccess(Global.WebApp.Context);
         }
     }
 }

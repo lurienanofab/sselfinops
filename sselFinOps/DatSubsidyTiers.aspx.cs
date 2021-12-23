@@ -1,4 +1,5 @@
-﻿using sselFinOps.AppCode;
+﻿using LNF;
+using sselFinOps.AppCode;
 using System;
 using System.Data;
 
@@ -69,34 +70,29 @@ namespace sselFinOps
         {
             var dt = new DataTable();
             dt.Columns.Add("AnnualFees", typeof(string));
-            dt.Columns.Add("LNF", typeof(string));
+            dt.Columns.Add(GlobalSettings.Current.CompanyName, typeof(string));
             dt.Columns.Add("PI", typeof(string));
             dt.Columns.Add("UserCharge", typeof(string));
             dt.Columns.Add("RunningTotal", typeof(string));
-
-            DataRow dr = null;
-            DataRow drNext = null;
-            DataRow drLast = null;
-            string annualFee = string.Empty;
-            double floor = 0;
-            double ceiling = 0;
-            double pi = 0;
-            double lnf = 0;
             double userCharge = 0;
             double runningTotal = 0;
             DataRow[] rows = dtRaw.Select(string.Format("GroupID = {0}", groupId));
 
             if (rows.Length > 0)
             {
+                string annualFee;
+                double floor;
+                double pi;
+                double lnf;
                 for (int r = 0; r < rows.Length - 1; r++) //stop at 2nd to last index
                 {
-                    dr = rows[r];
-                    drNext = rows[r + 1];
+                    DataRow dr = rows[r];
+                    DataRow drNext = rows[r + 1];
 
                     if (!double.TryParse(dr["FloorAmount"].ToString(), out floor))
                         floor = -1;
 
-                    if (!double.TryParse(drNext["FloorAmount"].ToString(), out ceiling))
+                    if (!double.TryParse(drNext["FloorAmount"].ToString(), out double ceiling))
                         ceiling = -1;
 
                     annualFee = FormatAnnualFee(floor, ceiling);
@@ -110,7 +106,7 @@ namespace sselFinOps
                     dt.Rows.Add(annualFee, FormatTierPercentage(lnf), FormatTierPercentage(pi), FormatTierCharge(userCharge), FormatTierCharge(runningTotal));
                 }
 
-                drLast = rows[rows.Length - 1];
+                DataRow drLast = rows[rows.Length - 1];
                 if (!double.TryParse(drLast["FloorAmount"].ToString(), out floor))
                     floor = -1;
 

@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace sselFinOps
 {
-    public partial class FinOpsMaster : LNF.Web.Content.LNFMasterPage
+    public partial class FinOpsMaster : LNF.Web.Content.OnlineServicesMasterPage
     {
         public override bool ShowMenu
         {

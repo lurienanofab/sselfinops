@@ -114,17 +114,16 @@ namespace sselFinOps.AppCode.SUB
 
             //2008-08-28 Get Billing Type
             DataTable dtBillingType = BillingTypeDA.GetAllBillingTypes();
-            int billingTypeId = 99;
             foreach (DataRow dr in dtRoomDB.Rows)
             {
                 dr["DebitAccount"] = dtAccount.Rows.Find(dr.Field<int>("AccountID"))["Number"];
                 dr["CreditAccount"] = dtAccount.Rows.Find(gc.LabCreditAccountID)["Number"];
-                //2007-06-19 doscar is not an administrator, but her name must be on JE
+                //2007-06-19 financial manager may not be an administrator, but their username must be on JE
                 dr["LineDesc"] = GetLineDesc(dr, dtClient, dtBillingType);
 
                 //2008-05-15 the code below handles the clean room monthly users - it's special code that we have to get rid of when all
                 //billingtype are all gone
-                billingTypeId = dr.Field<int>("BillingType");
+                int billingTypeId = dr.Field<int>("BillingType");
 
                 if (dr.Field<BLL.LabRoom>("RoomID") == BLL.LabRoom.CleanRoom) //6 is clean room
                 {
@@ -154,7 +153,6 @@ namespace sselFinOps.AppCode.SUB
 
             //For performance issue, we have to calculate something first, since it's used on all rows
             string depRefNum = string.Empty;
-            double chargeAmount = 0;
             double fTotal = 0;
             string creditAccount = dtAccount.Rows.Find(gc.LabCreditAccountID)["Number"].ToString();
             string creditAccountShortCode = dtAccount.Rows.Find(gc.LabCreditAccountID)["ShortCode"].ToString();
@@ -214,12 +212,12 @@ namespace sselFinOps.AppCode.SUB
                             ndr["ProjectGrant"] = debitAccountNum.ProjectGrant;
                             ndr["VendorID"] = "0000456136";
                             ndr["InvoiceDate"] = EndPeriod.AddMonths(-1).ToString("yyyy/MM/dd");
-                            ndr["InvoiceID"] = "LNF Room Charge";
+                            ndr["InvoiceID"] = $"{ReportSettings.CompanyName} Room Charge";
                             ndr["Uniqname"] = dtClient.Rows.Find(sdr.Field<int>("ClientID"))["UserName"];
                             ndr["DepartmentalReferenceNumber"] = depRefNum;
                             ndr["ItemDescription"] = GetItemDesc(sdr, dtClient, dtBillingType);
                             ndr["QuantityVouchered"] = "1.0000";
-                            chargeAmount = Math.Round(sdr.Field<double>("TotalCalcCost"), 5);
+                            double chargeAmount = Math.Round(sdr.Field<double>("TotalCalcCost"), 5);
                             ndr["UnitOfMeasure"] = chargeAmount;
                             ndr["MerchandiseAmount"] = Math.Round(chargeAmount, 2);
                             ndr["CreditAccount"] = creditAccount;
@@ -242,9 +240,9 @@ namespace sselFinOps.AppCode.SUB
             summaryUnit.ClassName = creditAccount.Substring(22, 5);
             summaryUnit.ProjectGrant = creditAccount.Substring(27, 7);
             summaryUnit.InvoiceDate = EndPeriod.AddMonths(-1).ToString("yyyy/MM/dd");
-            summaryUnit.Uniqname = FinancialManagerUserName;
+            summaryUnit.Uniqname = ReportSettings.FinancialManagerUserName;
             summaryUnit.DepartmentalReferenceNumber = depRefNum;
-            summaryUnit.ItemDescription = FinancialManagerUserName;
+            summaryUnit.ItemDescription = ReportSettings.FinancialManagerUserName;
             summaryUnit.MerchandiseAmount = Math.Round(-fTotal, 2);
             summaryUnit.CreditAccount = creditAccount;
 

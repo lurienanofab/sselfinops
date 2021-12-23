@@ -1,4 +1,5 @@
-﻿using LNF.Billing;
+﻿using LNF;
+using LNF.Billing;
 using LNF.Billing.Reports.ServiceUnitBilling;
 using sselFinOps.AppCode;
 using System;
@@ -15,6 +16,8 @@ namespace sselFinOps.Data
     /// </summary>
     public class Index : IHttpHandler
     {
+        [Inject] public IProvider Provider { get; set; }
+
         public bool IsReusable => false;
 
         public void ProcessRequest(HttpContext context)
@@ -74,24 +77,26 @@ namespace sselFinOps.Data
             double total;
             IEnumerable<ServiceUnitBillingReportItem> allItems;
 
+            var factory = GetReportFactory();
+
             switch (charge)
             {
                 case "all":
-                    roomSUB = ReportFactory.GetReportRoomSUB(sd, ed, clientId);
-                    toolSUB = ReportFactory.GetReportToolSUB(sd, ed, clientId);
-                    storeSUB = ReportFactory.GetReportStoreSUB(sd, ed, false, clientId);
+                    roomSUB = factory.GetReportRoomSUB(sd, ed, clientId);
+                    toolSUB = factory.GetReportToolSUB(sd, ed, clientId);
+                    storeSUB = factory.GetReportStoreSUB(sd, ed, false, clientId);
                     allItems = ReportFactory.GetAllSUB(roomSUB, toolSUB, storeSUB, out total);
                     break;
                 case "room":
-                    roomSUB = ReportFactory.GetReportRoomSUB(sd, ed, clientId);
+                    roomSUB = factory.GetReportRoomSUB(sd, ed, clientId);
                     allItems = ReportFactory.GetSUB(roomSUB, out total);
                     break;
                 case "tool":
-                    toolSUB = ReportFactory.GetReportToolSUB(sd, ed, clientId);
+                    toolSUB = factory.GetReportToolSUB(sd, ed, clientId);
                     allItems = ReportFactory.GetSUB(toolSUB, out total);
                     break;
                 case "store":
-                    storeSUB = ReportFactory.GetReportStoreSUB(sd, ed, false, clientId);
+                    storeSUB = factory.GetReportStoreSUB(sd, ed, false, clientId);
                     allItems = ReportFactory.GetSUB(storeSUB, out total);
                     break;
                 default:
@@ -167,7 +172,10 @@ namespace sselFinOps.Data
             ToolJU toolJUC;
             double temp, total;
             List<JournalUnitReportItem> allItems;
+            //string itemDesciption;
 
+            var factory = GetReportFactory();
+            
             switch (charge)
             {
                 case "all":
@@ -176,18 +184,17 @@ namespace sselFinOps.Data
                         case JournalUnitTypes.A:
                         case JournalUnitTypes.B:
                         case JournalUnitTypes.C:
-                            roomJU = ReportFactory.GetReportRoomJU(sd, ed, juType, clientId);
-                            toolJU = ReportFactory.GetReportToolJU(sd, ed, juType, clientId);
+                            roomJU = factory.GetReportRoomJU(sd, ed, juType, clientId);
+                            toolJU = factory.GetReportToolJU(sd, ed, juType, clientId);
                             allItems = ReportFactory.GetAllJU(roomJU, toolJU, out total);
                             break;
                         case JournalUnitTypes.All:
-                            roomJUA = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.A, clientId);
-                            toolJUA = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.A, clientId);
-                            roomJUB = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.B, clientId);
-                            toolJUB = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.B, clientId);
-                            roomJUC = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.C, clientId);
-                            toolJUC = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.C, clientId);
-
+                            roomJUA = factory.GetReportRoomJU(sd, ed, JournalUnitTypes.A, clientId);
+                            toolJUA = factory.GetReportToolJU(sd, ed, JournalUnitTypes.A, clientId);
+                            roomJUB = factory.GetReportRoomJU(sd, ed, JournalUnitTypes.B, clientId);
+                            toolJUB = factory.GetReportToolJU(sd, ed, JournalUnitTypes.B, clientId);
+                            roomJUC = factory.GetReportRoomJU(sd, ed, JournalUnitTypes.C, clientId);
+                            toolJUC = factory.GetReportToolJU(sd, ed, JournalUnitTypes.C, clientId);
                             total = 0;
 
                             allItems = new List<JournalUnitReportItem>();
@@ -211,13 +218,13 @@ namespace sselFinOps.Data
                         case JournalUnitTypes.A:
                         case JournalUnitTypes.B:
                         case JournalUnitTypes.C:
-                            roomJU = ReportFactory.GetReportRoomJU(sd, ed, juType, clientId);
+                            roomJU = factory.GetReportRoomJU(sd, ed, juType, clientId);
                             allItems = ReportFactory.GetAllJU(roomJU, null, out total);
                             break;
                         case JournalUnitTypes.All:
-                            roomJUA = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.A, clientId);
-                            roomJUB = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.B, clientId);
-                            roomJUC = ReportFactory.GetReportRoomJU(sd, ed, JournalUnitTypes.C, clientId);
+                            roomJUA = factory.GetReportRoomJU(sd, ed, JournalUnitTypes.A, clientId);
+                            roomJUB = factory.GetReportRoomJU(sd, ed, JournalUnitTypes.B, clientId);
+                            roomJUC = factory.GetReportRoomJU(sd, ed, JournalUnitTypes.C, clientId);
 
                             total = 0;
 
@@ -242,13 +249,13 @@ namespace sselFinOps.Data
                         case JournalUnitTypes.A:
                         case JournalUnitTypes.B:
                         case JournalUnitTypes.C:
-                            toolJU = ReportFactory.GetReportToolJU(sd, ed, juType, clientId);
+                            toolJU = factory.GetReportToolJU(sd, ed, juType, clientId);
                             allItems = ReportFactory.GetAllJU(null, toolJU, out total);
                             break;
                         case JournalUnitTypes.All:
-                            toolJUA = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.A, clientId);
-                            toolJUB = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.B, clientId);
-                            toolJUC = ReportFactory.GetReportToolJU(sd, ed, JournalUnitTypes.C, clientId);
+                            toolJUA = factory.GetReportToolJU(sd, ed, JournalUnitTypes.A, clientId);
+                            toolJUB = factory.GetReportToolJU(sd, ed, JournalUnitTypes.B, clientId);
+                            toolJUC = factory.GetReportToolJU(sd, ed, JournalUnitTypes.C, clientId);
 
                             total = 0;
 
@@ -272,7 +279,7 @@ namespace sselFinOps.Data
             }
 
             var items = allItems
-                .Where(i => i.ItemDescription != "zzdoscar")
+                .Where(i => !i.ItemDescription.StartsWith("zz"))
                 .OrderBy(x => x.ReportType)
                 .ThenBy(x => x.ChargeType);
 
@@ -309,5 +316,7 @@ namespace sselFinOps.Data
         {
             return string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount);
         }
+
+        private ReportFactory GetReportFactory() => new ReportFactory(Provider.Billing.Report);
     }
 }

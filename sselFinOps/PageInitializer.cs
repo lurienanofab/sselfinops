@@ -5,11 +5,11 @@ using System.Web;
 
 namespace sselFinOps
 {
-    public class PageInitializer
+    public class PageInitializer : PageInitializerModule
     {
         public static void Initialize()
         {
-            PageInitializerModule.Initialize();
+            RegisterModule(typeof(PageInitializer));
         }
     }
 }

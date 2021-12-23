@@ -18,7 +18,7 @@ namespace sselFinOps
         private IEnumerable<int> _ChargeTypeIds;
         private DataSet dsCost;
         private string tableNamePrefix;
-        private Color modifiedColor = Color.FromArgb(255, 150, 150);
+        private readonly Color modifiedColor = Color.FromArgb(255, 150, 150);
 
         public override ClientPrivilege AuthTypes
         {
@@ -216,7 +216,7 @@ namespace sselFinOps
             th.Style.Add("text-align", "left");
             tr.Cells.Add(th);
 
-            foreach (DataRow dr in dtChargeTypes.Rows)
+            foreach (DataRow _ in dtChargeTypes.Rows)
             {
                 if (costType == "Cost")
                 {
@@ -622,7 +622,7 @@ namespace sselFinOps
 
             tr.Cells.Add(td);
 
-            foreach (int chargeTypeId in ChargeTypeIDs)
+            foreach (var _ in ChargeTypeIDs)
             {
                 tr.Cells.Add(new TableCell
                 {
@@ -922,16 +922,17 @@ namespace sselFinOps
                 FileInfo fi = new FileInfo(postedFile.FileName);
                 string fileName = $"{CurrentUser.ClientID}_{DateTime.Now:yyyyMMddHHmmss}_{postedFile.FileName}";
                 string filePath = Server.MapPath(Path.Combine(ConfigurationManager.AppSettings["SpreadsheetsDirectory"], fileName));
-                string connstr = string.Empty;
-                switch (fi.Extension)
+                string connstr;
+                string[] allowedExt = new[] { ".xls", ".xlsx" };
+
+                if (allowedExt.Contains(fi.Extension))
                 {
-                    case ".xls":
-                    case ".xlsx":
-                        connstr = string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=1\"", filePath);
-                        break;
-                    default:
-                        litUploadMessage.Text = "&nbsp;<span class=\"error\">Invalid file type, only Excel files (*.xls, *.xlsx) are allowed.</span>";
-                        return;
+                    connstr = string.Format("Provider=Microsoft.ACE.OLEDB.12.0;Data Source={0};Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=1\"", filePath);
+                }
+                else
+                {
+                    litUploadMessage.Text = string.Format("&nbsp;<span class=\"error\">Invalid file type, only Excel files ({0}) are allowed.</span>", string.Join(", ", allowedExt));
+                    return;
                 }
 
                 postedFile.SaveAs(filePath);

@@ -1,6 +1,6 @@
-﻿using GemBox.ExcelLite;
-using LNF.Billing;
+﻿using LNF.Billing;
 using LNF.Billing.Reports.ServiceUnitBilling;
+using LNF.CommonTools;
 using LNF.Data;
 using sselFinOps.AppCode;
 using sselFinOps.AppCode.SUB;
@@ -16,8 +16,7 @@ namespace sselFinOps
 {
     public partial class RepSUB : ReportPage
     {
-        public static readonly DateTime July2009 = new DateTime(2009, 7, 1);
-        public static readonly DateTime July2010 = new DateTime(2010, 7, 1);
+        public bool ShowTotal { get; set; }
 
         public override ClientPrivilege AuthTypes
         {
@@ -58,7 +57,8 @@ namespace sselFinOps
 
         private void SetTotalText(double amount)
         {
-            //lblTotal.Text = amount.ToString("0.00");
+            if (ShowTotal)
+                lblTotal.Text = amount.ToString("0.00");
         }
 
         private void LoadGridSUB(ServiceUnitBillingReportItem[][] items, BillingUnit[] summaries)
@@ -99,7 +99,7 @@ namespace sselFinOps
 
         private void ProcessHtmlRoomSUB()
         {
-            RoomSUB report = ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
+            RoomSUB report = GetReportFactory().GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
             LoadGridSUB(report.Items, report.Summaries);
             SetLinkText("sub", "room");
         }
@@ -107,9 +107,9 @@ namespace sselFinOps
         private void ProcessExcelRoomSUB()
         {
             string filePath;
-            if (StartPeriod >= July2009)
+            if (StartPeriod >= ReportSettings.July2009)
             {
-                RoomSUB report = ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
+                RoomSUB report = GetReportFactory().GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
                 filePath = GenerateExcelSUB(report.Items, report.Summaries, "Labtime");
             }
             else
@@ -127,7 +127,7 @@ namespace sselFinOps
         {
             var juType = (JournalUnitTypes)Enum.Parse(typeof(JournalUnitTypes), e.CommandArgument.ToString());
 
-            RoomJU report = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, juType, GetClientID());
+            RoomJU report = GetReportFactory().GetReportRoomJU(StartPeriod, EndPeriod, juType, GetClientID());
 
             if (chkHTML.Checked)
                 ProcessHtmlRoomJU(report);
@@ -154,9 +154,11 @@ namespace sselFinOps
 
         private void ProcessHtmlAllRoomJU()
         {
-            var juA = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
-            var juB = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
-            var juC = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
+            var factory = GetReportFactory();
+
+            var juA = factory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
+            var juB = factory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
+            var juC = factory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
 
             List<JournalUnitReportItem> allItems = ReportFactory.GetAllRoomJU(juA, juB, juC, out double total);
 
@@ -179,7 +181,7 @@ namespace sselFinOps
 
         private void ProcessHtmlToolSUB()
         {
-            ToolSUB report = ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
+            ToolSUB report = GetReportFactory().GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
             LoadGridSUB(report.Items, report.Summaries);
             SetLinkText("sub", "tool");
         }
@@ -188,9 +190,9 @@ namespace sselFinOps
         {
             string filePath;
 
-            if (StartPeriod >= July2009)
+            if (StartPeriod >= ReportSettings.July2009)
             {
-                ToolSUB report = ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
+                ToolSUB report = GetReportFactory().GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
                 filePath = GenerateExcelSUB(report.Items, report.Summaries, "Tool");
             }
             else
@@ -208,7 +210,7 @@ namespace sselFinOps
         {
             JournalUnitTypes juType = (JournalUnitTypes)Enum.Parse(typeof(JournalUnitTypes), e.CommandArgument.ToString());
 
-            ToolJU report = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, juType, GetClientID());
+            ToolJU report = GetReportFactory().GetReportToolJU(StartPeriod, EndPeriod, juType, GetClientID());
 
             if (chkHTML.Checked)
                 ProcessHtmlToolJU(report);
@@ -235,9 +237,11 @@ namespace sselFinOps
 
         private void ProcessAllToolJUHTML()
         {
-            var juA = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
-            var juB = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
-            var juC = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
+            var factory = GetReportFactory();
+
+            var juA = factory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
+            var juB = factory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
+            var juC = factory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
 
             List<JournalUnitReportItem> allItems = ReportFactory.GetAllToolJU(juA, juB, juC, out double total);
 
@@ -268,19 +272,19 @@ namespace sselFinOps
 
         private void ProcessHtmlStoreSUB(bool twoCreditAccounts)
         {
-            StoreSUB report = ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
+            StoreSUB report = GetReportFactory().GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
             LoadGridSUB(report.Items, report.Summaries);
             SetLinkText("sub", "store", twoCreditAccounts);
         }
 
         private void ProcessExcelStoreSUB(bool twoCreditAccounts)
         {
-            string filePath = string.Empty;
+            string filePath;
             if (twoCreditAccounts)
             {
-                if (StartPeriod >= July2009)
+                if (StartPeriod >= ReportSettings.July2009)
                 {
-                    StoreSUB report = ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
+                    StoreSUB report = GetReportFactory().GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
                     filePath = GenerateExcelSUB(report.Items, report.Summaries, "Store");
                 }
                 else
@@ -294,9 +298,9 @@ namespace sselFinOps
             }
             else
             {
-                if (StartPeriod >= July2009)
+                if (StartPeriod >= ReportSettings.July2009)
                 {
-                    StoreSUB report = ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
+                    StoreSUB report = GetReportFactory().GetReportStoreSUB(StartPeriod, EndPeriod, twoCreditAccounts, GetClientID());
                     filePath = GenerateExcelSUB(report.Items, report.Summaries, "Store");
                 }
                 else
@@ -319,9 +323,10 @@ namespace sselFinOps
 
         private void ProcessHtmlAllSUB()
         {
-            RoomSUB roomSUB = ReportFactory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
-            ToolSUB toolSUB = ReportFactory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
-            StoreSUB storeSUB = ReportFactory.GetReportStoreSUB(StartPeriod, EndPeriod, false, GetClientID());
+            var factory = GetReportFactory();
+            RoomSUB roomSUB = factory.GetReportRoomSUB(StartPeriod, EndPeriod, GetClientID());
+            ToolSUB toolSUB = factory.GetReportToolSUB(StartPeriod, EndPeriod, GetClientID());
+            StoreSUB storeSUB = factory.GetReportStoreSUB(StartPeriod, EndPeriod, false, GetClientID());
 
             IEnumerable<ServiceUnitBillingReportItem> allItems = ReportFactory.GetAllSUB(roomSUB, toolSUB, storeSUB, out double total);
 
@@ -344,22 +349,24 @@ namespace sselFinOps
             double total;
             List<JournalUnitReportItem> allItems;
 
+            var factory = GetReportFactory();
+
             switch (juType)
             {
                 case JournalUnitTypes.A:
                 case JournalUnitTypes.B:
                 case JournalUnitTypes.C:
-                    RoomJU roomJU = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, juType, GetClientID());
-                    ToolJU toolJU = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, juType, GetClientID());
+                    RoomJU roomJU = factory.GetReportRoomJU(StartPeriod, EndPeriod, juType, GetClientID());
+                    ToolJU toolJU = factory.GetReportToolJU(StartPeriod, EndPeriod, juType, GetClientID());
                     allItems = ReportFactory.GetAllJU(roomJU, toolJU, out total);
                     break;
                 case JournalUnitTypes.All:
-                    RoomJU roomJUA = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
-                    ToolJU toolJUA = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
-                    RoomJU roomJUB = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
-                    ToolJU toolJUB = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
-                    RoomJU roomJUC = ReportFactory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
-                    ToolJU toolJUC = ReportFactory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
+                    RoomJU roomJUA = factory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
+                    ToolJU toolJUA = factory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.A, GetClientID());
+                    RoomJU roomJUB = factory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
+                    ToolJU toolJUB = factory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.B, GetClientID());
+                    RoomJU roomJUC = factory.GetReportRoomJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
+                    ToolJU toolJUC = factory.GetReportToolJU(StartPeriod, EndPeriod, JournalUnitTypes.C, GetClientID());
 
                     double temp;
                     total = 0;
@@ -393,257 +400,263 @@ namespace sselFinOps
         private string GenerateExcelSUB(ServiceUnitBillingReportItem[][] items, BillingUnit[] SummaryUnit, string ChargeType)
         {
             //Contruct the excel object
-            string templatePath = ExcelUtility.GetTemplatePath("SUB_Template.xlt");
+
+            string fileName = Utility.GetRequiredAppSetting("SUB_Template");
+            string templatePath = ExcelUtility.GetTemplatePath(fileName);
             string workPathDir = ExcelUtility.GetWorkPath(CurrentUser.ClientID);
-            ExcelLite.SetLicense("EL6N-Z669-AZZG-3LS7");
-            ExcelFile SpreadSheet = new ExcelFile();
-            SpreadSheet.LoadXls(templatePath);
-            ExcelWorksheet ws = SpreadSheet.Worksheets[0];
 
-            int iRow = 1; //zero based, iRow = 0 is Row #1 on spreadsheet (the header)
-
-            //dv.Sort = "ItemDescription ASC, ProjectGrant ASC";
-            foreach (ServiceUnitBillingReportItem item in items[0])
+            using (var mgr = ExcelUtility.NewExcelManager())
             {
-                if (!string.IsNullOrEmpty(item.CardType))
-                {
-                    ws.Cells[iRow, 0].Value = item.CardType;
-                    ws.Cells[iRow, 1].Value = item.ShortCode;
-                    ws.Cells[iRow, 2].Value = item.Account;
-                    ws.Cells[iRow, 3].Value = item.FundCode;
-                    ws.Cells[iRow, 4].Value = item.DeptID;
-                    ws.Cells[iRow, 5].Value = item.ProgramCode;
-                    ws.Cells[iRow, 6].Value = item.Class;
-                    ws.Cells[iRow, 7].Value = item.ProjectGrant;
-                    ws.Cells[iRow, 8].Value = item.VendorID;
-                    ws.Cells[iRow, 9].Value = item.InvoiceDate;
-                    ws.Cells[iRow, 10].Value = item.InvoiceID;
+                mgr.OpenWorkbook(templatePath);
+                mgr.SetActiveWorksheet("Sheet1");
 
-                    string uniqName = item.Uniqname.ToString();
-                    if (uniqName.Length > 8)
-                        uniqName = uniqName.Substring(0, 8);
-
-                    ws.Cells[iRow, 11].Value = uniqName;
-                    ws.Cells[iRow, 15].Value = item.DepartmentalReferenceNumber;
-
-                    //R = 17
-                    //[2014-09-08 jg] All column S and higher are now shifted one to the left so 18 -> 17, 19 -> 18, etc
-                    //ws.Cell[iRow, 18].Value = item.ItemDescription;
-                    //ws.Cell[iRow, 24].Value = item.QuantityVouchered;
-                    //ws.Cell[iRow, 26].Value = string.IsNullOrEmpty(item.UnitOfMeasure) ? 0 : Convert.ToDouble(item.UnitOfMeasure);
-                    //ws.Cell[iRow, 27].Value = string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount);
-
-                    ws.Cells[iRow, 17].Value = item.ItemDescription;
-                    ws.Cells[iRow, 23].Value = item.QuantityVouchered;
-                    ws.Cells[iRow, 25].Value = string.IsNullOrEmpty(item.UnitOfMeasure) ? 0 : Convert.ToDouble(item.UnitOfMeasure);
-                    ws.Cells[iRow, 26].Value = string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount);
-
-                    iRow += 1;
-                }
-            }
-
-            ws.Cells[iRow, 0].Value = SummaryUnit[0].CardType;
-            ws.Cells[iRow, 1].Value = SummaryUnit[0].ShortCode;
-            ws.Cells[iRow, 2].Value = SummaryUnit[0].Account;
-            ws.Cells[iRow, 3].Value = SummaryUnit[0].FundCode;
-            ws.Cells[iRow, 4].Value = SummaryUnit[0].DeptID;
-            ws.Cells[iRow, 5].Value = SummaryUnit[0].ProgramCode;
-            ws.Cells[iRow, 6].Value = SummaryUnit[0].ClassName;
-            ws.Cells[iRow, 7].Value = SummaryUnit[0].ProjectGrant;
-            ws.Cells[iRow, 9].Value = SummaryUnit[0].InvoiceDate;
-            ws.Cells[iRow, 11].Value = SummaryUnit[0].Uniqname;
-
-            //ws.Cells[iRow, 18].Value = SummaryUnit[0].ItemDescription;
-            //ws.Cells[iRow, 24].Value = SummaryUnit[0].QuantityVouchered;
-            //ws.Cells[iRow, 26].Value = Math.Round(SummaryUnit[0].MerchandiseAmount, 5);
-            //ws.Cells[iRow, 27].Formula = string.Format("=-SUM(AB2:AB{0})", iRow);
-
-            ws.Cells[iRow, 17].Value = SummaryUnit[0].ItemDescription;
-            ws.Cells[iRow, 23].Value = SummaryUnit[0].QuantityVouchered;
-            ws.Cells[iRow, 25].Value = Math.Round(SummaryUnit[0].MerchandiseAmount, 5);
-            ws.Cells[iRow, 26].Formula = string.Format("=-SUM(AB2:AB{0})", iRow);
-
-            if (items.Length > 1 && SummaryUnit.Length > 1)
-            {
-                iRow += 1;
-                int startingRowNumber = iRow + 1; //we use excel formula to calculate the sum, so we have to keep this to get the starting range
+                int iRow = 1; //zero based, iRow = 0 is Row #1 on spreadsheet (the header)
 
                 //dv.Sort = "ItemDescription ASC, ProjectGrant ASC";
-                foreach (ServiceUnitBillingReportItem item in items[1])
+                foreach (ServiceUnitBillingReportItem item in items[0])
                 {
                     if (!string.IsNullOrEmpty(item.CardType))
                     {
-                        ws.Cells[iRow, 0].Value = item.CardType;
-                        ws.Cells[iRow, 1].Value = item.ShortCode;
-                        ws.Cells[iRow, 2].Value = item.Account;
-                        ws.Cells[iRow, 3].Value = item.FundCode;
-                        ws.Cells[iRow, 4].Value = item.DeptID;
-                        ws.Cells[iRow, 5].Value = item.ProgramCode;
-                        ws.Cells[iRow, 6].Value = item.Class;
-                        ws.Cells[iRow, 7].Value = item.ProjectGrant;
-                        ws.Cells[iRow, 8].Value = item.VendorID;
-                        ws.Cells[iRow, 9].Value = item.InvoiceDate;
-                        ws.Cells[iRow, 10].Value = item.InvoiceID;
+                        mgr.SetCellTextValue(iRow, 0, item.CardType);
+                        mgr.SetCellTextValue(iRow, 1, item.ShortCode);
+                        mgr.SetCellTextValue(iRow, 2, item.Account);
+                        mgr.SetCellTextValue(iRow, 3, item.FundCode);
+                        mgr.SetCellTextValue(iRow, 4, item.DeptID);
+                        mgr.SetCellTextValue(iRow, 5, item.ProgramCode);
+                        mgr.SetCellTextValue(iRow, 6, item.Class);
+                        mgr.SetCellTextValue(iRow, 7, item.ProjectGrant);
+                        mgr.SetCellTextValue(iRow, 8, item.VendorID);
+                        mgr.SetCellTextValue(iRow, 9, item.InvoiceDate);
+                        mgr.SetCellTextValue(iRow, 10, item.InvoiceID);
 
-                        string uniqName = item.Uniqname;
+                        string uniqName = item.Uniqname.ToString();
                         if (uniqName.Length > 8)
                             uniqName = uniqName.Substring(0, 8);
 
-                        ws.Cells[iRow, 11].Value = uniqName;
-                        ws.Cells[iRow, 15].Value = item.DepartmentalReferenceNumber;
+                        mgr.SetCellTextValue(iRow, 11, uniqName);
+                        mgr.SetCellTextValue(iRow, 15, item.DepartmentalReferenceNumber);
 
-                        //ws.Cells[iRow, 18].Value = item.ItemDescription;
-                        //ws.Cells[iRow, 24].Value = item.QuantityVouchered;
-                        //ws.Cells[iRow, 26].Value = string.IsNullOrEmpty(item.UnitOfMeasure) ? 0 : Convert.ToDouble(item.UnitOfMeasure);
-                        //ws.Cells[iRow, 27].Value = string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount);
+                        //R = 17
+                        //[2014-09-08 jg] All column S and higher are now shifted one to the left so 18 -> 17, 19 -> 18, etc
+                        //ws.Cell[iRow, 18].Value = item.ItemDescription;
+                        //ws.Cell[iRow, 24].Value = item.QuantityVouchered;
+                        //ws.Cell[iRow, 26].Value = string.IsNullOrEmpty(item.UnitOfMeasure) ? 0 : Convert.ToDouble(item.UnitOfMeasure);
+                        //ws.Cell[iRow, 27].Value = string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount);
 
-                        ws.Cells[iRow, 17].Value = item.ItemDescription;
-                        ws.Cells[iRow, 23].Value = item.QuantityVouchered;
-                        ws.Cells[iRow, 25].Value = string.IsNullOrEmpty(item.UnitOfMeasure) ? 0 : Convert.ToDouble(item.UnitOfMeasure);
-                        ws.Cells[iRow, 26].Value = string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount);
+                        mgr.SetCellTextValue(iRow, 17, item.ItemDescription);
+                        mgr.SetCellNumberValue(iRow, 23, item.QuantityVouchered);
+                        mgr.SetCellNumberValue(iRow, 25, string.IsNullOrEmpty(item.UnitOfMeasure) ? 0 : Convert.ToDouble(item.UnitOfMeasure));
+                        mgr.SetCellNumberValue(iRow, 26, string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount));
 
                         iRow += 1;
                     }
                 }
 
-                ws.Cells[iRow, 0].Value = SummaryUnit[1].CardType;
-                ws.Cells[iRow, 1].Value = SummaryUnit[1].ShortCode;
-                ws.Cells[iRow, 2].Value = SummaryUnit[1].Account;
-                ws.Cells[iRow, 3].Value = SummaryUnit[1].FundCode;
-                ws.Cells[iRow, 4].Value = SummaryUnit[1].DeptID;
-                ws.Cells[iRow, 5].Value = SummaryUnit[1].ProgramCode;
-                ws.Cells[iRow, 6].Value = SummaryUnit[1].ClassName;
-                ws.Cells[iRow, 7].Value = SummaryUnit[1].ProjectGrant;
-                ws.Cells[iRow, 9].Value = SummaryUnit[1].InvoiceDate;
-                ws.Cells[iRow, 11].Value = SummaryUnit[1].Uniqname;
+                mgr.SetCellTextValue(iRow, 0, SummaryUnit[0].CardType);
+                mgr.SetCellTextValue(iRow, 1, SummaryUnit[0].ShortCode);
+                mgr.SetCellTextValue(iRow, 2, SummaryUnit[0].Account);
+                mgr.SetCellTextValue(iRow, 3, SummaryUnit[0].FundCode);
+                mgr.SetCellTextValue(iRow, 4, SummaryUnit[0].DeptID);
+                mgr.SetCellTextValue(iRow, 5, SummaryUnit[0].ProgramCode);
+                mgr.SetCellTextValue(iRow, 6, SummaryUnit[0].ClassName);
+                mgr.SetCellTextValue(iRow, 7, SummaryUnit[0].ProjectGrant);
+                mgr.SetCellTextValue(iRow, 9, SummaryUnit[0].InvoiceDate);
+                mgr.SetCellTextValue(iRow, 11, SummaryUnit[0].Uniqname);
 
-                //ws.Cells[iRow, 18].Value = SummaryUnit[1].ItemDescription;
-                //ws.Cells[iRow, 24].Value = SummaryUnit[1].QuantityVouchered;
+                //ws.Cells[iRow, 18].Value = SummaryUnit[0].ItemDescription;
+                //ws.Cells[iRow, 24].Value = SummaryUnit[0].QuantityVouchered;
                 //ws.Cells[iRow, 26].Value = Math.Round(SummaryUnit[0].MerchandiseAmount, 5);
-                //ws.Cells[iRow, 27].Formula = string.Format("=-SUM(AB{0}:AB{1})", startingRowNumber, iRow);
+                //ws.Cells[iRow, 27].Formula = string.Format("=-SUM(AB2:AB{0})", iRow);
 
-                ws.Cells[iRow, 17].Value = SummaryUnit[1].ItemDescription;
-                ws.Cells[iRow, 23].Value = SummaryUnit[1].QuantityVouchered;
-                ws.Cells[iRow, 25].Value = Math.Round(SummaryUnit[0].MerchandiseAmount, 5);
-                ws.Cells[iRow, 26].Formula = string.Format("=-SUM(AB{0}:AB{1})", startingRowNumber, iRow);
+                mgr.SetCellTextValue(iRow, 17, SummaryUnit[0].ItemDescription);
+                mgr.SetCellNumberValue(iRow, 23, SummaryUnit[0].QuantityVouchered);
+                mgr.SetCellNumberValue(iRow, 25, Math.Round(SummaryUnit[0].MerchandiseAmount, 5));
+                mgr.SetCellFormula(iRow, 26, string.Format("=-SUM(AB2:AB{0})", iRow));
 
-                ws.Columns["I"].Collapsed = true;
-                ws.Columns["J"].Collapsed = true;
-                ws.Columns[10].Width = 1;
+                if (items.Length > 1 && SummaryUnit.Length > 1)
+                {
+                    iRow += 1;
+                    int startingRowNumber = iRow + 1; //we use excel formula to calculate the sum, so we have to keep this to get the starting range
+
+                    //dv.Sort = "ItemDescription ASC, ProjectGrant ASC";
+                    foreach (ServiceUnitBillingReportItem item in items[1])
+                    {
+                        if (!string.IsNullOrEmpty(item.CardType))
+                        {
+                            mgr.SetCellTextValue(iRow, 0, item.CardType);
+                            mgr.SetCellTextValue(iRow, 1, item.ShortCode);
+                            mgr.SetCellTextValue(iRow, 2, item.Account);
+                            mgr.SetCellTextValue(iRow, 3, item.FundCode);
+                            mgr.SetCellTextValue(iRow, 4, item.DeptID);
+                            mgr.SetCellTextValue(iRow, 5, item.ProgramCode);
+                            mgr.SetCellTextValue(iRow, 6, item.Class);
+                            mgr.SetCellTextValue(iRow, 7, item.ProjectGrant);
+                            mgr.SetCellTextValue(iRow, 8, item.VendorID);
+                            mgr.SetCellTextValue(iRow, 9, item.InvoiceDate);
+                            mgr.SetCellTextValue(iRow, 10, item.InvoiceID);
+
+                            string uniqName = item.Uniqname;
+                            if (uniqName.Length > 8)
+                                uniqName = uniqName.Substring(0, 8);
+
+                            mgr.SetCellTextValue(iRow, 11, uniqName);
+                            mgr.SetCellTextValue(iRow, 15, item.DepartmentalReferenceNumber);
+
+                            //ws.Cells[iRow, 18].Value = item.ItemDescription;
+                            //ws.Cells[iRow, 24].Value = item.QuantityVouchered;
+                            //ws.Cells[iRow, 26].Value = string.IsNullOrEmpty(item.UnitOfMeasure) ? 0 : Convert.ToDouble(item.UnitOfMeasure);
+                            //ws.Cells[iRow, 27].Value = string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount);
+
+                            mgr.SetCellTextValue(iRow, 17, item.ItemDescription);
+                            mgr.SetCellNumberValue(iRow, 23, item.QuantityVouchered);
+                            mgr.SetCellNumberValue(iRow, 25, string.IsNullOrEmpty(item.UnitOfMeasure) ? 0 : Convert.ToDouble(item.UnitOfMeasure));
+                            mgr.SetCellNumberValue(iRow, 26, string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount));
+
+                            iRow += 1;
+                        }
+                    }
+
+                    mgr.SetCellTextValue(iRow, 0, SummaryUnit[1].CardType);
+                    mgr.SetCellTextValue(iRow, 1, SummaryUnit[1].ShortCode);
+                    mgr.SetCellTextValue(iRow, 2, SummaryUnit[1].Account);
+                    mgr.SetCellTextValue(iRow, 3, SummaryUnit[1].FundCode);
+                    mgr.SetCellTextValue(iRow, 4, SummaryUnit[1].DeptID);
+                    mgr.SetCellTextValue(iRow, 5, SummaryUnit[1].ProgramCode);
+                    mgr.SetCellTextValue(iRow, 6, SummaryUnit[1].ClassName);
+                    mgr.SetCellTextValue(iRow, 7, SummaryUnit[1].ProjectGrant);
+                    mgr.SetCellTextValue(iRow, 9, SummaryUnit[1].InvoiceDate);
+                    mgr.SetCellTextValue(iRow, 11, SummaryUnit[1].Uniqname);
+
+                    //ws.Cells[iRow, 18].Value = SummaryUnit[1].ItemDescription;
+                    //ws.Cells[iRow, 24].Value = SummaryUnit[1].QuantityVouchered;
+                    //ws.Cells[iRow, 26].Value = Math.Round(SummaryUnit[0].MerchandiseAmount, 5);
+                    //ws.Cells[iRow, 27].Formula = string.Format("=-SUM(AB{0}:AB{1})", startingRowNumber, iRow);
+
+                    mgr.SetCellTextValue(iRow, 17, SummaryUnit[1].ItemDescription);
+                    mgr.SetCellNumberValue(iRow, 23, SummaryUnit[1].QuantityVouchered);
+                    mgr.SetCellNumberValue(iRow, 25, Math.Round(SummaryUnit[0].MerchandiseAmount, 5));
+                    mgr.SetCellFormula(iRow, 26, string.Format("=-SUM(AB{0}:AB{1})", startingRowNumber, iRow));
+
+                    mgr.SetColumnCollapsed("I", true);
+                    mgr.SetColumnCollapsed("J", true);
+                    mgr.SetColumnWidth(10, 1);
+                }
+
+                if (!Directory.Exists(workPathDir))
+                    Directory.CreateDirectory(workPathDir);
+
+                // the sub number
+                string workFilePath = Path.Combine(workPathDir, ChargeType + "SUB_" + StartPeriod.ToString("yyyy-MM"));
+
+                if (EndPeriod == StartPeriod.AddMonths(1))
+                    workFilePath += Path.GetExtension(fileName);
+                else
+                    workFilePath += "_" + EndPeriod.AddMonths(-1).ToString("yyyy-MM") + Path.GetExtension(fileName);
+
+                mgr.SaveAs(workFilePath);
+
+                return workFilePath;
             }
-
-            SpreadSheet.Worksheets.ActiveWorksheet = SpreadSheet.Worksheets[0];
-
-            if (!Directory.Exists(workPathDir))
-                Directory.CreateDirectory(workPathDir);
-
-            string workFilePath = Path.Combine(workPathDir, ChargeType + "SUB_" + StartPeriod.ToString("yyyy-MM"));
-
-            if (EndPeriod == StartPeriod.AddMonths(1))
-                workFilePath += ".xls";
-            else
-                workFilePath += "_" + EndPeriod.AddMonths(-1).ToString("yyyy-MM") + ".xls";
-
-            SpreadSheet.SaveXls(workFilePath);
-            SpreadSheet = null;
-            GC.Collect();
-
-            return workFilePath;
         }
 
         private string GenerateExcelJU(JournalUnitReportItem[] items, CreditEntry creditEntry, BillingCategory billingCategory, JournalUnitTypes juType)
         {
             //Contruct the excel object
-            string templatePath = ExcelUtility.GetTemplatePath("JU_Template.xls");
+            string fileName = Utility.GetRequiredAppSetting("JU_Template");
+            string templatePath = ExcelUtility.GetTemplatePath(fileName);
 
-            ExcelLite.SetLicense("EL6N-Z669-AZZG-3LS7");
-            ExcelFile SpreadSheet = new ExcelFile();
-            SpreadSheet.LoadXls(templatePath);
-            ExcelWorksheet ws = SpreadSheet.Worksheets[0];
-
-            DateTime Period = EndPeriod.AddMonths(-1);
-            string billingCategoryName = Enum.GetName(typeof(BillingCategory), billingCategory);
-
-            //We start at first row, because for ExcelLite control, the header row is not included
-            ws.Cells[2, 0].Value = "H";
-            ws.Cells[2, 1].Value = "NEXT";
-            ws.Cells[2, 2].Value = DateTime.Now.ToString("MM/dd/yyyy");
-            ws.Cells[2, 3].Value = "JU";
-            ws.Cells[2, 4].Value = Period.ToString("yyyy/MM");
-            ws.Cells[2, 5].Value = string.Format("JU {0} {1:MM/yy} LNF {2}{3}", GetJournalUnitNumber(Period, billingCategory, juType), Period, billingCategoryName, juType);
-            ws.Cells[2, 6].Value = "Rice";
-
-            int iRow = 3;
-            int iCol = 7;
-
-            //DataView dv = dt.DefaultView;
-            //dv.Sort = "ItemDescription ASC, ProjectGrant ASC";
-            foreach (JournalUnitReportItem item in items.Where(i => i.ItemDescription != "zzdoscar"))
+            using (var mgr = ExcelUtility.NewExcelManager())
             {
-                ws.Cells[iRow, 0].Value = "L";
-                ws.Cells[iRow, iCol].Value = item.Account;
-                ws.Cells[iRow, iCol + 1].Value = item.FundCode;
-                ws.Cells[iRow, iCol + 2].Value = item.DeptID;
-                ws.Cells[iRow, iCol + 3].Value = item.ProgramCode;
-                ws.Cells[iRow, iCol + 4].Value = item.Class;
-                ws.Cells[iRow, iCol + 5].Value = item.ProjectGrant;
-                ws.Cells[iRow, iCol + 6].Value = string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount);
-                ws.Cells[iRow, iCol + 7].Value = item.DepartmentalReferenceNumber;
-                ws.Cells[iRow, iCol + 8].Value = item.ItemDescription;
-                iRow += 1;
+                mgr.OpenWorkbook(templatePath);
+                mgr.SetActiveWorksheet("Sheet1");
+
+                DateTime period = EndPeriod.AddMonths(-1);
+                string billingCategoryName = Utility.EnumToString(billingCategory);
+
+                //We start at first row, because for ExcelLite control, the header row is not included
+
+                // [2021-09-27 jg]
+                //      source was previoulsy JU, now it is ENG (set in web.config)
+                //      journalDescription was previously "JU {0} {1:MM/yy} {2} {3}{4}" now set in web.config
+                string source = Utility.GetRequiredAppSetting("JournalSource"); //ENG
+                int journalUnitNumber = ReportSettings.GetJournalUnitNumber(period, billingCategory, juType);
+                // JournalDescription example: sponprogtechsupport@umich.edu; JU {0} {1:MM/yy} {2} {3}{4}
+                string journalDescription = string.Format(
+                    Utility.GetRequiredAppSetting("JournalDescription"),
+                    /*0*/ journalUnitNumber,
+                    /*1*/ period,
+                    /*2*/ ReportSettings.CompanyName,
+                    /*3*/ billingCategoryName,
+                    /*4*/ Utility.EnumToString(juType)
+                );
+
+                //column A
+                mgr.SetCellTextValue(2, 0, "H");
+                //column B
+                mgr.SetCellTextValue(2, 1, "NEXT");
+                //column C
+                mgr.SetCellTextValue(2, 2, DateTime.Now.ToString("MM/dd/yyyy"));
+                //column D
+                mgr.SetCellTextValue(2, 3, source);
+                //column E
+                mgr.SetCellTextValue(2, 4, period.ToString("yyyy/MM"));
+                //column F
+                mgr.SetCellTextValue(2, 5, journalDescription);
+                //column G
+                mgr.SetCellTextValue(2, 6, ReportSettings.FinancialManagerUserName);
+
+                int iRow = 3;
+                int iCol = 7;
+
+                //DataView dv = dt.DefaultView;
+                //dv.Sort = "ItemDescription ASC, ProjectGrant ASC";
+                foreach (JournalUnitReportItem item in items.Where(i => i.ItemDescription != $"zz{ReportSettings.FinancialManagerUserName}"))
+                {
+                    //column A
+                    mgr.SetCellTextValue(iRow, 0, "L");
+                    //column H
+                    mgr.SetCellTextValue(iRow, iCol, item.Account);
+                    //column I
+                    mgr.SetCellTextValue(iRow, iCol + 1, item.FundCode);
+                    //column J
+                    mgr.SetCellTextValue(iRow, iCol + 2, item.DeptID);
+                    //column K
+                    mgr.SetCellTextValue(iRow, iCol + 3, item.ProgramCode);
+                    //column L
+                    mgr.SetCellTextValue(iRow, iCol + 4, item.Class);
+                    //column M
+                    mgr.SetCellTextValue(iRow, iCol + 5, item.ProjectGrant);
+                    //column N
+                    mgr.SetCellNumberValue(iRow, iCol + 6, string.IsNullOrEmpty(item.MerchandiseAmount) ? 0 : Convert.ToDouble(item.MerchandiseAmount));
+                    //column O
+                    mgr.SetCellTextValue(iRow, iCol + 7, item.DepartmentalReferenceNumber);
+                    //column P
+                    mgr.SetCellTextValue(iRow, iCol + 8, item.ItemDescription);
+                    iRow += 1;
+                }
+
+                //Add the last row - which is the summary unit
+                mgr.SetCellTextValue(iRow, 0, "L");
+                mgr.SetCellTextValue(iRow, iCol, creditEntry.Account);
+                mgr.SetCellTextValue(iRow, iCol + 1, creditEntry.FundCode);
+                mgr.SetCellTextValue(iRow, iCol + 2, creditEntry.DeptID);
+                mgr.SetCellTextValue(iRow, iCol + 3, creditEntry.ProgramCode);
+                mgr.SetCellTextValue(iRow, iCol + 4, creditEntry.ClassName);
+                mgr.SetCellTextValue(iRow, iCol + 5, creditEntry.ProjectGrant);
+                mgr.SetCellTextValue(iRow, iCol + 6, creditEntry.MerchandiseAmount);
+                mgr.SetCellTextValue(iRow, iCol + 7, creditEntry.DepartmentalReferenceNumber); //should be davejd
+                mgr.SetCellTextValue(iRow, iCol + 8, creditEntry.ItemDescription); // should be MM/YY LNF UsageCase Subsidy;SUB#
+
+                string workPathDir = ExcelUtility.GetWorkPath(CurrentUser.ClientID);
+
+                if (!Directory.Exists(workPathDir))
+                    Directory.CreateDirectory(workPathDir);
+
+                string workFilePath = Path.Combine(workPathDir, "JU" + Enum.GetName(typeof(JournalUnitTypes), juType) + "_" + billingCategoryName + "_" + period.ToString("yyyy-MM") + Path.GetExtension(fileName));
+                mgr.SaveAs(workFilePath);
+
+                return workFilePath;
             }
-
-            //Add the last row - which is the summary unit
-            ws.Cells[iRow, 0].Value = "L";
-            ws.Cells[iRow, iCol].Value = creditEntry.Account;
-            ws.Cells[iRow, iCol + 1].Value = creditEntry.FundCode;
-            ws.Cells[iRow, iCol + 2].Value = creditEntry.DeptID;
-            ws.Cells[iRow, iCol + 3].Value = creditEntry.ProgramCode;
-            ws.Cells[iRow, iCol + 4].Value = creditEntry.ClassName;
-            ws.Cells[iRow, iCol + 5].Value = creditEntry.ProjectGrant;
-            ws.Cells[iRow, iCol + 6].Value = creditEntry.MerchandiseAmount;
-            //ws.Cells[iRow, iCol + 6].Formula = "=-SUM(AB2:AB" + iRow.ToString() + ")";
-            ws.Cells[iRow, iCol + 7].Value = creditEntry.DepartmentalReferenceNumber;
-            ws.Cells[iRow, iCol + 8].Value = creditEntry.ItemDescription;
-
-            SpreadSheet.Worksheets.ActiveWorksheet = SpreadSheet.Worksheets[0];
-
-            string workPathDir = ExcelUtility.GetWorkPath(CurrentUser.ClientID);
-
-            if (!Directory.Exists(workPathDir))
-                Directory.CreateDirectory(workPathDir);
-
-            string workFilePath = Path.Combine(workPathDir, "JU" + Enum.GetName(typeof(JournalUnitTypes), juType) + "_" + billingCategoryName + "_" + Period.ToString("yyyy-MM") + ".xls");
-            SpreadSheet.SaveXls(workFilePath);
-            SpreadSheet = null;
-
-            GC.Collect();
-
-            return workFilePath;
-        }
-
-        private int GetJournalUnitNumber(DateTime period, BillingCategory billingCategory, JournalUnitTypes juType)
-        {
-            int yearOff = period.Year - July2010.Year;
-            int monthOff = period.Month - July2010.Month;
-
-            int increment = (yearOff * 12 + monthOff) * 6;
-
-            //263 is the starting number for room sub in July 2010
-            if (billingCategory == BillingCategory.Room && juType == JournalUnitTypes.A)
-                return 100 + increment;
-            else if (billingCategory == BillingCategory.Room && juType == JournalUnitTypes.B)
-                return 100 + increment + 1;
-            else if (billingCategory == BillingCategory.Room && juType == JournalUnitTypes.C)
-                return 100 + increment + 2;
-            else if (billingCategory == BillingCategory.Tool && juType == JournalUnitTypes.A)
-                return 100 + increment + 3;
-            else if (billingCategory == BillingCategory.Tool && juType == JournalUnitTypes.B)
-                return 100 + increment + 4;
-            else if (billingCategory == BillingCategory.Tool && juType == JournalUnitTypes.C)
-                return 100 + increment + 5;
-            else
-                throw new ArgumentException("Invalid arguments passed to GetJournalUnitNumber in RepSUB.aspx");
         }
 
         private void OutputExcel(string filePath)
@@ -706,5 +719,7 @@ namespace sselFinOps
             string link = string.Format(@"<a href=""{0}"" target=""_blank"" target=""_blank"">xml</a>", url);
             litLink.Text = link;
         }
+
+        private ReportFactory GetReportFactory() => new ReportFactory(Provider.Billing.Report);
     }
 }

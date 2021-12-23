@@ -1,4 +1,6 @@
-﻿using SevenZip;
+﻿using LNF.CommonTools;
+using SevenZip;
+using System;
 using System.Configuration;
 using System.IO;
 
@@ -8,7 +10,12 @@ namespace sselFinOps.AppCode
     {
         public static string CreateArchive(string workPath, string name)
         {
-            SevenZipBase.SetLibraryPath(ConfigurationManager.AppSettings["7zLibPath"]);
+            string libPath = Utility.GetRequiredAppSetting("7zLibPath");
+            
+            if (!File.Exists(libPath))
+                throw new Exception($"File not found: {libPath}");
+
+            SevenZipBase.SetLibraryPath(libPath);
             var zip = new SevenZipCompressor();
             zip.ArchiveFormat = OutArchiveFormat.Zip;
 

@@ -1,5 +1,4 @@
-﻿using GemBox.ExcelLite;
-using LNF.Billing;
+﻿using LNF.Billing;
 using LNF.CommonTools;
 using LNF.Repository;
 using sselFinOps.AppCode.BLL;
@@ -16,6 +15,13 @@ namespace sselFinOps.AppCode
 {
     public static class ExcelUtility
     {
+        public static IExcelManager NewExcelManager()
+        {
+            var typeName = Utility.GetRequiredAppSetting("ExcelManager");
+            var result = (IExcelManager)Activator.CreateInstance(Type.GetType(typeName));
+            return result;
+        }
+
         public static string GetWorkPath(int clientId)
         {
             return GetSpreadsheetsPath(string.Format("Work\\{0}", clientId));
@@ -23,9 +29,6 @@ namespace sselFinOps.AppCode
 
         public static string GetTemplatePath(string name)
         {
-            //Invoice_Template.xls
-            //SUB_Template.xlt
-            //JU_Template.xls
             return GetSpreadsheetsPath(string.Format("Templates\\{0}", name));
         }
 
@@ -48,11 +51,12 @@ namespace sselFinOps.AppCode
             var usage = inv.Usage;
 
             // point to template files
-            string template = GetTemplatePath("Invoice_Template.xls");
-            string subPath = GetWorkPath(currentUserClientId);
+            string fileName = Utility.GetRequiredAppSetting("Invoice_Template");
+            string templatePath = GetTemplatePath(fileName);
+            string workPathDir = GetWorkPath(currentUserClientId);
 
             if (!string.IsNullOrEmpty(subFolder))
-                subPath = Path.Combine(subPath, subFolder);
+                workPathDir = Path.Combine(workPathDir, subFolder);
 
             // Delete old work files
             // need to check and see if any old files are left behind
@@ -67,22 +71,23 @@ namespace sselFinOps.AppCode
             // if subFolder is empty then subPath is the same as ExcelUtility.WorkPath and we already checked to see if that exists
             if (!string.IsNullOrEmpty(subFolder))
             {
-                if (!Directory.Exists(subPath))
-                    Directory.CreateDirectory(subPath);
+                if (!Directory.Exists(workPathDir))
+                    Directory.CreateDirectory(workPathDir);
             }
 
             // Write to excel
             int attempts = 0;
             string orgName = inv.Header.OrgName;
             string acctName = inv.Header.AccountName;
-            string fileName = EnsureFileNameIsValid(orgName + " (" + acctName + ") " + inv.StartDate.ToString("yyyy-MM") + ".xls");
-            string workFilePath = Path.Combine(subPath, fileName);
+            string workFileName = EnsureFileNameIsValid(orgName + " (" + acctName + ") " + inv.StartDate.ToString("yyyy-MM") + Path.GetExtension(fileName));
+            string workFilePath = Path.Combine(workPathDir, workFileName);
             string errmsg = string.Empty;
+
             while (!File.Exists(workFilePath) && attempts < 10)
             {
                 try
                 {
-                    File.Copy(template, workFilePath, true);
+                    File.Copy(templatePath, workFilePath, true);
                 }
                 catch (Exception ex)
                 {
@@ -94,36 +99,28 @@ namespace sselFinOps.AppCode
 
             if (File.Exists(workFilePath))
             {
-                using (var conn = new OleDbConnection("Provider=Microsoft.ACE.OLEDB.12.0;Data Source='" + workFilePath + "';Extended Properties='Excel 12.0 Xml;HDR=NO;';"))
-                using (var cmd = new OleDbCommand(string.Empty, conn))
+                using (var mgr = NewExcelManager())
                 {
-                    cmd.Connection.Open();
+                    mgr.OpenWorkbook(workFilePath);
+                    mgr.SetActiveWorksheet("Invoice");
 
                     //show invoice date
-                    cmd.CommandText = string.Format("UPDATE [Invoice$F4:F4] SET F1 = '{0:MMMM dd, yyyy}';", DateTime.Now);
-                    cmd.ExecuteNonQuery();
+                    mgr.SetCellTextValue("F4", DateTime.Now.ToString("MMMM dd, yyyy"));
 
                     DataTable dtAddress = AddressDA.GetAddressByAccountID(inv.Header.AccountID);
                     foreach (DataRow drAddr in dtAddress.Rows)
                     {
                         int startRow = (drAddr.Field<string>("AddrType") == "Billing") ? 7 : 13;
-                        cmd.CommandText = string.Format("UPDATE [Invoice$C{0}:C{0}] SET F1 = '{1}';", startRow, inv.Header.OrgName);
-                        cmd.ExecuteNonQuery();
-                        cmd.CommandText = string.Format("UPDATE [Invoice$C{0}:C{0}] SET F1 = '{1}';", startRow + 1, drAddr.Field<string>("InternalAddress"));
-                        cmd.ExecuteNonQuery();
-                        cmd.CommandText = string.Format("UPDATE [Invoice$C{0}:C{0}] SET F1 = '{1}';", startRow + 2, drAddr.Field<string>("StrAddress1"));
-                        cmd.ExecuteNonQuery();
-                        cmd.CommandText = string.Format("UPDATE [Invoice$C{0}:C{0}] SET F1 = '{1}';", startRow + 3, drAddr.Field<string>("StrAddress2"));
-                        cmd.ExecuteNonQuery();
-                        cmd.CommandText = string.Format("UPDATE [Invoice$C{0}:C{0}] SET F1 = '{1}';", startRow + 4, drAddr.Field<string>("City") + ", " + drAddr.Field<string>("State") + " " + drAddr.Field<string>("Zip"));
-                        cmd.ExecuteNonQuery();
+                        mgr.SetCellTextValue($"C{startRow}", inv.Header.OrgName);
+                        mgr.SetCellTextValue($"C{startRow + 1}", drAddr.Field<string>("InternalAddress"));
+                        mgr.SetCellTextValue($"C{startRow + 2}", drAddr.Field<string>("StrAddress1"));
+                        mgr.SetCellTextValue($"C{startRow + 3}", drAddr.Field<string>("StrAddress2"));
+                        mgr.SetCellTextValue($"C{startRow + 4}", drAddr.Field<string>("City") + ", " + drAddr.Field<string>("State") + " " + drAddr.Field<string>("Zip"));
                     }
 
                     //invoice number that needs to be entered
-                    cmd.CommandText = string.Format("UPDATE [Invoice$E12:E12] SET F1 = '{0}';", inv.Header.InvoiceNumber);
-                    cmd.ExecuteNonQuery();
-                    cmd.CommandText = string.Format("UPDATE [Invoice$I14:I14] SET F1 = '{0}';", inv.Header.DeptRef);
-                    cmd.ExecuteNonQuery();
+                    mgr.SetCellTextValue("E12", inv.Header.InvoiceNumber);
+                    mgr.SetCellTextValue("I14", inv.Header.DeptRef);
 
                     //now print charges
                     int r = 21;
@@ -133,19 +130,15 @@ namespace sselFinOps.AppCode
                     {
                         if (item.Cost != 0)
                         {
-                            cmd.CommandText = string.Format("UPDATE [Invoice$C{0}:C{0}] SET F1 = '{1:MM/yyyy}';", r, inv.StartDate);
-                            cmd.ExecuteNonQuery();
-                            cmd.CommandText = string.Format("UPDATE [Invoice$D{0}:D{0}] SET F1 = '{1}';", r, item.Description.Replace("'", "''"));
-                            cmd.ExecuteNonQuery();
-                            cmd.CommandText = string.Format("UPDATE [Invoice$H{0}:H{0}] SET F1 = '{1}';", r, item.Quantity);
-                            cmd.ExecuteNonQuery();
-                            cmd.CommandText = string.Format("UPDATE [Invoice$I{0}:I{0}] SET F1 = '{1:C}';", r, item.Cost);
-                            cmd.ExecuteNonQuery();
+                            mgr.SetCellTextValue($"C{r}", inv.StartDate.ToString("MM/yyyy"));
+                            mgr.SetCellTextValue($"D{r}", item.Description.Replace("'", "''"));
+                            mgr.SetCellNumberValue($"H{r}", item.Quantity);
+                            mgr.SetCellNumberValue($"I{r}", item.Cost);
                             r += 1;
                         }
                     }
 
-                    cmd.Connection.Close();
+                    mgr.SaveAs(workFilePath);
                 }
             }
             else
@@ -306,74 +299,74 @@ namespace sselFinOps.AppCode
             }
 
             // Write to excel
-            ExcelLite.SetLicense("EL6N-Z669-AZZG-3LS7");
-            ExcelFile spreadSheet = new ExcelFile();
-            spreadSheet.LoadXls(ExcelUtility.GetTemplatePath("Invoice_Template.xls"));
-            ExcelWorksheet ws = spreadSheet.Worksheets["InvoiceBlank"];
-
-            // show invoice date
-            ws.Cells["F4"].Value = DateTime.Now.ToShortDateString();
-
-            int startRow;
-            int useRow = 0;
-            foreach (DataRow drAddr in dtAddress.Rows)
+            using (var mgr = NewExcelManager())
             {
-                if (drAddr["AddrType"].ToString() == "Billing")
-                    startRow = 7;
-                else
-                    startRow = 13;
+                string fileName = Utility.GetRequiredAppSetting("Invoice_Template");
+                mgr.OpenWorkbook(GetTemplatePath(fileName));
+                mgr.SetActiveWorksheet("Invoice");
 
-                FillField(ws, "C", startRow, orgName, ref useRow);
-                FillField(ws, "C", 0, drAddr.Field<string>("InternalAddress"), ref useRow);
-                FillField(ws, "C", 0, drAddr.Field<string>("StrAddress1"), ref useRow);
-                FillField(ws, "C", 0, drAddr.Field<string>("StrAddress2"), ref useRow);
-                FillField(ws, "C", 0, drAddr.Field<string>("City") + ", " + drAddr.Field<string>("State") + " " + drAddr.Field<string>("Zip"), ref useRow);
-            }
+                // show invoice date
+                mgr.SetCellTextValue("F4", DateTime.Now.ToShortDateString());
 
-            // invoice number that needs to be entered
-            ws.Cells["E12"].Value = invoiceNumber;
-            ws.Cells["I14"].Value = deptRef;
-
-            int rowRef = 21;
-            string rowCell;
-
-            // now print charges
-            foreach (DataRow dr in dtUsage.Rows)
-            {
-                if (dr.Field<double>("Cost") != 0)
+                int startRow;
+                int useRow = 0;
+                foreach (DataRow drAddr in dtAddress.Rows)
                 {
-                    rowCell = "C" + rowRef.ToString();
-                    ws.Cells[rowCell].Value = startPeriod.ToString("MM/yyyy");
+                    if (drAddr["AddrType"].ToString() == "Billing")
+                        startRow = 7;
+                    else
+                        startRow = 13;
 
-                    rowCell = "D" + rowRef.ToString();
-                    ws.Cells[rowCell].Value = dr["Descrip"].ToString();
-
-                    rowCell = "H" + rowRef.ToString();
-                    ws.Cells[rowCell].Value = dr["Quantity"];
-
-                    rowCell = "I" + rowRef.ToString();
-                    ws.Cells[rowCell].Value = dr["Cost"];
-
-                    rowRef += 1;
+                    FillField(mgr, "C", startRow, orgName, ref useRow);
+                    FillField(mgr, "C", 0, drAddr.Field<string>("InternalAddress"), ref useRow);
+                    FillField(mgr, "C", 0, drAddr.Field<string>("StrAddress1"), ref useRow);
+                    FillField(mgr, "C", 0, drAddr.Field<string>("StrAddress2"), ref useRow);
+                    FillField(mgr, "C", 0, drAddr.Field<string>("City") + ", " + drAddr.Field<string>("State") + " " + drAddr.Field<string>("Zip"), ref useRow);
                 }
+
+                // invoice number that needs to be entered
+                mgr.SetCellTextValue("E12", invoiceNumber);
+                mgr.SetCellTextValue("I14", deptRef);
+
+                int rowRef = 21;
+                string rowCell;
+
+                // now print charges
+                foreach (DataRow dr in dtUsage.Rows)
+                {
+                    if (dr.Field<double>("Cost") != 0)
+                    {
+                        rowCell = "C" + rowRef.ToString();
+                        mgr.SetCellTextValue(rowCell, startPeriod.ToString("MM/yyyy"));
+
+                        rowCell = "D" + rowRef.ToString();
+                        mgr.SetCellTextValue(rowCell, dr["Descrip"]);
+
+                        rowCell = "H" + rowRef.ToString();
+                        mgr.SetCellNumberValue(rowCell, dr["Quantity"]);
+
+                        rowCell = "I" + rowRef.ToString();
+                        mgr.SetCellNumberValue(rowCell, dr["Cost"]);
+
+                        rowRef += 1;
+                    }
+                }
+
+                string workFilePath = Path.Combine(GetWorkPath(currentUserClientId), orgName + Path.GetExtension(fileName));
+                mgr.SaveAs(workFilePath);
+
+                return workFilePath;
             }
-
-            string workFilePath = Path.Combine(ExcelUtility.GetWorkPath(currentUserClientId), orgName + ".xls");
-            spreadSheet.SaveXls(workFilePath);
-            spreadSheet = null;
-            GC.Collect();
-
-            return workFilePath;
         }
 
-        private static void FillField(ExcelWorksheet ws, string col, int row, string data, ref int useRow)
+        private static void FillField(IExcelManager mgr, string col, int row, string data, ref int useRow)
         {
             if (row != 0)
                 useRow = row;
 
             if (data.Length > 0)
             {
-                ws.Cells[col + useRow.ToString()].Value = data;
+                mgr.SetCellTextValue(col + useRow.ToString(), data);
                 useRow += 1;
             }
         }

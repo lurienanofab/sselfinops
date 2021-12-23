@@ -1,4 +1,4 @@
-﻿<%@ Page Title="SUB Reports" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="RepSUB.aspx.cs" Inherits="sselFinOps.RepSUB" %>
+﻿<%@ Page Title="SUB Reports" Language="C#" MasterPageFile="~/FinOpsMaster.Master" AutoEventWireup="true" CodeBehind="RepSUB.aspx.cs" Inherits="sselFinOps.RepSUB" ShowTotal="false" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
     <style>

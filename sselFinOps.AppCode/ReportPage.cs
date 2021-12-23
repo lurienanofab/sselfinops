@@ -7,7 +7,7 @@ using System.Web.UI.WebControls;
 
 namespace sselFinOps.AppCode
 {
-    public abstract class ReportPage : LNF.Web.Content.LNFPage
+    public abstract class ReportPage : LNF.Web.Content.OnlineServicesPage
     {
         public override ClientPrivilege AuthTypes
         {

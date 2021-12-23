@@ -1,5 +1,4 @@
-﻿using LNF;
-using LNF.Billing;
+﻿using LNF.Billing;
 using LNF.Billing.Reports;
 using LNF.Billing.Reports.ServiceUnitBilling;
 using System;
@@ -7,38 +6,43 @@ using System.Collections.Generic;
 
 namespace sselFinOps.AppCode
 {
-    public static class ReportFactory
+    public class ReportFactory
     {
-        private static IReportRepository ReportClient => ServiceProvider.Current.Billing.Report;
+        public IReportRepository ReportRepository { get; }
 
-        public static RoomJU GetReportRoomJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
+        public ReportFactory(IReportRepository repo)
         {
-            return ReportClient.GetRoomJU(sd, ed, type.ToString(), id);
+            ReportRepository = repo;
         }
 
-        public static ToolJU GetReportToolJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
+        public RoomJU GetReportRoomJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
         {
-            return ReportClient.GetToolJU(sd, ed, type.ToString(), id);
+            return ReportRepository.GetRoomJU(sd, ed, type.ToString(), id);
         }
 
-        public static RoomSUB GetReportRoomSUB(DateTime sd, DateTime ed, int id)
+        public ToolJU GetReportToolJU(DateTime sd, DateTime ed, JournalUnitTypes type, int id)
         {
-            return ReportClient.GetRoomSUB(sd, ed, id);
+            return ReportRepository.GetToolJU(sd, ed, type.ToString(), id);
         }
 
-        public static ToolSUB GetReportToolSUB(DateTime sd, DateTime ed, int id)
+        public RoomSUB GetReportRoomSUB(DateTime sd, DateTime ed, int id)
         {
-            return ReportClient.GetToolSUB(sd, ed, id);
+            return ReportRepository.GetRoomSUB(sd, ed, id);
         }
 
-        public static StoreSUB GetReportStoreSUB(DateTime sd, DateTime ed, bool twoCreditAccounts, int id)
+        public ToolSUB GetReportToolSUB(DateTime sd, DateTime ed, int id)
+        {
+            return ReportRepository.GetToolSUB(sd, ed, id);
+        }
+
+        public StoreSUB GetReportStoreSUB(DateTime sd, DateTime ed, bool twoCreditAccounts, int id)
         {
             string option = null;
 
             if (twoCreditAccounts)
                 option = "two-credit-accounts";
 
-            return ReportClient.GetStoreSUB(sd, ed, id, option);
+            return ReportRepository.GetStoreSUB(sd, ed, id, option);
         }
 
         public static List<JournalUnitReportItem> GetAllRoomJU(RoomJU juA, RoomJU juB, RoomJU juC, out double total)

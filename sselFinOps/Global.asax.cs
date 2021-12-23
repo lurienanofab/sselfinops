@@ -1,5 +1,5 @@
 ﻿using LNF;
-using LNF.Impl;
+using LNF.Impl.DependencyInjection;
 using LNF.Web;
 using System;
 using System.Linq;
@@ -12,17 +12,21 @@ namespace sselFinOps
 {
     public class Global : System.Web.HttpApplication
     {
+        public static WebApp WebApp { get; private set; }
+
         protected void Application_Start(object sender, EventArgs e)
         {
-            Assembly[] assemblies = BuildManager.GetReferencedAssemblies().Cast<Assembly>().ToArray();
+            WebApp = new WebApp();
 
             // setup up dependency injection container
-            var wcc = new WebContainerConfiguration(WebApp.Current.Container);
-            wcc.EnablePropertyInjection();
+            WebApp.Context.EnablePropertyInjection();
+
+            var wcc = new WebContainerConfiguration(WebApp.Context);
             wcc.RegisterAllTypes();
 
             // setup web dependency injection
-            WebApp.Current.Bootstrap(assemblies);
+            Assembly[] assemblies = BuildManager.GetReferencedAssemblies().Cast<Assembly>().ToArray();
+            WebApp.Bootstrap(assemblies);
 
             if (ServiceProvider.Current.IsProduction())
                 Application["AppServer"] = "http://" + Environment.MachineName + ".eecs.umich.edu/";

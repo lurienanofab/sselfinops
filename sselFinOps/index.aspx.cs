@@ -6,7 +6,7 @@ using System.Web.UI.WebControls;
 
 namespace sselFinOps
 {
-    public partial class Index : LNFPage
+    public partial class Index : OnlineServicesPage
     {
         public override ClientPrivilege AuthTypes
         {

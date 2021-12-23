@@ -1,7 +1,9 @@
 ﻿using LNF.Data;
 using LNF.Impl.Repository.Scheduler;
+using LNF.Scheduler;
 using sselFinOps.AppCode;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -42,8 +44,7 @@ namespace sselFinOps
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            SqlConnection cnSselData = new SqlConnection(ConfigurationManager.ConnectionStrings["cnSselData"].ConnectionString);
-            GenerateTitleLinks(cnSselData);
+            GenerateTitleLinks();
 
             //RetrieveAllCostData(cnSselData)
 
@@ -53,24 +54,27 @@ namespace sselFinOps
         private void GenerateMaterialGrid()
         {
             //Dim allPIPs As IEnumerable(Of ProcessInfoLineParam) = DA.Search(Of ProcessInfoLineParam)(Function(x) x.IsPremiumMaterial = True).OrderBy(Function(x) x.Resource.ResourceID)
-            var allPIPs = DataSession.Query<ProcessInfoLineParam>().OrderBy(x => x.Resource.ResourceID).ToArray();
+            var allPIPs = DataSession.Query<ProcessInfoLineParam>().OrderBy(x => x.ResourceID).ToArray();
             int currentResourceId = -1;
+
+            var resources = Provider.Scheduler.Resource.GetActiveResources();
 
             foreach (var item in allPIPs)
             {
                 var tRow = new TableRow();
                 tRow.Attributes["class"] = "cost-item";
-                if (currentResourceId != item.Resource.ResourceID)
+                if (currentResourceId != item.ResourceID)
                 {
-                    if (item.Resource.ResourceID > 0)
+                    if (item.ResourceID > 0)
                     {
                         //tRow.Attributes("class") = tRow.Attributes("class") + " tr-top"
-                        AddResourceNameRow(item.Resource, tblmaterial);
+                        var res = resources.First(x => x.ResourceID == item.ResourceID);
+                        AddResourceNameRow(res, tblmaterial);
                     }
-                    currentResourceId = item.Resource.ResourceID;
+                    currentResourceId = item.ResourceID;
                 }
 
-                AddMaterial(item, tRow, item.Resource.ResourceID);
+                AddMaterial(item, tRow, item.ResourceID);
 
                 AddChargeRow(tRow, UMICH);
                 AddChargeRow(tRow, OTHER_ACADEMIC);
@@ -93,7 +97,7 @@ namespace sselFinOps
             tRow.Cells.Add(tCell);
         }
 
-        private void AddResourceNameRow(Resource res, Table tbl)
+        private void AddResourceNameRow(IResource res, Table tbl)
         {
             var rhRow = new TableRow();
             var lblPILP = new Label { Text = $"<b>{res.ResourceName}</b>" };
@@ -138,7 +142,7 @@ namespace sselFinOps
             return tCell;
         }
 
-        private void GenerateTitleLinks(SqlConnection cnSselData)
+        private void GenerateTitleLinks()
         {
             dsCost = new DataSet("ConCost");
 

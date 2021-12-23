@@ -1,5 +1,4 @@
-﻿using LNF;
-using LNF.Billing;
+﻿using LNF.Billing;
 using LNF.Billing.Process;
 using LNF.CommonTools;
 using LNF.Data;
@@ -121,7 +120,7 @@ namespace sselFinOps
             if (item != null)
                 item.Selected = true;
             else
-            { 
+            {
                 userSelectedValue = -1;
                 ddlClient.ClearSelection();
             }
@@ -152,7 +151,7 @@ namespace sselFinOps
         private void LoadGrid()
         {
             hidPeriod.Value = PeriodPicker1.SelectedPeriod.ToString("yyyy-MM-dd");
-            gvMiscCharge.DataSource = ServiceProvider.Current.Billing.Misc.GetMiscBillingCharges(PeriodPicker1.SelectedPeriod);
+            gvMiscCharge.DataSource = Provider.Billing.Misc.GetMiscBillingCharges(PeriodPicker1.SelectedPeriod, new[] { "Tool", "Room", "Store" });
             gvMiscCharge.DataBind();
         }
 
@@ -237,7 +236,7 @@ namespace sselFinOps
             int accountId = Convert.ToInt32(ddlAccount.SelectedValue);
 
             // Save Misc Charge
-            var expId = ServiceProvider.Current.Billing.Misc.CreateMiscBillingCharge(new MiscBillingChargeCreateArgs
+            var expId = Provider.Billing.Misc.CreateMiscBillingCharge(new MiscBillingChargeCreateArgs
             {
                 ClientID = clientId,
                 AccountID = accountId,
@@ -292,12 +291,8 @@ namespace sselFinOps
             //[2015-11-12 jg] only subsidy step4 is needed now
             try
             {
-                ServiceProvider.Current.Billing.Process.Step4(new Step4Command
-                {
-                    Command = "subsidy",
-                    Period = period,
-                    ClientID = clientId
-                });
+                //Provider.Worker.Execute(new WorkerRequest { Args = new[] { period.ToString("yyyy-MM-dd"), clientId.ToString() }, Command = "UpdateSubsidyBilling" });
+                Provider.Billing.Process.Step4(new Step4Command { Command = "subsidy", Period = period, ClientID = clientId });
             }
             catch (Exception ex)
             {
@@ -342,9 +337,9 @@ namespace sselFinOps
         {
             int expId = Convert.ToInt32(e.Keys[0]);
 
-            var mbc = ServiceProvider.Current.Billing.Misc.GetMiscBillingCharge(expId);
+            var mbc = Provider.Billing.Misc.GetMiscBillingCharge(expId);
 
-            int deleted = ServiceProvider.Current.Billing.Misc.DeleteMiscBillingCharge(expId);
+            int deleted = Provider.Billing.Misc.DeleteMiscBillingCharge(expId);
 
             if (deleted == 0)
                 SetDebugError($"Cannot find record with ExpID = {expId}");
@@ -370,7 +365,7 @@ namespace sselFinOps
         {
             int expId = Convert.ToInt32(e.Keys[0]);
 
-            var mbc = ServiceProvider.Current.Billing.Misc.GetMiscBillingCharge(expId);
+            var mbc = Provider.Billing.Misc.GetMiscBillingCharge(expId);
 
             var txtActDate = (TextBox)gvMiscCharge.Rows[e.RowIndex].FindControl("txtActDate");
 
@@ -386,7 +381,7 @@ namespace sselFinOps
                 UnitCost = Convert.ToDecimal(e.NewValues["UnitCost"])
             };
 
-            var updated = ServiceProvider.Current.Billing.Misc.UpdateMiscBilling(args);
+            var updated = Provider.Billing.Misc.UpdateMiscBilling(args);
 
             if (updated == 0)
                 SetDebugError($"Cannot find record with ExpID = {expId}");
