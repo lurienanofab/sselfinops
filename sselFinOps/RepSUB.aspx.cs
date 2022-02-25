@@ -643,7 +643,7 @@ namespace sselFinOps
                 mgr.SetCellTextValue(iRow, iCol + 3, creditEntry.ProgramCode);
                 mgr.SetCellTextValue(iRow, iCol + 4, creditEntry.ClassName);
                 mgr.SetCellTextValue(iRow, iCol + 5, creditEntry.ProjectGrant);
-                mgr.SetCellTextValue(iRow, iCol + 6, creditEntry.MerchandiseAmount);
+                mgr.SetCellNumberValue(iRow, iCol + 6, creditEntry.MerchandiseAmount);
                 mgr.SetCellTextValue(iRow, iCol + 7, creditEntry.DepartmentalReferenceNumber); //should be davejd
                 mgr.SetCellTextValue(iRow, iCol + 8, creditEntry.ItemDescription); // should be MM/YY LNF UsageCase Subsidy;SUB#
 
