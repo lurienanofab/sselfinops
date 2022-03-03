@@ -398,9 +398,9 @@ namespace sselFinOps
             LoadGrid();
         }
 
-        protected void BtnRecalcSubsidy_Command(object sender, CommandEventArgs e)
+        protected void GvMiscCharge_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (e.CommandName == "reclac")
+            if (e.CommandName == "recalc")
             {
                 var period = DateTime.Parse(hidPeriod.Value);
                 var clientId = Convert.ToInt32(e.CommandArgument);

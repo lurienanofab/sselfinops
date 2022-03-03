@@ -146,7 +146,7 @@
     </div>
     <div class="section">
         <asp:HiddenField runat="server" ID="hidPeriod" />
-        <asp:GridView runat="server" ID="gvMiscCharge" AutoGenerateColumns="false" DataKeyNames="ExpID" AllowSorting="true" CssClass="gridview highlight" GridLines="None" OnRowDeleting="GvMiscCharge_RowDeleting" OnRowEditing="GvMiscCharge_RowEditing" OnRowCancelingEdit="GvMiscCharge_RowCancelingEdit" OnRowUpdating="GvMiscCharge_RowUpdating">
+        <asp:GridView runat="server" ID="gvMiscCharge" AutoGenerateColumns="false" DataKeyNames="ExpID" AllowSorting="true" CssClass="gridview highlight" GridLines="None" OnRowDeleting="GvMiscCharge_RowDeleting" OnRowEditing="GvMiscCharge_RowEditing" OnRowCancelingEdit="GvMiscCharge_RowCancelingEdit" OnRowUpdating="GvMiscCharge_RowUpdating" OnRowCommand="GvMiscCharge_RowCommand">
             <HeaderStyle CssClass="header" />
             <RowStyle CssClass="row" />
             <AlternatingRowStyle CssClass="altrow" />
@@ -177,7 +177,7 @@
                 <asp:TemplateField>
                     <ItemStyle HorizontalAlign="Center" />
                     <ItemTemplate>
-                        <asp:LinkButton runat="server" ID="btnRecalcSubsidy" OnCommand="BtnRecalcSubsidy_Command" CommandName="recalc" CommandArgument='<%#Eval("ClientID")%>'>Recalculate</asp:LinkButton>
+                        <asp:LinkButton runat="server" ID="btnRecalcSubsidy" CommandName="recalc" CommandArgument='<%#Eval("ClientID")%>'>Recalculate</asp:LinkButton>
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
