@@ -6,29 +6,36 @@
 <configuration>
   <configSections>
     <sectionGroup name="lnf">
-      <section name="provider" type="LNF.ServiceProviderSection, LNF" />
+      <section name="provider" type="LNF.Configuration, LNF"/>
     </sectionGroup>
   </configSections>
 
   <lnf>
     <provider production="false">
-      <context loginUrl="/login" />
-      <dataAccess showSql="true" />
-      <email host="xxxxx" log="true" />
-      <control host="xxxxx" />
-      <log name="sselFinOps" enabled="true" />
+      <context loginUrl="/login"/>
+      <dataAccess showSql="true"/>
+      <email host="xxxxx"/>
+      <control host="xxxxx"/>
+      <log name="sselFinOps" enabled="true"/>
     </provider>
   </lnf>
 
   <appSettings>
     <add key="SecurePath" value="xxxxx"/>
-    <add key="7zLibPath" value="xxxxx" />
-    <add key="SpreadsheetsDirectory" value="xxxxx" />
-    <add key="ApiBaseUrl" value="xxxxx" />
-    <add key="BasicAuthUsername" value="xxxxx" />
-    <add key="BasicAuthPassword" value="xxxxx" />
-    <add key="StaticHost" value="xxxxx" />
-    <add key="MongoConnectionString" value="xxxxx" />
+    <add key="JournalSource" value="xxxxx"/>
+    <add key="JournalDescription" value="xxxxx"/>
+    <add key="CreditEntryItemDescription" value="xxxxx"/>
+    <add key="SpreadsheetsDirectory" value="xxxxx"/>
+    <add key="JU_Template" value="xxxxx"/>
+    <add key="SUB_Template" value="xxxxx"/>
+    <add key="Invoice_Template" value="xxxxx"/>
+    <add key="ExcelManager" value="sselFinOps.AppCode.Excel.SpreadsheetLightManager, sselFinOps.AppCode"/>
+    <add key="7zLibPath" value="xxxxx"/>
+    <add key="ApiBaseUrl" value="xxxxx"/>
+    <add key="BasicAuthUsername" value="xxxxx"/>
+    <add key="BasicAuthPassword" value="xxxxx"/>
+    <add key="StaticHost" value="xxxxx"/>
+    <add key="MongoConnectionString" value="xxxxx"/>
   </appSettings>
 
   <connectionStrings>
@@ -36,8 +43,8 @@
   </connectionStrings>
 
   <system.web>
-    <compilation debug="true" targetFramework="4.6.1" />
-    <httpRuntime targetFramework="4.6.1" />
+    <compilation debug="true" targetFramework="4.8" />
+    <httpRuntime targetFramework="4.8" />
 
     <pages>
       <controls>
