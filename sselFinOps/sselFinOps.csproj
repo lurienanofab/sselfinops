@@ -47,26 +47,26 @@
       <HintPath>..\packages\Ical.Net.4.2.0\lib\netstandard2.0\Ical.Net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Owin, Version=4.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.4.2.0\lib\net45\Microsoft.Owin.dll</HintPath>
+    <Reference Include="Microsoft.Owin, Version=4.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.2.1\lib\net45\Microsoft.Owin.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.2.0\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.2.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NodaTime, Version=3.0.9.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
-      <HintPath>..\packages\NodaTime.3.0.9\lib\netstandard2.0\NodaTime.dll</HintPath>
+    <Reference Include="NodaTime, Version=3.0.10.0, Culture=neutral, PublicKeyToken=4226afe0d9b296d1, processorArchitecture=MSIL">
+      <HintPath>..\packages\NodaTime.3.0.10\lib\netstandard2.0\NodaTime.dll</HintPath>
     </Reference>
     <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="SimpleInjector, Version=5.0.0.0, Culture=neutral, PublicKeyToken=984cb50dea722e99, processorArchitecture=MSIL">
-      <HintPath>..\packages\SimpleInjector.5.3.2\lib\net461\SimpleInjector.dll</HintPath>
+      <HintPath>..\packages\SimpleInjector.5.3.3\lib\net461\SimpleInjector.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.IO.Compression" />
@@ -111,12 +111,13 @@
     <Content Include="ConCostMaterial.aspx" />
     <Content Include="ConFormula.aspx" />
     <Content Include="ConGlobal.aspx" />
-    <Content Include="HolidaysConfiguration.aspx" />
+    <Content Include="MscBillingImportUtility.aspx" />
+    <Content Include="ConHolidays.aspx" />
     <Content Include="ConOrgRecharge.aspx" />
     <Content Include="ConRemoteProcessing.aspx" />
     <Content Include="DatHistorical.aspx" />
     <Content Include="DatSubsidyTiers.aspx" />
-    <Content Include="DurationsReport.aspx" />
+    <Content Include="RepDurationsReport.aspx" />
     <Content Include="Error.aspx" />
     <Content Include="FinExtTool.aspx" />
     <Content Include="FinOpsMaster.Master" />
@@ -130,7 +131,8 @@
     <Content Include="images\im_restore.gif" />
     <Content Include="images\im_update.gif" />
     <Content Include="images\xls.png" />
-    <Content Include="ManagerUsageSummary.aspx" />
+    <Content Include="RepManagerUsageEmails.aspx" />
+    <Content Include="RepManagerUsageReport.aspx" />
     <Content Include="MscBillingChecks.aspx" />
     <Content Include="MscExp.aspx" />
     <Content Include="RepInvoice.aspx" />
@@ -141,8 +143,8 @@
     <Content Include="Ajax\OrgRecharge.ashx" />
     <Content Include="data\index.ashx" />
     <None Include="packages.config" />
-    <Content Include="ReportFinancialManager.aspx" />
-    <Content Include="ReportToolBilling.aspx" />
+    <Content Include="RepFinancialManager.aspx" />
+    <Content Include="RepToolBilling.aspx" />
     <Content Include="scripts\jquery.remoteproc.js" />
     <Content Include="Spreadsheets.ashx" />
     <None Include="Properties\PublishProfiles\Production %28Apps%29.pubxml" />
@@ -202,13 +204,6 @@
     </Compile>
     <Compile Include="data\index.ashx.cs">
       <DependentUpon>index.ashx</DependentUpon>
-    </Compile>
-    <Compile Include="HolidaysConfiguration.aspx.cs">
-      <DependentUpon>HolidaysConfiguration.aspx</DependentUpon>
-      <SubType>ASPXCodeBehind</SubType>
-    </Compile>
-    <Compile Include="HolidaysConfiguration.aspx.designer.cs">
-      <DependentUpon>HolidaysConfiguration.aspx</DependentUpon>
     </Compile>
     <Compile Include="ConOrgRecharge.aspx.cs">
       <DependentUpon>ConOrgRecharge.aspx</DependentUpon>

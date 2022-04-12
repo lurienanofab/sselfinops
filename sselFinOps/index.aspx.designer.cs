@@ -7,11 +7,13 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace sselFinOps {
-    
-    
-    public partial class Index {
-        
+namespace sselFinOps
+{
+
+
+    public partial class Index
+    {
+
         /// <summary>
         /// lblName control.
         /// </summary>
@@ -20,7 +22,16 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblName;
-        
+
+        /// <summary>
+        /// divRep control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divRep;
+
         /// <summary>
         /// lblRep control.
         /// </summary>
@@ -29,25 +40,7 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Label lblRep;
-        
-        /// <summary>
-        /// lblCon control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblCon;
-        
-        /// <summary>
-        /// lblDat control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblDat;
-        
+
         /// <summary>
         /// btnRepMiscCharge control.
         /// </summary>
@@ -56,25 +49,7 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepMiscCharge;
-        
-        /// <summary>
-        /// btnConHolidays control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConHolidays;
-        
-        /// <summary>
-        /// btnDatHistorical control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatHistorical;
-        
+
         /// <summary>
         /// btnRepSUB control.
         /// </summary>
@@ -83,7 +58,7 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepSUB;
-        
+
         /// <summary>
         /// btnRepOther control.
         /// </summary>
@@ -92,25 +67,7 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepOther;
-        
-        /// <summary>
-        /// btnConGlobal control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConGlobal;
-        
-        /// <summary>
-        /// btnDatSubsidyTiers control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatSubsidyTiers;
-        
+
         /// <summary>
         /// btnRepInvoice control.
         /// </summary>
@@ -119,34 +76,16 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepInvoice;
-        
+
         /// <summary>
-        /// btnAuxCostConfiguration control.
+        /// btnRepToolBilling control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAuxCostConfiguration;
-        
-        /// <summary>
-        /// btnDatCurrentCosts control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDatCurrentCosts;
-        
-        /// <summary>
-        /// btnReportToolBilling control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnReportToolBilling;
-        
+        protected global::System.Web.UI.WebControls.Button btnRepToolBilling;
+
         /// <summary>
         /// btnRepLabTimeJE control.
         /// </summary>
@@ -155,25 +94,7 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepLabTimeJE;
-        
-        /// <summary>
-        /// btnConRoomCost control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConRoomCost;
-        
-        /// <summary>
-        /// lblMsc control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMsc;
-        
+
         /// <summary>
         /// btnRepToolUseJE control.
         /// </summary>
@@ -182,70 +103,7 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepToolUseJE;
-        
-        /// <summary>
-        /// btnManagerUsageSummary control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnManagerUsageSummary;
-        
-        /// <summary>
-        /// btnConStoreCost control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConStoreCost;
-        
-        /// <summary>
-        /// btnMscInternalSpecial control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMscInternalSpecial;
-        
-        /// <summary>
-        /// btnReportFinancialManager control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnReportFinancialManager;
-        
-        /// <summary>
-        /// btnRepSUBStore control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnRepSUBStore;
-        
-        /// <summary>
-        /// btnConToolCost control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnConToolCost;
-        
-        /// <summary>
-        /// btnMscExp control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMscExp;
-        
+
         /// <summary>
         /// btnRepMaterialsJE control.
         /// </summary>
@@ -254,7 +112,124 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnRepMaterialsJE;
-        
+
+        /// <summary>
+        /// btnRepManagerUsageReport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRepManagerUsageReport;
+
+        /// <summary>
+        /// btnRepManagerUsageEmails control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRepManagerUsageEmails;
+
+        /// <summary>
+        /// btnRepFinancialManager control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRepFinancialManager;
+
+        /// <summary>
+        /// btnRepSUBStore control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRepSUBStore;
+
+        /// <summary>
+        /// btnRepDurationReport control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnRepDurationReport;
+
+        /// <summary>
+        /// divCon control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divCon;
+
+        /// <summary>
+        /// lblCon control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblCon;
+
+        /// <summary>
+        /// btnConHolidays control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConHolidays;
+
+        /// <summary>
+        /// btnConGlobal control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConGlobal;
+
+        /// <summary>
+        /// btnAuxCostConfiguration control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnAuxCostConfiguration;
+
+        /// <summary>
+        /// btnConRoomCost control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConRoomCost;
+
+        /// <summary>
+        /// btnConStoreCost control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConStoreCost;
+
+        /// <summary>
+        /// btnConToolCost control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConToolCost;
+
         /// <summary>
         /// btnConFormula control.
         /// </summary>
@@ -263,16 +238,7 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnConFormula;
-        
-        /// <summary>
-        /// btnMscExp2 control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMscExp2;
-        
+
         /// <summary>
         /// btnConRemoteProcessing control.
         /// </summary>
@@ -281,16 +247,7 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnConRemoteProcessing;
-        
-        /// <summary>
-        /// btnMscBillingChecks control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnMscBillingChecks;
-        
+
         /// <summary>
         /// btnConOrgRecharge control.
         /// </summary>
@@ -299,25 +256,115 @@ namespace sselFinOps {
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnConOrgRecharge;
-        
+
         /// <summary>
-        /// btnDurationReport control.
+        /// divDat control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnDurationReport;
-        
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divDat;
+
         /// <summary>
-        /// Label2 control.
+        /// lblDat control.
         /// </summary>
         /// <remarks>
         /// Auto-generated field.
         /// To modify move field declaration from designer file to code-behind file.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label Label2;
-        
+        protected global::System.Web.UI.WebControls.Label lblDat;
+
+        /// <summary>
+        /// btnDatHistorical control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDatHistorical;
+
+        /// <summary>
+        /// btnDatSubsidyTiers control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDatSubsidyTiers;
+
+        /// <summary>
+        /// btnDatCurrentCosts control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnDatCurrentCosts;
+
+        /// <summary>
+        /// divMisc control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divMisc;
+
+        /// <summary>
+        /// lblMsc control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMsc;
+
+        /// <summary>
+        /// btnMscInternalSpecial control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMscInternalSpecial;
+
+        /// <summary>
+        /// btnMscExp control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMscExp;
+
+        /// <summary>
+        /// btnMscExp2 control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMscExp2;
+
+        /// <summary>
+        /// btnMscBillingChecks control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMscBillingChecks;
+
+        /// <summary>
+        /// btnMscBillingImportUtility control.
+        /// </summary>
+        /// <remarks>
+        /// Auto-generated field.
+        /// To modify move field declaration from designer file to code-behind file.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnMscBillingImportUtility;
+
         /// <summary>
         /// btnLogout control.
         /// </summary>
